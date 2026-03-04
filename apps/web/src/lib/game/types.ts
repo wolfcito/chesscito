@@ -18,5 +18,6 @@ export type SquareState = {
   isDark: boolean;
   isHighlighted: boolean;
   isSelected: boolean;
+  isTarget: boolean;
   piece: BoardPiece | null;
 };

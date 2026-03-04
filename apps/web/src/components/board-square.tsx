@@ -29,6 +29,14 @@ export function BoardSquare({ square, onPress }: BoardSquareProps) {
       {square.isHighlighted ? (
         <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-primary" />
       ) : null}
+      {square.isTarget && !square.piece ? (
+        <span
+          className="absolute inset-x-0 bottom-3 flex justify-center text-xl"
+          aria-hidden="true"
+        >
+          ◎
+        </span>
+      ) : null}
       {square.piece ? (
         <span className="flex h-full items-center justify-center text-3xl" aria-hidden="true">
           ♖

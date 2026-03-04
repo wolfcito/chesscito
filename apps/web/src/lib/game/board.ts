@@ -46,10 +46,12 @@ export function buildBoardSquares({
   selectedPosition,
   piece,
   validTargets,
+  targetPosition = null,
 }: {
   selectedPosition: BoardPosition | null;
   piece: BoardPiece;
   validTargets: BoardPosition[];
+  targetPosition?: BoardPosition | null;
 }): SquareState[] {
   const squares: SquareState[] = [];
 
@@ -65,6 +67,7 @@ export function buildBoardSquares({
         isDark: (file + rank) % 2 === 1,
         isHighlighted: validTargets.some((target) => arePositionsEqual(target, position)),
         isSelected: selectedPosition ? arePositionsEqual(selectedPosition, position) : false,
+        isTarget: targetPosition ? arePositionsEqual(targetPosition, position) : false,
         piece: hasPiece ? piece : null,
       });
     }
