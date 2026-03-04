@@ -22,9 +22,17 @@ function parseLabel(label: string): BoardPosition {
 
 type BoardProps = {
   mode?: "tutorial" | "practice";
+  targetPosition?: BoardPosition | null;
+  isLocked?: boolean;
+  onMove?: (position: BoardPosition) => void;
 };
 
-export function Board({ mode = "practice" }: BoardProps) {
+export function Board({
+  mode = "practice",
+  targetPosition = null,
+  isLocked = false,
+  onMove,
+}: BoardProps) {
   const [piece, setPiece] = useState(INITIAL_ROOK);
   const [selectedPosition, setSelectedPosition] = useState<BoardPosition | null>(
     mode === "tutorial" ? INITIAL_ROOK.position : null
@@ -48,12 +56,13 @@ export function Board({ mode = "practice" }: BoardProps) {
         selectedPosition,
         piece,
         validTargets,
+        targetPosition,
       }),
-    [piece, selectedPosition, validTargets]
+    [piece, selectedPosition, targetPosition, validTargets]
   );
 
   const handleSquarePress = (label: string) => {
-    if (mode !== "practice") {
+    if (mode !== "practice" || isLocked) {
       return;
     }
 
@@ -70,6 +79,7 @@ export function Board({ mode = "practice" }: BoardProps) {
     if (canMove) {
       setPiece((current) => movePiece(current, nextPosition));
       setSelectedPosition(null);
+      onMove?.(nextPosition);
       return;
     }
 
@@ -97,20 +107,28 @@ export function Board({ mode = "practice" }: BoardProps) {
           <p className="mt-1 text-sm text-white/75">
             {mode === "tutorial"
               ? "Las flechas verdes marcan la fila y la columna completas."
-              : "Toca la pieza para ver movimientos legales."}
+              : targetPosition
+                ? "Selecciona la Torre y captura el objetivo en un solo movimiento."
+                : "Toca la pieza para ver movimientos legales."}
           </p>
         </div>
         <div className="rounded-2xl bg-slate-100 px-4 py-4">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-            {mode === "tutorial" ? "Tutorial state" : "Current square"}
+            {mode === "tutorial" ? "Tutorial state" : targetPosition ? "Target square" : "Current square"}
           </p>
           <p className="mt-2 text-lg font-semibold text-slate-950">
-            {mode === "tutorial" ? "Trayectorias activas" : getPositionLabel(piece.position)}
+            {mode === "tutorial"
+              ? "Trayectorias activas"
+              : targetPosition
+                ? getPositionLabel(targetPosition)
+                : getPositionLabel(piece.position)}
           </p>
           <p className="mt-1 text-sm text-slate-600">
             {mode === "tutorial"
               ? "Pulsa Probar para convertir estas trayectorias en movimiento interactivo."
-              : "Toca una casilla marcada para mover la Torre."}
+              : targetPosition
+                ? "El circulo marca la captura objetivo."
+                : "Toca una casilla marcada para mover la Torre."}
           </p>
         </div>
       </div>
