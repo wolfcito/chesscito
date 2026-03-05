@@ -2,14 +2,28 @@ export const scoreboardAbi = [
   {
     type: "function",
     stateMutability: "nonpayable",
-    name: "submitScore",
+    name: "submitScoreSigned",
     inputs: [
       { name: "levelId", type: "uint256" },
       { name: "score", type: "uint256" },
       { name: "timeMs", type: "uint256" },
       { name: "nonce", type: "uint256" },
+      { name: "deadline", type: "uint256" },
+      { name: "signature", type: "bytes" },
     ],
     outputs: [],
+  },
+  {
+    type: "event",
+    anonymous: false,
+    name: "ScoreSubmitted",
+    inputs: [
+      { indexed: true, name: "player", type: "address" },
+      { indexed: true, name: "levelId", type: "uint256" },
+      { indexed: false, name: "score", type: "uint256" },
+      { indexed: false, name: "timeMs", type: "uint256" },
+      { indexed: false, name: "nonce", type: "uint256" },
+    ],
   },
 ] as const;
 

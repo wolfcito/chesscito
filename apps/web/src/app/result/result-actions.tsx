@@ -13,7 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { useMiniPay } from "@/hooks/use-minipay";
 import { badgesAbi } from "@/lib/contracts/badges";
-import { getBadgesAddress, getMiniPayFeeCurrency, getScoreboardAddress } from "@/lib/contracts/chains";
+import {
+  getBadgesAddress,
+  getConfiguredChainId,
+  getMiniPayFeeCurrency,
+  getScoreboardAddress,
+} from "@/lib/contracts/chains";
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 
 type ResultActionsProps = {
@@ -23,8 +28,29 @@ type ResultActionsProps = {
   status: string;
 };
 
+type SignatureResponse =
+  | { nonce: string; deadline: string; signature: `0x${string}`; error?: never }
+  | { error: string };
+
 function shortenHash(hash: string) {
   return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
+}
+
+async function requestSignature(endpoint: "/api/sign-badge" | "/api/sign-score", body: object) {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const payload = (await response.json()) as SignatureResponse;
+
+  if (!response.ok || "error" in payload) {
+    throw new Error(payload.error ?? "Could not fetch signature");
+  }
+
+  return payload;
 }
 
 export function ResultActions({ piece, score, moves, status }: ResultActionsProps) {
@@ -62,6 +88,7 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [claimBadgeError, setClaimBadgeError] = useState<string | null>(null);
 
+  const configuredChainId = useMemo(() => getConfiguredChainId(), []);
   const scoreboardAddress = useMemo(() => getScoreboardAddress(chainId), [chainId]);
   const badgesAddress = useMemo(() => getBadgesAddress(chainId), [chainId]);
   const feeCurrency = useMemo(() => getMiniPayFeeCurrency(chainId), [chainId]);
@@ -80,11 +107,13 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
     },
   });
 
+  const isCorrectChain = configuredChainId != null && chainId === configuredChainId;
   const canSubmit =
     isReady &&
     hasProvider &&
     isConnected &&
     Boolean(address) &&
+    isCorrectChain &&
     Boolean(scoreboardAddress) &&
     levelId > 0n &&
     status === "success";
@@ -93,30 +122,45 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
     hasProvider &&
     isConnected &&
     Boolean(address) &&
+    isCorrectChain &&
     Boolean(badgesAddress) &&
     levelId > 0n &&
     status === "success" &&
     !hasClaimedBadge;
 
   const handleSubmitScore = async () => {
-    if (!canSubmit || !scoreboardAddress) {
+    if (!canSubmit || !scoreboardAddress || !address) {
       return;
     }
 
     setSubmissionError(null);
     resetSubmit();
 
-    const baseRequest = {
-      address: scoreboardAddress,
-      abi: scoreboardAbi,
-      functionName: "submitScore" as const,
-      args: [levelId, parsedScore, parsedTimeMs, BigInt(Date.now())],
-      chainId,
-      account: address,
-      type: isMiniPay ? ("legacy" as const) : undefined,
-    } as const;
-
     try {
+      const signed = await requestSignature("/api/sign-score", {
+        player: address,
+        levelId: Number(levelId),
+        score: Number(parsedScore),
+        timeMs: Number(parsedTimeMs),
+      });
+
+      const baseRequest = {
+        address: scoreboardAddress,
+        abi: scoreboardAbi,
+        functionName: "submitScoreSigned" as const,
+        args: [
+          levelId,
+          parsedScore,
+          parsedTimeMs,
+          BigInt(signed.nonce),
+          BigInt(signed.deadline),
+          signed.signature,
+        ],
+        chainId,
+        account: address,
+        type: isMiniPay ? ("legacy" as const) : undefined,
+      } as const;
+
       writeSubmitContract(
         (feeCurrency
           ? {
@@ -125,30 +169,35 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
             }
           : baseRequest) as Parameters<typeof writeSubmitContract>[0]
       );
-    } catch (submitError) {
-      setSubmissionError(submitError instanceof Error ? submitError.message : "Could not submit score");
+    } catch (error) {
+      setSubmissionError(error instanceof Error ? error.message : "Could not submit score");
     }
   };
 
   const handleClaimBadge = async () => {
-    if (!canClaimBadge || !badgesAddress) {
+    if (!canClaimBadge || !badgesAddress || !address) {
       return;
     }
 
     setClaimBadgeError(null);
     resetClaim();
 
-    const baseRequest = {
-      address: badgesAddress,
-      abi: badgesAbi,
-      functionName: "claimBadge" as const,
-      args: [levelId],
-      chainId,
-      account: address,
-      type: isMiniPay ? ("legacy" as const) : undefined,
-    } as const;
-
     try {
+      const signed = await requestSignature("/api/sign-badge", {
+        player: address,
+        levelId: Number(levelId),
+      });
+
+      const baseRequest = {
+        address: badgesAddress,
+        abi: badgesAbi,
+        functionName: "claimBadgeSigned" as const,
+        args: [levelId, BigInt(signed.nonce), BigInt(signed.deadline), signed.signature],
+        chainId,
+        account: address,
+        type: isMiniPay ? ("legacy" as const) : undefined,
+      } as const;
+
       writeClaimContract(
         (feeCurrency
           ? {
@@ -157,14 +206,13 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
             }
           : baseRequest) as Parameters<typeof writeClaimContract>[0]
       );
-    } catch (claimErrorCandidate) {
-      setClaimBadgeError(
-        claimErrorCandidate instanceof Error ? claimErrorCandidate.message : "Could not claim badge"
-      );
+    } catch (error) {
+      setClaimBadgeError(error instanceof Error ? error.message : "Could not claim badge");
     }
   };
 
-  const explorerBaseUrl = `https://${chainId === 11142220 ? "sepolia." : ""}celoscan.io/tx/`;
+  const explorerSubdomain = chainId === 44787 ? "alfajores." : chainId === 11142220 ? "sepolia." : "";
+  const explorerBaseUrl = `https://${explorerSubdomain}celoscan.io/tx/`;
 
   return (
     <div className="space-y-3 rounded-[28px] border border-slate-200 bg-white p-5">
@@ -176,8 +224,8 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
           Enviar puntaje on-chain
         </h2>
         <p className="text-sm leading-6 text-slate-600">
-          Crea la prueba on-chain del resultado local. El flujo usa transaccion legacy dentro de
-          MiniPay y fee currency opcional si la configuracion del entorno la define.
+          El backend firma el payload EIP-712 y MiniPay solo envia la transaccion. El flujo mantiene
+          legacy tx y fee currency opcional si la configuracion del entorno la define.
         </p>
       </div>
 
@@ -197,9 +245,16 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
           </p>
         </div>
         <div className="rounded-2xl bg-slate-100 px-4 py-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Contract</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Chain</p>
+          <p className="mt-2 text-sm font-semibold text-slate-950">
+            {chainId ? `${chainId}` : "No chain"}
+            {configuredChainId ? ` / target ${configuredChainId}` : ""}
+          </p>
+        </div>
+        <div className="rounded-2xl bg-slate-100 px-4 py-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Scoreboard</p>
           <p className="mt-2 break-all text-sm font-semibold text-slate-950">
-            {scoreboardAddress ?? "Missing NEXT_PUBLIC_SCOREBOARD_ADDRESS_*"}
+            {scoreboardAddress ?? "Missing NEXT_PUBLIC_SCOREBOARD_ADDRESS"}
           </p>
         </div>
         <div className="rounded-2xl bg-slate-100 px-4 py-4">
@@ -211,7 +266,7 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
         <div className="rounded-2xl bg-slate-100 px-4 py-4">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Badges contract</p>
           <p className="mt-2 break-all text-sm font-semibold text-slate-950">
-            {badgesAddress ?? "Missing NEXT_PUBLIC_BADGES_ADDRESS_*"}
+            {badgesAddress ?? "Missing NEXT_PUBLIC_BADGES_ADDRESS"}
           </p>
         </div>
       </div>
@@ -249,13 +304,16 @@ export function ResultActions({ piece, score, moves, status }: ResultActionsProp
           Abre esta pantalla dentro de MiniPay o conecta una wallet compatible para enviar la transaccion.
         </p>
       ) : null}
-
+      {configuredChainId && !isCorrectChain ? (
+        <p className="text-sm text-amber-700">
+          Cambia la wallet a la red {configuredChainId} para usar las direcciones configuradas del demo.
+        </p>
+      ) : null}
       {status !== "success" ? (
         <p className="text-sm text-slate-600">
           El submit on-chain se habilita cuando el challenge termina en exito.
         </p>
       ) : null}
-
       {!scoreboardAddress ? (
         <p className="text-sm text-amber-700">
           Falta configurar la direccion del contrato Scoreboard para la red actual.
