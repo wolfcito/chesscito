@@ -4,8 +4,8 @@ This package contains the on-chain proof layer for Chesscito on Celo.
 
 ## Contracts
 
-- `Scoreboard.sol`: event-based score submission with anti-spam controls
-- `Badges.sol`: ERC-1155 badge claims with one mint per wallet and level
+- `ScoreboardUpgradeable.sol`: EIP-712 signed score submission with anti-spam controls
+- `BadgesUpgradeable.sol`: EIP-712 signed ERC-1155 badge claims (one mint per wallet and level)
 
 ## Local workflow
 
@@ -18,33 +18,39 @@ pnpm --filter hardhat test
 
 ```bash
 pnpm --filter hardhat deploy
+pnpm --filter hardhat deploy:alfajores
 pnpm --filter hardhat deploy:celo-sepolia
 pnpm --filter hardhat deploy:celo
-pnpm --filter hardhat deploy:badges
-pnpm --filter hardhat deploy:badges:celo-sepolia
-pnpm --filter hardhat deploy:badges:celo
+pnpm --filter hardhat verify:alfajores
+pnpm --filter hardhat verify:celo-sepolia
+pnpm --filter hardhat verify:celo
 ```
 
-Default ignition parameters:
+Default deploy parameters:
 - `submitCooldown=60`
-- `maxSubmissionsPerDay=20`
-- `initialOwner=deployer`
-- `baseURI=ipfs://chesscito/badges/`
+- `maxSubmissionsPerDay=25`
+- `initialOwner=SAFE_OWNER`
+- `baseURI=ipfs://chesscito/badges`
+- `kind=transparent`
 
 ## Environment
 
 Copy `.env.example` to `.env` and fill only what you need:
 
 ```env
-PRIVATE_KEY=your_private_key_without_0x_prefix
-ETHERSCAN_API_KEY=your_etherscan_api_key
+DEPLOYER_PRIVATE_KEY=your_private_key_with_0x_prefix
+SIGNER_PRIVATE_KEY=server_signer_private_key_with_0x_prefix
+SAFE_OWNER=0xYourSafeAddress
+ALFAJORES_RPC_URL=https://alfajores-forno.celo-testnet.org
+CELO_SEPOLIA_RPC_URL=https://forno.celo-sepolia.celo-testnet.org
 CELO_RPC_URL=https://forno.celo.org
-CELO_SEPOLIA_RPC_URL=https://forno.celo-sepolia.celo-testnet.org/
+CELOSCAN_API_KEY=your_celoscan_api_key
 ```
 
 ## Notes
 
 - Never commit `.env` with real keys
-- Use Celo Sepolia before Celo Mainnet
-- The Scoreboard contract emits `ScoreSubmitted` and enforces cooldown plus max submissions per day
-- The Badges contract exposes `claimBadge(levelId)` and serves metadata as `baseURI + tokenId + .json`
+- Current recommended Celo testnet flow is Celo Sepolia
+- Deploy writes `deployments/<network>.json` with proxy and implementation addresses
+- The Scoreboard contract emits `ScoreSubmitted` and enforces cooldown/max submissions/day with signed payloads
+- The Badges contract exposes `claimBadgeSigned(levelId, nonce, deadline, signature)` and serves `baseURI + tokenId + .json`

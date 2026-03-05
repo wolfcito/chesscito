@@ -15,7 +15,7 @@ Chesscito is a MiniPay MiniApp for cognitive enrichment through short pre-chess 
 
 Ship a MiniPay MiniApp on Celo Mainnet with:
 - Gameplay MVP for Tower first, then Bishop/Knight if time remains
-- On-chain proof via `submitScore` and `claimBadge`
+- On-chain proof via `submitScoreSigned` and `claimBadgeSigned`
 - Functional Top 10 leaderboard
 - Submission pack complete in Karma GAP
 
@@ -57,6 +57,7 @@ This monorepo is managed by Turborepo:
 - `pnpm contracts:compile` — compile contracts
 - `pnpm contracts:test` — run contract tests
 - `pnpm contracts:deploy` — deploy to local network
+- `pnpm contracts:deploy:alfajores` — deploy to Alfajores
 - `pnpm contracts:deploy:celo-sepolia` — deploy to Celo Sepolia
 - `pnpm contracts:deploy:celo` — deploy to Celo Mainnet
 
