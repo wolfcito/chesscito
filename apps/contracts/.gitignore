@@ -15,3 +15,9 @@ node_modules
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+
+# OpenZeppelin upgrades manifests (keep real networks, ignore ephemeral local)
+.openzeppelin/unknown-*.json
+
+# Local deployment outputs
+deployments/hardhat.json
