@@ -1,84 +1,182 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { loadFixture, time } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
-import hre from "hardhat";
-import { getAddress } from "viem";
+import { ethers, upgrades } from "hardhat";
 
-describe("Badges", function () {
+describe("BadgesUpgradeable", function () {
   async function deployBadgesFixture() {
-    const [owner, player, otherPlayer] = await hre.viem.getWalletClients();
-    const publicClient = await hre.viem.getPublicClient();
-    const badges = await hre.viem.deployContract("Badges", [
-      "ipfs://chesscito/badges/",
-      owner.account.address,
-    ]);
+    const [owner, player, otherPlayer] = await ethers.getSigners();
+    const signingWallet = ethers.Wallet.createRandom();
+    const factory = await ethers.getContractFactory("BadgesUpgradeable");
+    const badges = await upgrades.deployProxy(
+      factory,
+      ["ipfs://chesscito/badges", signingWallet.address, owner.address],
+      { kind: "transparent", initializer: "initialize" }
+    );
+
+    await badges.waitForDeployment();
 
     return {
       owner,
       player,
       otherPlayer,
-      publicClient,
+      signingWallet,
       badges,
+      chainId: (await ethers.provider.getNetwork()).chainId,
     };
   }
 
-  it("sets owner and metadata uri scheme", async function () {
-    const { owner, badges } = await loadFixture(deployBadgesFixture);
+  async function signClaim({
+    player,
+    levelId,
+    nonce,
+    deadline,
+    signer,
+    chainId,
+    verifyingContract,
+  }: {
+    player: string;
+    levelId: bigint;
+    nonce: bigint;
+    deadline: bigint;
+    signer: ethers.Wallet;
+    chainId: bigint;
+    verifyingContract: string;
+  }) {
+    return signer.signTypedData(
+      {
+        name: "Badges",
+        version: "1",
+        chainId,
+        verifyingContract,
+      },
+      {
+        BadgeClaim: [
+          { name: "player", type: "address" },
+          { name: "levelId", type: "uint256" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      },
+      {
+        player,
+        levelId,
+        nonce,
+        deadline,
+      }
+    );
+  }
 
-    expect(await badges.read.owner()).to.equal(getAddress(owner.account.address));
-    expect(await badges.read.uri([3n])).to.equal("ipfs://chesscito/badges/3.json");
+  it("sets owner, signer, and metadata uri scheme through initialize", async function () {
+    const { owner, signingWallet, badges } = await loadFixture(deployBadgesFixture);
+
+    expect(await badges.owner()).to.equal(owner.address);
+    expect(await badges.signer()).to.equal(signingWallet.address);
+    expect(await badges.uri(3n)).to.equal("ipfs://chesscito/badges/3.json");
+    expect(await badges.baseURI()).to.equal("ipfs://chesscito/badges/");
   });
 
-  it("mints one badge per wallet and level", async function () {
-    const { player, publicClient, badges } = await loadFixture(deployBadgesFixture);
-    const badgesAsPlayer = await hre.viem.getContractAt("Badges", badges.address, {
-      client: { wallet: player },
+  it("mints one badge per wallet and level with a valid server signature", async function () {
+    const { player, signingWallet, badges, chainId } = await loadFixture(deployBadgesFixture);
+    const deadline = (await time.latest()) + 600;
+    const nonce = 101n;
+    const signature = await signClaim({
+      player: player.address,
+      levelId: 1n,
+      nonce,
+      deadline: BigInt(deadline),
+      signer: signingWallet,
+      chainId,
+      verifyingContract: await badges.getAddress(),
     });
 
-    const hash = await badgesAsPlayer.write.claimBadge([1n]);
-    await publicClient.waitForTransactionReceipt({ hash });
+    await badges.connect(player).claimBadgeSigned(1n, nonce, deadline, signature);
 
-    expect(await badges.read.hasClaimedBadge([getAddress(player.account.address), 1n])).to.equal(true);
-    expect(await badges.read.balanceOf([getAddress(player.account.address), 1n])).to.equal(1n);
-
-    const events = await badges.getEvents.BadgeClaimed();
-    expect(events).to.have.length(1);
-    expect(events[0].args.player).to.equal(getAddress(player.account.address));
-    expect(events[0].args.levelId).to.equal(1n);
-    expect(events[0].args.tokenId).to.equal(1n);
+    expect(await badges.hasClaimedBadge(player.address, 1n)).to.equal(true);
+    expect(await badges.usedNonces(player.address, nonce)).to.equal(true);
+    expect(await badges.balanceOf(player.address, 1n)).to.equal(1n);
   });
 
   it("prevents claiming the same level twice for the same wallet", async function () {
-    const { player, badges } = await loadFixture(deployBadgesFixture);
-    const badgesAsPlayer = await hre.viem.getContractAt("Badges", badges.address, {
-      client: { wallet: player },
+    const { player, signingWallet, badges, chainId } = await loadFixture(deployBadgesFixture);
+    const deadline = BigInt((await time.latest()) + 600);
+    const firstSignature = await signClaim({
+      player: player.address,
+      levelId: 2n,
+      nonce: 201n,
+      deadline,
+      signer: signingWallet,
+      chainId,
+      verifyingContract: await badges.getAddress(),
     });
 
-    await badgesAsPlayer.write.claimBadge([2n]);
+    await badges.connect(player).claimBadgeSigned(2n, 201n, deadline, firstSignature);
 
-    await expect(badgesAsPlayer.write.claimBadge([2n])).to.be.rejectedWith("BadgeAlreadyClaimed");
+    const secondSignature = await signClaim({
+      player: player.address,
+      levelId: 2n,
+      nonce: 202n,
+      deadline,
+      signer: signingWallet,
+      chainId,
+      verifyingContract: await badges.getAddress(),
+    });
+
+    await expect(
+      badges.connect(player).claimBadgeSigned(2n, 202n, deadline, secondSignature)
+    ).to.be.rejectedWith("BadgeAlreadyClaimed");
   });
 
-  it("allows different wallets to claim the same level", async function () {
-    const { player, otherPlayer, badges } = await loadFixture(deployBadgesFixture);
-    const badgesAsPlayer = await hre.viem.getContractAt("Badges", badges.address, {
-      client: { wallet: player },
-    });
-    const badgesAsOtherPlayer = await hre.viem.getContractAt("Badges", badges.address, {
-      client: { wallet: otherPlayer },
+  it("rejects invalid or expired signatures and pauses claims", async function () {
+    const { owner, player, otherPlayer, signingWallet, badges, chainId } = await loadFixture(
+      deployBadgesFixture
+    );
+    const deadline = BigInt((await time.latest()) + 600);
+    const signature = await signClaim({
+      player: player.address,
+      levelId: 4n,
+      nonce: 301n,
+      deadline,
+      signer: signingWallet,
+      chainId,
+      verifyingContract: await badges.getAddress(),
     });
 
-    await badgesAsPlayer.write.claimBadge([4n]);
-    await badgesAsOtherPlayer.write.claimBadge([4n]);
+    await expect(
+      badges.connect(otherPlayer).claimBadgeSigned(4n, 301n, deadline, signature)
+    ).to.be.rejectedWith("InvalidSignature");
 
-    expect(await badges.read.balanceOf([getAddress(player.account.address), 4n])).to.equal(1n);
-    expect(await badges.read.balanceOf([getAddress(otherPlayer.account.address), 4n])).to.equal(1n);
+    await time.increase(601);
+
+    await expect(badges.connect(player).claimBadgeSigned(4n, 301n, deadline, signature)).to.be.rejectedWith(
+      "SignatureExpired"
+    );
+
+    await badges.connect(owner).pause();
+
+    const freshDeadline = BigInt((await time.latest()) + 600);
+    const freshSignature = await signClaim({
+      player: player.address,
+      levelId: 5n,
+      nonce: 302n,
+      deadline: freshDeadline,
+      signer: signingWallet,
+      chainId,
+      verifyingContract: await badges.getAddress(),
+    });
+
+    await expect(
+      badges.connect(player).claimBadgeSigned(5n, 302n, freshDeadline, freshSignature)
+    ).to.be.rejectedWith("EnforcedPause()");
   });
 
-  it("lets the owner update the base uri", async function () {
-    const { badges } = await loadFixture(deployBadgesFixture);
+  it("lets the owner update the base uri and signer", async function () {
+    const { owner, badges } = await loadFixture(deployBadgesFixture);
+    const nextSigner = ethers.Wallet.createRandom();
 
-    await badges.write.setBaseURI(["https://assets.chesscito.xyz/badges/"]);
+    await badges.connect(owner).setSigner(nextSigner.address);
+    await badges.connect(owner).setBaseURI("https://assets.chesscito.xyz/badges");
 
-    expect(await badges.read.uri([7n])).to.equal("https://assets.chesscito.xyz/badges/7.json");
+    expect(await badges.signer()).to.equal(nextSigner.address);
+    expect(await badges.uri(7n)).to.equal("https://assets.chesscito.xyz/badges/7.json");
   });
 });
