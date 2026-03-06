@@ -1,6 +1,6 @@
 # Testnet E2E Checklist (2026-03-05)
 
-Estado: `PARCIAL` (deploy+verify listos, catálogo Shop pendiente por permisos owner)
+Estado: `PARCIAL` (testnet estable operativo; pendiente cierre QA/publicación final)
 
 ## Verificaciones ejecutadas
 
@@ -11,8 +11,8 @@ Estado: `PARCIAL` (deploy+verify listos, catálogo Shop pendiente por permisos o
 - Deployments:
   - Existe `apps/contracts/deployments/celo-sepolia.json` con Badges + Scoreboard + Shop + USDC
 - Env (sin imprimir secretos):
-  - `apps/contracts/.env`: faltan/placeholder varios campos de Shop y parámetros nuevos
-  - `apps/web/.env`: faltan `NEXT_PUBLIC_SHOP_ADDRESS` y `NEXT_PUBLIC_USDC_ADDRESS`
+  - `apps/contracts/.env`: operativo para deploy/config/verify en Sepolia
+  - `apps/web/.env`: direcciones públicas completas (Badges, Scoreboard, Shop, USDC)
 - Verificación explorer:
   - Badges impl: verificado
   - Scoreboard impl: verificado
@@ -21,7 +21,7 @@ Estado: `PARCIAL` (deploy+verify listos, catálogo Shop pendiente por permisos o
 ## Resultado de readiness
 
 - `Badges + Scoreboard`: listos para pruebas en Celo Sepolia
-- `Shop`: no listo para E2E hasta desplegar/configurar y propagar direcciones al web env
+- `Shop` estable (`0xd913...`): desplegado, configurado, verificado y conectado al web env
 
 ## Pasos para cerrar el checklist (sin exponer secretos)
 
@@ -34,15 +34,20 @@ Estado: `PARCIAL` (deploy+verify listos, catálogo Shop pendiente por permisos o
    - `INITIAL_MAX_LEVEL_ID` (ej. `10`)
    - `BADGES_BASE_URI` (ej. `ipfs://chesscito/badges`)
 
-2. (Completado) Shop desplegado en Celo Sepolia
+2. (Completado) Shop estable desplegado en Celo Sepolia
    - `shopAddress=0xd913D2D01871ceB1204A26F99FB414484f903Eba`
    - `usdcAddress=0x01C5C0122039549AD1493B8220cABEdD739BC44E`
 
-3. Configurar catálogo de items en Shop (pendiente)
+3. (Completado) Configurar catálogo de items en Shop
    - Editar `apps/contracts/scripts/configure-shop.ts` (`ITEMS[]`)
    - Ejecutar:
    - `SHOP_ADDRESS=0x... pnpm --filter hardhat configure:shop:celo-sepolia`
-   - Nota: hoy revierte por `onlyOwner` (el owner on-chain difiere del deployer actual)
+   - Resultado estable aplicado:
+     - item1 `10000` (0.01 USDC)
+     - item2 `25000` (0.025 USDC)
+     - item3 `5000` (0.005 USDC)
+     - item4 `40000` (0.04 USDC)
+     - item5 `100000` (0.10 USDC)
 
 4. (Completado) Verificar contratos en explorer
    - Opción completa:
@@ -79,3 +84,8 @@ Checklist se considera `COMPLETO` cuando:
 - Variables web de Shop/USDC establecidas
 - Verificación en explorer sin errores críticos
 - Flujo real MiniPay exitoso para claim, submit y compra
+
+## Nota de arquitectura (cerrada)
+
+- Se evaluó POC de compra nativa CELO para evitar approve ERC-20.
+- Decisión final: mantener flujo estable ERC-20 (approve + buy) porque fee-currency de MiniPay solo cubre gas, no autorización de gasto del token de pago.
