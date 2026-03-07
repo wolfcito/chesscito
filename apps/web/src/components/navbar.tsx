@@ -70,10 +70,10 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full backdrop-blur-md",
+        "sticky top-0 z-50 w-full",
         isPlayHub
           ? "bg-transparent"
-          : "border-b bg-background/80 supports-[backdrop-filter]:bg-background/60"
+          : "backdrop-blur-md border-b bg-background/80 supports-[backdrop-filter]:bg-background/60"
       )}
     >
       <div
@@ -86,7 +86,7 @@ export function Navbar() {
           className={cn(
             "flex items-center justify-between",
             isPlayHub
-              ? "h-12 rounded-2xl border border-cyan-900/45 bg-slate-950/78 px-2 shadow-[0_16px_42px_rgba(2,12,22,0.38)]"
+              ? "h-11 rounded-xl border border-cyan-700/60 bg-slate-950 px-2 shadow-[0_14px_34px_rgba(2,12,22,0.42)]"
               : "h-16"
           )}
         >
