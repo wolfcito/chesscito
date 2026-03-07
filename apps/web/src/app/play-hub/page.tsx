@@ -420,100 +420,103 @@ export default function PlayHubPage() {
   }
 
   return (
-    <main className="mission-shell mx-auto min-h-screen w-full max-w-screen-sm px-4 pb-72 pt-6 sm:px-6">
-      <MissionPanel
-        selectedPiece={selectedPiece}
-        onSelectPiece={(piece) => {
-          setSelectedPiece(piece);
-          resetBoard();
-        }}
-        pieces={[
-          { key: "rook", label: "Torre", enabled: true },
-          { key: "bishop", label: "Alfil", enabled: false },
-          { key: "knight", label: "Caballo", enabled: false },
-        ]}
-        phase={phase}
-        board={
-          <Board
-            key={boardKey}
-            mode="practice"
-            targetPosition={challengeTarget}
-            isLocked={phase === "failure" || phase === "success"}
-            onMove={handleMove}
-          />
-        }
-      />
+    <>
+      <div className="playhub-intro-overlay" aria-hidden="true" />
+      <main className="mission-shell mx-auto min-h-screen w-full max-w-screen-sm px-4 pb-72 pt-6 sm:px-6">
+        <MissionPanel
+          selectedPiece={selectedPiece}
+          onSelectPiece={(piece) => {
+            setSelectedPiece(piece);
+            resetBoard();
+          }}
+          pieces={[
+            { key: "rook", label: "Torre", enabled: true },
+            { key: "bishop", label: "Alfil", enabled: false },
+            { key: "knight", label: "Caballo", enabled: false },
+          ]}
+          phase={phase}
+          board={
+            <Board
+              key={boardKey}
+              mode="practice"
+              targetPosition={challengeTarget}
+              isLocked={phase === "failure" || phase === "success"}
+              onMove={handleMove}
+            />
+          }
+        />
 
-      <section className="fixed bottom-0 left-0 right-0 z-40 border-t border-cyan-800/45 bg-slate-950/94 px-4 pb-4 pt-3 backdrop-blur sm:px-6">
-        <div className="mx-auto max-h-[56vh] w-full max-w-screen-sm space-y-3 overflow-y-auto pr-1">
-          <OnChainActionsPanel
-            score={score.toString()}
-            timeMs={timeMs.toString()}
-            moves={moves}
-            effectiveLevelId={levelId.toString()}
-            canClaim={qaEnabled ? canSendOnChain && isQaLevelValid : canSendOnChain && !Boolean(hasClaimedBadge)}
-            canSubmit={canSendOnChain}
-            isClaimBusy={isClaimBusy}
-            isSubmitBusy={isSubmitBusy}
-            isGlobalBusy={isWriting}
-            qaEnabled={qaEnabled}
-            qaLevelInput={qaLevelInput}
-            isQaLevelValid={isQaLevelValid}
-            onQaLevelInputChange={setQaLevelInput}
-            onClaim={() => void handleClaimBadge()}
-            onSubmit={() => void handleSubmitScore()}
-            onReset={resetBoard}
-            shopControl={
-              <ShopSheet
-                open={storeOpen}
-                onOpenChange={setStoreOpen}
-                items={shopCatalog}
-                onSelectItem={(itemId) => {
-                  setSelectedItemId(itemId);
-                  setConfirmOpen(true);
-                }}
-              />
-            }
-            leaderboardControl={
-              <LeaderboardSheet open={leaderboardOpen} onOpenChange={setLeaderboardOpen} rows={leaderboardRows} />
-            }
-          />
+        <section className="fixed bottom-0 left-0 right-0 z-40 border-t border-cyan-800/45 bg-slate-950/94 px-4 pb-4 pt-3 backdrop-blur sm:px-6">
+          <div className="mx-auto max-h-[56vh] w-full max-w-screen-sm space-y-3 overflow-y-auto pr-1">
+            <OnChainActionsPanel
+              score={score.toString()}
+              timeMs={timeMs.toString()}
+              moves={moves}
+              effectiveLevelId={levelId.toString()}
+              canClaim={qaEnabled ? canSendOnChain && isQaLevelValid : canSendOnChain && !Boolean(hasClaimedBadge)}
+              canSubmit={canSendOnChain}
+              isClaimBusy={isClaimBusy}
+              isSubmitBusy={isSubmitBusy}
+              isGlobalBusy={isWriting}
+              qaEnabled={qaEnabled}
+              qaLevelInput={qaLevelInput}
+              isQaLevelValid={isQaLevelValid}
+              onQaLevelInputChange={setQaLevelInput}
+              onClaim={() => void handleClaimBadge()}
+              onSubmit={() => void handleSubmitScore()}
+              onReset={resetBoard}
+              shopControl={
+                <ShopSheet
+                  open={storeOpen}
+                  onOpenChange={setStoreOpen}
+                  items={shopCatalog}
+                  onSelectItem={(itemId) => {
+                    setSelectedItemId(itemId);
+                    setConfirmOpen(true);
+                  }}
+                />
+              }
+              leaderboardControl={
+                <LeaderboardSheet open={leaderboardOpen} onOpenChange={setLeaderboardOpen} rows={leaderboardRows} />
+              }
+            />
 
-          <StatusStrip
-            chainId={chainId}
-            isConnected={isConnected}
-            isCorrectChain={isCorrectChain}
-            missionCompleted={phase === "success"}
-            hasClaimedBadge={hasClaimedBadge}
-            shopTxHash={shopTxHash}
-            claimTxHash={claimTxHash}
-            submitTxHash={submitTxHash}
-            isShopConfirming={isShopConfirming}
-            isClaimConfirming={isClaimConfirming}
-            isSubmitConfirming={isSubmitConfirming}
-            lastError={lastError}
-            txLink={(txHash) => txLink(chainId, txHash)}
-          />
-        </div>
-      </section>
+            <StatusStrip
+              chainId={chainId}
+              isConnected={isConnected}
+              isCorrectChain={isCorrectChain}
+              missionCompleted={phase === "success"}
+              hasClaimedBadge={hasClaimedBadge}
+              shopTxHash={shopTxHash}
+              claimTxHash={claimTxHash}
+              submitTxHash={submitTxHash}
+              isShopConfirming={isShopConfirming}
+              isClaimConfirming={isClaimConfirming}
+              isSubmitConfirming={isSubmitConfirming}
+              lastError={lastError}
+              txLink={(txHash) => txLink(chainId, txHash)}
+            />
+          </div>
+        </section>
 
-      <PurchaseConfirmSheet
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        selectedItem={selectedItem}
-        chainId={chainId}
-        shopAddress={shopAddress}
-        usdcAddress={usdcAddress}
-        isConnected={isConnected}
-        isCorrectChain={isCorrectChain}
-        isWriting={isWriting}
-        purchasePhase={purchasePhase}
-        onConfirm={() => void handleConfirmPurchase()}
-      />
+        <PurchaseConfirmSheet
+          open={confirmOpen}
+          onOpenChange={setConfirmOpen}
+          selectedItem={selectedItem}
+          chainId={chainId}
+          shopAddress={shopAddress}
+          usdcAddress={usdcAddress}
+          isConnected={isConnected}
+          isCorrectChain={isCorrectChain}
+          isWriting={isWriting}
+          purchasePhase={purchasePhase}
+          onConfirm={() => void handleConfirmPurchase()}
+        />
 
-      {isMiniPay ? null : (
-        <p className="mt-4 text-xs text-cyan-100/65">En navegador normal puedes probar submit/claim. En MiniPay valida el flujo real de firma.</p>
-      )}
-    </main>
+        {isMiniPay ? null : (
+          <p className="mt-4 text-xs text-cyan-100/65">En navegador normal puedes probar submit/claim. En MiniPay valida el flujo real de firma.</p>
+        )}
+      </main>
+    </>
   );
 }

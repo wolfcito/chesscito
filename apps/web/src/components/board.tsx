@@ -88,8 +88,9 @@ export function Board({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-[28px] border border-slate-200 bg-white p-3 shadow-[0_24px_48px_rgba(15,23,42,0.08)]">
-        <div className="grid grid-cols-8 gap-2">
+      <div className="playhub-game-stage">
+        <div className="playhub-game-grid">
+          <div className="grid grid-cols-8 gap-2">
           {squares.map((square) => (
             <BoardSquare
               key={square.label}
@@ -97,6 +98,7 @@ export function Board({
               onPress={handleSquarePress}
             />
           ))}
+          </div>
         </div>
       </div>
 
