@@ -19,6 +19,28 @@ function parseLabel(label: string): BoardPosition {
   return { file, rank };
 }
 
+type Point = { x: number; y: number };
+
+// Calibrated corners (% of canvas) for chesscito-board.png perspective
+const BOARD_TOP_LEFT: Point = { x: 18.4, y: 8.6 };
+const BOARD_TOP_RIGHT: Point = { x: 88.9, y: 8.6 };
+const BOARD_BOTTOM_LEFT: Point = { x: 1.5, y: 93.7 };
+const BOARD_BOTTOM_RIGHT: Point = { x: 98.4, y: 93.7 };
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
+const BOARD_V_GAMMA = 1.0;
+
+function interpolateQuad(u: number, v: number): Point {
+  const vg = Math.pow(v, BOARD_V_GAMMA);
+  return {
+    x: lerp(lerp(BOARD_TOP_LEFT.x, BOARD_TOP_RIGHT.x, u), lerp(BOARD_BOTTOM_LEFT.x, BOARD_BOTTOM_RIGHT.x, u), vg),
+    y: lerp(lerp(BOARD_TOP_LEFT.y, BOARD_TOP_RIGHT.y, u), lerp(BOARD_BOTTOM_LEFT.y, BOARD_BOTTOM_RIGHT.y, u), vg),
+  };
+}
+
 type BoardProps = {
   mode?: "tutorial" | "practice";
   targetPosition?: BoardPosition | null;
@@ -92,25 +114,61 @@ export function Board({
           <div className="playhub-game-grid">
             <div className="playhub-board-canvas">
               <div className="playhub-board-hitgrid" role="grid" aria-label="Chess board">
-                {squares.map((square) => (
-                  <button
-                    key={square.label}
-                    type="button"
-                    role="gridcell"
-                    aria-label={`Square ${square.label}`}
-                    onClick={() => handleSquarePress(square.label)}
-                    className={[
-                      "playhub-board-cell",
-                      square.isHighlighted ? "is-highlighted" : "",
-                      square.isSelected ? "is-selected" : "",
-                    ].join(" ")}
-                  >
-                    <span className="playhub-board-label">{square.label}</span>
-                    {square.isHighlighted ? <span className="playhub-board-dot" /> : null}
-                    {square.isTarget && !square.piece ? <span className="playhub-board-target">◎</span> : null}
-                    {square.piece ? <span className="playhub-board-piece">♖</span> : null}
-                  </button>
-                ))}
+                {squares.map((square) =>
+                  (() => {
+                    const row = 7 - square.rank;
+                    const col = square.file;
+                    const u0 = col / 8;
+                    const u1 = (col + 1) / 8;
+                    const v0 = row / 8;
+                    const v1 = (row + 1) / 8;
+                    const p00 = interpolateQuad(u0, v0);
+                    const p10 = interpolateQuad(u1, v0);
+                    const p01 = interpolateQuad(u0, v1);
+                    const p11 = interpolateQuad(u1, v1);
+                    const minX = Math.min(p00.x, p10.x, p01.x, p11.x);
+                    const maxX = Math.max(p00.x, p10.x, p01.x, p11.x);
+                    const minY = Math.min(p00.y, p10.y, p01.y, p11.y);
+                    const maxY = Math.max(p00.y, p10.y, p01.y, p11.y);
+                    const cW = maxX - minX || 0.01;
+                    const cH = maxY - minY || 0.01;
+
+                    function relPt(pt: Point) {
+                      return `${(((pt.x - minX) / cW) * 100).toFixed(1)}% ${(((pt.y - minY) / cH) * 100).toFixed(1)}%`;
+                    }
+
+                    const clipPath = `polygon(${relPt(p00)}, ${relPt(p10)}, ${relPt(p11)}, ${relPt(p01)})`;
+
+                    return (
+                      <button
+                        key={square.label}
+                        type="button"
+                        role="gridcell"
+                        aria-label={`Square ${square.label}`}
+                        onClick={() => handleSquarePress(square.label)}
+                        style={{
+                          left: `${minX}%`,
+                          top: `${minY}%`,
+                          width: `${cW}%`,
+                          height: `${cH}%`,
+                          clipPath,
+                        }}
+                        className={[
+                          "playhub-board-cell",
+                          square.isHighlighted ? "is-highlighted" : "",
+                          square.isSelected ? "is-selected" : "",
+                        ].join(" ")}
+                      >
+                        <span className="playhub-board-label">{square.label}</span>
+                        {square.isHighlighted ? <span className="playhub-board-dot" /> : null}
+                        {square.isTarget && !square.piece ? (
+                          <span className="playhub-board-target">◎</span>
+                        ) : null}
+                        {square.piece ? <span className="playhub-board-piece">♖</span> : null}
+                      </button>
+                    );
+                  })()
+                )}
               </div>
             </div>
           </div>
