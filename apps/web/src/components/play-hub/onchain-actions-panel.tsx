@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 type OnChainActionsPanelProps = {
+  effectiveLevelId: string;
   canClaim: boolean;
   canSubmit: boolean;
   isClaimBusy: boolean;
@@ -20,6 +21,7 @@ type OnChainActionsPanelProps = {
 };
 
 export function OnChainActionsPanel({
+  effectiveLevelId,
   canClaim,
   canSubmit,
   isClaimBusy,
