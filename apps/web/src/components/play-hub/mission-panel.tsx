@@ -24,6 +24,12 @@ const SELECTED_PIECE_ART: Record<PieceOption["key"], string> = {
   knight: "/art/caballo-selected.webp",
 };
 
+const PHASE_STATUS: Record<MissionPanelProps["phase"], { text: string; className: string } | null> = {
+  ready: null,
+  success: { text: "✓ Objetivo completado", className: "text-emerald-300" },
+  failure: { text: "✗ Jugada incorrecta — reinicia", className: "text-rose-300" },
+};
+
 export function MissionPanel({
   selectedPiece,
   onSelectPiece,
@@ -35,26 +41,22 @@ export function MissionPanel({
   board,
   actionPanel,
 }: MissionPanelProps) {
-  return (
-    <section className="stage-vignette mx-auto w-full max-w-app space-y-4 p-4">
-      <div className="space-y-2">
-        <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">
-          <span className="glow-dot" />
-          Arcane Play Hub
-        </p>
-      </div>
+  const status = PHASE_STATUS[phase];
 
-      <div className="flex gap-2">
+  return (
+    <section className="mission-shell flex h-[100dvh] flex-col overflow-hidden px-3 pb-3 pt-2">
+      {/* Top row: piece selector + phase badge */}
+      <div className="flex shrink-0 items-center gap-2 pb-2">
         {pieces.map((piece) => (
           <button
             key={piece.key}
             type="button"
             disabled={!piece.enabled}
             onClick={() => onSelectPiece(piece.key)}
-            className={`relative h-10 min-w-[110px] overflow-hidden rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+            className={`relative h-9 min-w-[90px] overflow-hidden rounded-full px-3 text-xs font-semibold uppercase tracking-[0.2em] transition disabled:opacity-40 ${
               selectedPiece === piece.key
                 ? "text-cyan-50 shadow-[0_0_20px_rgba(103,232,249,0.45)]"
-                : "mission-chip disabled:opacity-50"
+                : "mission-chip"
             }`}
             style={
               selectedPiece === piece.key
@@ -69,15 +71,23 @@ export function MissionPanel({
             {piece.label}
           </button>
         ))}
+
+        {status ? (
+          <span className={`ml-auto shrink-0 text-xs font-semibold ${status.className}`}>
+            {status.text}
+          </span>
+        ) : (
+          <span className="ml-auto shrink-0 text-xs text-cyan-300/60 tracking-[0.16em] uppercase">
+            Lv {level}
+          </span>
+        )}
       </div>
 
-      <div className="mission-soft rune-frame rounded-2xl p-3 text-sm">
-        Objetivo: capturar <span className="font-semibold">h1</span> en un movimiento.
-      </div>
+      {/* Board — fills remaining space */}
+      <div className="min-h-0 flex-1">{board}</div>
 
-      {board}
-
-      <div className="chesscito-stats-bar">
+      {/* Stats bar */}
+      <div className="chesscito-stats-bar mt-2 shrink-0">
         <div className="chesscito-stats-item">
           <span className="chesscito-stats-label">SCORE</span>
           <span className="chesscito-stats-value">{score}</span>
@@ -87,28 +97,13 @@ export function MissionPanel({
           <span className="chesscito-stats-value">{timeMs} ms</span>
         </div>
         <div className="chesscito-stats-item">
-          <span className="chesscito-stats-label">LEVEL</span>
-          <span className="chesscito-stats-value">{level}</span>
+          <span className="chesscito-stats-label">TARGET</span>
+          <span className="chesscito-stats-value">h1</span>
         </div>
       </div>
 
-      {actionPanel}
-
-      {phase === "failure" ? (
-        <div className="rounded-2xl border border-rose-500/40 bg-rose-900/35 px-4 py-3 text-sm text-rose-200">
-          Jugada incorrecta. Reinicia para intentar de nuevo.
-        </div>
-      ) : null}
-      {phase === "ready" ? (
-        <div className="rounded-2xl border border-cyan-500/35 bg-cyan-900/25 px-4 py-3 text-sm text-cyan-100">
-          Haz una sola jugada valida para capturar la pieza objetivo en <span className="font-semibold">h1</span>.
-        </div>
-      ) : null}
-      {phase === "success" ? (
-        <div className="rounded-2xl border border-emerald-400/45 bg-emerald-900/35 px-4 py-3 text-sm text-emerald-100">
-          Objetivo completado. Ya puedes claim badge y submit score.
-        </div>
-      ) : null}
+      {/* Action panel */}
+      <div className="mt-2 shrink-0">{actionPanel}</div>
     </section>
   );
 }
