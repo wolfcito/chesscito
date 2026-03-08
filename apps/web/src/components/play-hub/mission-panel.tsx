@@ -16,7 +16,7 @@ type MissionPanelProps = {
 
 export function MissionPanel({ selectedPiece, onSelectPiece, pieces, phase, board }: MissionPanelProps) {
   return (
-    <section className="mission-card mission-shell stage-vignette space-y-4 rounded-3xl p-4">
+    <section className="stage-vignette space-y-4 p-4">
       <div className="space-y-2">
         <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">
           <span className="glow-dot" />
