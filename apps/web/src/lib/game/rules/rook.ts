@@ -59,3 +59,18 @@ export function getBlockersForPiece(piece: BoardPiece, pieces: BoardPiece[]) {
     .filter((candidate) => candidate.id !== piece.id)
     .map((candidate) => candidate.position);
 }
+
+/**
+ * Mínimo de movimientos de la torre de `from` a `to`.
+ * - 0 si misma casilla
+ * - 1 si misma fila o columna
+ * - 2 en cualquier otro caso
+ */
+export function getRookOptimalMoves(
+  from: BoardPosition,
+  to: BoardPosition
+): number {
+  if (from.file === to.file && from.rank === to.rank) return 0;
+  if (from.file === to.file || from.rank === to.rank) return 1;
+  return 2;
+}
