@@ -127,6 +127,12 @@ export default function PlayHubPage() {
 
   const autoResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const PIECE_ORDER: PieceKey[] = ["rook", "bishop", "knight"];
+  const currentPieceIndex = PIECE_ORDER.indexOf(selectedPiece);
+  const nextPiece = currentPieceIndex < PIECE_ORDER.length - 1
+    ? PIECE_ORDER[currentPieceIndex + 1]
+    : null;
+
   useEffect(() => {
     const host = window.location.hostname;
     setIsLocalhost(host === "localhost" || host === "127.0.0.1" || host === "::1");
@@ -252,7 +258,6 @@ export default function PlayHubPage() {
     Boolean(address) &&
     isConnected &&
     isCorrectChain &&
-    phase === "success" &&
     levelId > 0n &&
     badgeEarned;
   const isClaimBusy = isWriting || isClaimConfirming;
@@ -295,10 +300,18 @@ export default function PlayHubPage() {
       setPhase("success");
       setElapsedMs(1000);
       completeExercise(movesCount);
-      // Avanzar automáticamente al siguiente ejercicio tras 1.5s
       autoResetTimer.current = setTimeout(() => {
-        if (!isLastExercise) advanceExercise();
-        resetBoard();
+        if (!isLastExercise) {
+          // Hay más ejercicios en esta pieza → avanzar
+          advanceExercise();
+          resetBoard();
+        } else if (nextPiece) {
+          // Último ejercicio de la pieza → avanzar a la siguiente pieza
+          setSelectedPiece(nextPiece);
+          resetBoard();
+        }
+        // Último ejercicio de la última pieza → no resetear,
+        // el jugador puede ver el estado y reclamar el badge
       }, 1500);
       return;
     }
