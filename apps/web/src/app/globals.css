@@ -231,7 +231,7 @@
     border-radius: 28px;
     border: 1px solid rgba(103, 232, 249, 0.2);
     overflow: hidden;
-    min-height: clamp(22rem, 58dvh, 27rem);
+    height: 100%;
     background: linear-gradient(180deg, rgba(2, 8, 24, 0.42) 0%, rgba(2, 10, 20, 0.72) 100%);
     box-shadow: 0 24px 56px rgba(2, 12, 22, 0.55);
   }
@@ -243,6 +243,7 @@
   .playhub-stage-shell {
     margin: 0 auto;
     width: min(100%, 24.5rem);
+    height: 100%;
   }
 
   .playhub-board-canvas {
