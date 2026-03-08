@@ -110,7 +110,7 @@
     @apply bg-background text-foreground antialiased;
     background-image: var(--playhub-game-bg);
     background-position: center top;
-    background-size: 100% auto;
+    background-size: 100vw auto;
     background-repeat: no-repeat;
     background-attachment: scroll;
     min-height: 100vh;
