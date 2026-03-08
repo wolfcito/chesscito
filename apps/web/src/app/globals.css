@@ -109,10 +109,10 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image: var(--playhub-game-bg);
-    background-position: center;
-    background-size: cover;
+    background-position: center top;
+    background-size: 100% auto;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -285,6 +285,13 @@
 }
 
 @media (min-width: 640px) {
+  @layer base {
+    body {
+      background-position: center;
+      background-size: cover;
+    }
+  }
+
   @layer components {
     .intro-shell {
       background-image:
