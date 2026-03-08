@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  INITIAL_ROOK,
   arePositionsEqual,
   buildBoardSquares,
-  getRookTargets,
+  getValidTargets,
+  makePiece,
   movePiece,
 } from "@/lib/game/board";
-import type { BoardPosition } from "@/lib/game/types";
+import type { BoardPosition, PieceId } from "@/lib/game/types";
 
 function parseLabel(label: string): BoardPosition {
   const file = label.charCodeAt(0) - 97;
@@ -42,34 +42,41 @@ function interpolateQuad(u: number, v: number): Point {
 }
 
 type BoardProps = {
+  pieceType?: PieceId;
+  startPosition?: BoardPosition;
   mode?: "tutorial" | "practice";
   targetPosition?: BoardPosition | null;
   isLocked?: boolean;
-  onMove?: (position: BoardPosition) => void;
+  onMove?: (position: BoardPosition, movesCount: number) => void;
 };
 
 export function Board({
+  pieceType = "rook",
+  startPosition = { file: 0, rank: 0 },
   mode = "practice",
   targetPosition = null,
   isLocked = false,
   onMove,
 }: BoardProps) {
-  const [piece, setPiece] = useState(INITIAL_ROOK);
-  const [selectedPosition, setSelectedPosition] = useState<BoardPosition | null>(
-    mode === "tutorial" ? INITIAL_ROOK.position : null
+  const initialPiece = useMemo(
+    () => makePiece(pieceType, startPosition),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
+  const [piece, setPiece] = useState(initialPiece);
+  const [selectedPosition, setSelectedPosition] = useState<BoardPosition | null>(
+    mode === "tutorial" ? initialPiece.position : null
+  );
+  const [movesCount, setMovesCount] = useState(0);
 
   useEffect(() => {
     setSelectedPosition(mode === "tutorial" ? piece.position : null);
   }, [mode, piece.position]);
 
   const validTargets = useMemo(() => {
-    if (!selectedPosition) {
-      return [];
-    }
-
-    return getRookTargets(selectedPosition);
-  }, [selectedPosition]);
+    if (!selectedPosition) return [];
+    return getValidTargets(pieceType, selectedPosition);
+  }, [pieceType, selectedPosition]);
 
   const squares = useMemo(
     () =>
@@ -98,9 +105,11 @@ export function Board({
     const canMove = validTargets.some((target) => arePositionsEqual(target, nextPosition));
 
     if (canMove) {
+      const nextMoves = movesCount + 1;
+      setMovesCount(nextMoves);
       setPiece((current) => movePiece(current, nextPosition));
       setSelectedPosition(null);
-      onMove?.(nextPosition);
+      onMove?.(nextPosition, nextMoves);
       return;
     }
 
