@@ -40,7 +40,7 @@
       url("/art/bg-playhub-forest-mobile.png") type("image/png")
     );
     --intro-bg-mobile: image-set(
-      url("/art/bg-intro.png") type("image/png")
+      url("/art/bg-splash.png") type("image/png")
     );
     --playhub-bg-desktop: image-set(
       url("/art/bg-playhub-forest-desktop.avif") type("image/avif"),
@@ -347,7 +347,7 @@
   z-index: 80;
   pointer-events: none;
   background-color: #0b1220;
-  background-image: url("/art/bg-intro.png");
+  background-image: url("/art/bg-splash.png");
   background-position: center top;
   background-size: cover;
   background-repeat: no-repeat;
