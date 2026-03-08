@@ -65,9 +65,9 @@
       url("/art/reward-glow.png") type("image/png")
     );
     --playhub-game-bg: image-set(
-      url("/art/bg-chesscito-play.avif") type("image/avif"),
-      url("/art/bg-chesscito-play.webp") type("image/webp"),
-      url("/art/bg-chesscito-play.png") type("image/png")
+      url("/art/bg-chesscitov2.avif") type("image/avif"),
+      url("/art/bg-chesscitov2.webp") type("image/webp"),
+      url("/art/bg-chesscitov2.png") type("image/png")
     );
     --playhub-board-bg: url("/art/chesscito-board.png");
   }
