@@ -110,9 +110,7 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    background-image:
-      linear-gradient(180deg, rgba(2, 6, 23, 0.42), rgba(2, 6, 23, 0.55)),
-      var(--playhub-game-bg);
+    background-image: var(--playhub-game-bg);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -133,14 +131,7 @@
   .mission-shell {
     width: 100%;
     overflow-x: clip;
-    background:
-      linear-gradient(180deg, rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.45)),
-      var(--playhub-game-bg);
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
     color: #f3f6fb;
-    border-color: #2b4252;
   }
 
   .intro-shell {
@@ -163,16 +154,15 @@
   }
 
   .mission-soft {
-    background: rgba(7, 28, 41, 0.62);
-    border: 1px solid #2f5364;
+    background: transparent;
+    border: 1px solid rgba(125, 211, 252, 0.4);
     color: #d5edf5;
   }
 
   .mission-chip {
-    background: rgba(6, 26, 39, 0.88);
-    border: 1px solid #3d5d6f;
+    background: transparent;
+    border: 1px solid rgba(125, 211, 252, 0.36);
     color: #d7eef5;
-    box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.16);
   }
 
   .fantasy-title {
@@ -181,26 +171,14 @@
   }
 
   .rune-frame {
-    border: 1px solid #43677a;
-    box-shadow:
-      inset 0 0 0 1px rgba(103, 232, 249, 0.16),
-      0 0 24px rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(125, 211, 252, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(103, 232, 249, 0.14);
     border-radius: 18px;
-    background-image:
-      var(--playhub-rune-frame),
-      linear-gradient(180deg, rgba(8, 33, 46, 0.58), rgba(8, 28, 40, 0.72));
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: transparent;
   }
 
   .shop-slot-frame {
-    background-image:
-      var(--playhub-slot-frame),
-      linear-gradient(180deg, rgba(8, 33, 46, 0.58), rgba(8, 28, 40, 0.72));
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: transparent;
   }
 
   .glow-dot {
@@ -216,16 +194,7 @@
   }
 
   .stage-vignette::before {
-    content: "";
-    position: absolute;
-    inset: -20px -12px;
-    pointer-events: none;
-    border-radius: 24px;
-    background:
-      radial-gradient(circle at 50% 10%, rgba(34, 211, 238, 0.16), transparent 38%),
-      radial-gradient(circle at 50% 120%, rgba(16, 185, 129, 0.18), transparent 45%);
-    filter: blur(2px);
-    z-index: 0;
+    content: none;
   }
 
   .stage-vignette > * {
@@ -235,12 +204,6 @@
 
   .reward-burst {
     animation: reward-pop 320ms ease-out both;
-    background-image:
-      var(--playhub-reward-glow),
-      linear-gradient(180deg, rgba(2, 6, 23, 0.7), rgba(2, 6, 23, 0.84));
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
   }
 
   @keyframes reward-pop {
@@ -259,22 +222,12 @@
     border-radius: 28px;
     border: 1px solid rgba(103, 232, 249, 0.2);
     overflow: hidden;
-    background:
-      linear-gradient(180deg, rgba(2, 6, 23, 0.2), rgba(2, 6, 23, 0.35)),
-      var(--playhub-game-bg),
-      linear-gradient(180deg, #0e2230 0%, #0b1824 100%);
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+    background: transparent;
     box-shadow: 0 24px 56px rgba(2, 12, 22, 0.55);
   }
 
   .playhub-game-stage::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(circle at 50% 45%, rgba(15, 23, 42, 0.08), rgba(2, 6, 23, 0.34));
+    content: none;
   }
 
   .playhub-game-grid {
@@ -292,9 +245,7 @@
     border: 1px solid rgba(167, 243, 208, 0.32);
     border-radius: 14px;
     overflow: hidden;
-    background:
-      linear-gradient(180deg, rgba(15, 54, 64, 0.6), rgba(7, 37, 46, 0.78)),
-      linear-gradient(90deg, rgba(45, 212, 191, 0.08), rgba(34, 211, 238, 0.08));
+    background: transparent;
     box-shadow:
       inset 0 0 0 1px rgba(186, 230, 253, 0.14),
       0 10px 28px rgba(3, 20, 30, 0.32);
@@ -332,12 +283,6 @@
 
 @media (min-width: 640px) {
   @layer components {
-    .mission-shell {
-      background-image:
-        linear-gradient(180deg, rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.45)),
-        var(--playhub-game-bg);
-    }
-
     .intro-shell {
       background-image:
         linear-gradient(180deg, rgba(2, 6, 23, 0.38), rgba(2, 6, 23, 0.18)),
