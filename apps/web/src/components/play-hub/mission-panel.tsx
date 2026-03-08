@@ -15,6 +15,7 @@ type MissionPanelProps = {
   timeMs: string;
   level: string;
   board: ReactNode;
+  starsBar: ReactNode;
   actionPanel: ReactNode;
 };
 
@@ -39,6 +40,7 @@ export function MissionPanel({
   timeMs,
   level,
   board,
+  starsBar,
   actionPanel,
 }: MissionPanelProps) {
   const status = PHASE_STATUS[phase];
@@ -85,6 +87,9 @@ export function MissionPanel({
 
       {/* Board — fills remaining space */}
       <div className="min-h-0 flex-1">{board}</div>
+
+      {/* Exercise stars */}
+      <div className="mt-2 shrink-0">{starsBar}</div>
 
       {/* Stats bar */}
       <div className="chesscito-stats-bar mt-2 shrink-0">
