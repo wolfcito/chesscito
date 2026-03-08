@@ -429,9 +429,9 @@ export default function PlayHubPage() {
   }
 
   return (
-    <>
+    <div className="relative w-full overflow-x-hidden">
       <div className="playhub-intro-overlay" aria-hidden="true" />
-      <main className="mission-shell mx-auto min-h-screen w-full max-w-none px-0 pb-8 pt-0 sm:px-0">
+      <main className="mission-shell min-h-screen w-full max-w-none px-0 pb-8 pt-0 sm:px-0">
         <MissionPanel
           selectedPiece={selectedPiece}
           onSelectPiece={(piece) => {
@@ -527,6 +527,6 @@ export default function PlayHubPage() {
           <p className="mt-4 text-xs text-cyan-100/65">En navegador normal puedes probar submit/claim. En MiniPay valida el flujo real de firma.</p>
         )}
       </main>
-    </>
+    </div>
   );
 }
