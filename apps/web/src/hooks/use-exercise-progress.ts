@@ -40,9 +40,13 @@ function saveProgress(progress: PieceProgress) {
 }
 
 export function useExerciseProgress(piece: PieceId) {
-  const [progress, setProgress] = useState<PieceProgress>(() =>
-    loadProgress(piece)
-  );
+  // Inicializar siempre con defaults para que server y cliente rendericen igual
+  // (evita hydration mismatch). localStorage se lee después del montaje.
+  const [progress, setProgress] = useState<PieceProgress>({
+    piece,
+    exerciseIndex: 0,
+    stars: [0, 0, 0, 0, 0],
+  });
 
   useEffect(() => {
     setProgress(loadProgress(piece));
