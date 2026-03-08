@@ -40,9 +40,9 @@
       url("/art/bg-playhub-forest-mobile.png") type("image/png")
     );
     --intro-bg-mobile: image-set(
-      url("/art/bg-splash.avif") type("image/avif"),
-      url("/art/bg-splash.webp") type("image/webp"),
-      url("/art/bg-splash.png") type("image/png")
+      url("/art/bg-splash-chesscito.avif") type("image/avif"),
+      url("/art/bg-splash-chesscito.webp") type("image/webp"),
+      url("/art/bg-splash-chesscito.png") type("image/png")
     );
     --playhub-bg-desktop: image-set(
       url("/art/bg-playhub-forest-desktop.avif") type("image/avif"),
@@ -144,7 +144,8 @@
       var(--intro-bg-mobile),
       linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
     background-position: center top;
-    background-size: cover;
+    /* 1024/826 — same safe-area scaling as playhub bg */
+    background-size: calc(1024 / 826 * 100%) auto, calc(1024 / 826 * 100%) auto, cover;
     background-repeat: no-repeat;
   }
 
