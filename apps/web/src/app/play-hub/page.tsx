@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { erc20Abi } from "viem";
 import {
   useAccount,
@@ -111,6 +111,12 @@ export default function PlayHubPage() {
   const [lastError, setLastError] = useState<string | null>(null);
   const [purchasePhase, setPurchasePhase] = useState<"idle" | "approving" | "buying">("idle");
   const [qaLevelInput, setQaLevelInput] = useState("2");
+  const [isLocalhost, setIsLocalhost] = useState(false);
+
+  useEffect(() => {
+    const host = window.location.hostname;
+    setIsLocalhost(host === "localhost" || host === "127.0.0.1" || host === "::1");
+  }, []);
 
   const configuredChainId = useMemo(() => getConfiguredChainId(), []);
   const isCorrectChain = configuredChainId != null && chainId === configuredChainId;
@@ -120,7 +126,10 @@ export default function PlayHubPage() {
   const usdcAddress = useMemo(() => getUsdcAddress(chainId), [chainId]);
   const feeCurrency = useMemo(() => getMiniPayFeeCurrency(chainId), [chainId]);
   const defaultLevelId = useMemo(() => getLevelId(selectedPiece), [selectedPiece]);
-  const qaEnabled = useMemo(() => process.env.NEXT_PUBLIC_QA_MODE === "1", []);
+  const qaEnabled = useMemo(
+    () => process.env.NEXT_PUBLIC_QA_MODE === "1" && isLocalhost,
+    [isLocalhost]
+  );
   const qaLevel = useMemo(() => Number.parseInt(qaLevelInput, 10), [qaLevelInput]);
   const isQaLevelValid = Number.isInteger(qaLevel) && qaLevel >= 1 && qaLevel <= 9999;
   const levelId = useMemo(
@@ -422,7 +431,7 @@ export default function PlayHubPage() {
   return (
     <>
       <div className="playhub-intro-overlay" aria-hidden="true" />
-      <main className="mission-shell mx-auto min-h-screen w-full max-w-screen-sm px-4 pb-72 pt-6 sm:px-6">
+      <main className="mission-shell mx-auto min-h-screen w-full max-w-none px-0 pb-72 pt-0 sm:px-0">
         <MissionPanel
           selectedPiece={selectedPiece}
           onSelectPiece={(piece) => {
@@ -481,21 +490,23 @@ export default function PlayHubPage() {
               }
             />
 
-            <StatusStrip
-              chainId={chainId}
-              isConnected={isConnected}
-              isCorrectChain={isCorrectChain}
-              missionCompleted={phase === "success"}
-              hasClaimedBadge={hasClaimedBadge}
-              shopTxHash={shopTxHash}
-              claimTxHash={claimTxHash}
-              submitTxHash={submitTxHash}
-              isShopConfirming={isShopConfirming}
-              isClaimConfirming={isClaimConfirming}
-              isSubmitConfirming={isSubmitConfirming}
-              lastError={lastError}
-              txLink={(txHash) => txLink(chainId, txHash)}
-            />
+            {isLocalhost ? (
+              <StatusStrip
+                chainId={chainId}
+                isConnected={isConnected}
+                isCorrectChain={isCorrectChain}
+                missionCompleted={phase === "success"}
+                hasClaimedBadge={hasClaimedBadge}
+                shopTxHash={shopTxHash}
+                claimTxHash={claimTxHash}
+                submitTxHash={submitTxHash}
+                isShopConfirming={isShopConfirming}
+                isClaimConfirming={isClaimConfirming}
+                isSubmitConfirming={isSubmitConfirming}
+                lastError={lastError}
+                txLink={(txHash) => txLink(chainId, txHash)}
+              />
+            ) : null}
           </div>
         </section>
 
