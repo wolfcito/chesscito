@@ -20,7 +20,13 @@ function loadProgress(piece: PieceId): PieceProgress {
     const raw = localStorage.getItem(storageKey(piece));
     if (raw) {
       const parsed = JSON.parse(raw) as PieceProgress;
-      if (Array.isArray(parsed.stars) && parsed.stars.length === EXERCISES_PER_PIECE) {
+      if (
+        Array.isArray(parsed.stars) &&
+        parsed.stars.length === EXERCISES_PER_PIECE &&
+        typeof parsed.exerciseIndex === "number" &&
+        parsed.exerciseIndex >= 0 &&
+        parsed.exerciseIndex < EXERCISES_PER_PIECE
+      ) {
         return parsed;
       }
     }
