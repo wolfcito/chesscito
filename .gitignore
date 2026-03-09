@@ -104,3 +104,22 @@ Thumbs.db
 
 # Turbo
 .turbo
+
+# Private / sensitive — never commit
+private/
+
+# AI-tool config directories
+.agents/
+.cursor/
+.gemini/
+
+# BMAD agent workspace
+_bmad/
+_bmad-output/
+
+# Temporary scripts and test artifacts
+.tmp/
+test-results/
+
+# Generated non-code artifacts (presentations, exports)
+artifacts/
