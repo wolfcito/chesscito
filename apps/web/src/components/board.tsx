@@ -179,11 +179,15 @@ export function Board({
                           <span className="playhub-board-target" />
                         ) : null}
                         {square.piece ? (
-                          <img
-                            src={PIECE_IMG[square.piece.type]}
-                            alt={square.piece.type}
-                            className="playhub-board-piece"
-                          />
+                          <picture>
+                            <source srcSet={PIECE_IMG[square.piece.type].replace(".png", ".avif")} type="image/avif" />
+                            <source srcSet={PIECE_IMG[square.piece.type].replace(".png", ".webp")} type="image/webp" />
+                            <img
+                              src={PIECE_IMG[square.piece.type]}
+                              alt={square.piece.type}
+                              className="playhub-board-piece"
+                            />
+                          </picture>
                         ) : null}
                       </button>
                     );

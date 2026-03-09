@@ -49,7 +49,11 @@ function ActionBtn({
       {busy ? (
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100/85">...</span>
       ) : (
-        <img src={icon} alt="" aria-hidden="true" className="h-full w-full object-contain p-1" />
+        <picture className="h-full w-full">
+          <source srcSet={icon.replace(/\.png$/, ".avif")} type="image/avif" />
+          <source srcSet={icon.replace(/\.png$/, ".webp")} type="image/webp" />
+          <img src={icon} alt="" aria-hidden="true" className="h-full w-full object-contain p-1" />
+        </picture>
       )}
     </button>
   );

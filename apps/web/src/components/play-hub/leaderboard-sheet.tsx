@@ -41,7 +41,11 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
           aria-label="Leaderboard"
           className="mission-chip relative flex h-14 flex-1 items-center justify-center overflow-hidden rounded-2xl transition"
         >
-          <img src="/art/ranking-chesscito.png" alt="" aria-hidden="true" className="h-full w-full object-contain p-1.5" />
+          <picture className="h-full w-full">
+            <source srcSet="/art/ranking-chesscito.avif" type="image/avif" />
+            <source srcSet="/art/ranking-chesscito.webp" type="image/webp" />
+            <img src="/art/ranking-chesscito.png" alt="" aria-hidden="true" className="h-full w-full object-contain p-1.5" />
+          </picture>
           <span className="sr-only">Leaderboard</span>
         </button>
       </SheetTrigger>
