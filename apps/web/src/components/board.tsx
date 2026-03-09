@@ -73,10 +73,13 @@ export function Board({
   // Sync internal state when exercise changes (e.g. localStorage loads progress after board mounts,
   // or the user navigates exercises via the stars bar). Without this, the piece stays at the
   // previous exercise's position while the props already point to the new exercise.
+  // Intentionally using startPosition.file/.rank (primitives) instead of the startPosition object
+  // to avoid false-positive re-runs when the parent creates a new object with the same coordinates.
   useEffect(() => {
     setPiece(makePiece(pieceType, startPosition));
     setSelectedPosition(mode === "tutorial" ? startPosition : null);
     setMovesCount(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pieceType, startPosition.file, startPosition.rank, mode]);
 
   const validTargets = useMemo(() => {
