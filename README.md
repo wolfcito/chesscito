@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="apps/web/public/art/bg-splash-chesscito.png" alt="Chesscito" width="320" />
+  <img src="apps/web/public/art/favicon-wolf.png" alt="Chesscito" width="180" />
 
   <h3>Pre-chess puzzles on Celo — playable inside MiniPay</h3>
 
