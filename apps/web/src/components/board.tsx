@@ -64,20 +64,20 @@ export function Board({
   isLocked = false,
   onMove,
 }: BoardProps) {
-  const initialPiece = useMemo(
-    () => makePiece(pieceType, startPosition),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-  const [piece, setPiece] = useState(initialPiece);
+  const [piece, setPiece] = useState(() => makePiece(pieceType, startPosition));
   const [selectedPosition, setSelectedPosition] = useState<BoardPosition | null>(
-    mode === "tutorial" ? initialPiece.position : null
+    mode === "tutorial" ? makePiece(pieceType, startPosition).position : null
   );
   const [movesCount, setMovesCount] = useState(0);
 
+  // Sync internal state when exercise changes (e.g. localStorage loads progress after board mounts,
+  // or the user navigates exercises via the stars bar). Without this, the piece stays at the
+  // previous exercise's position while the props already point to the new exercise.
   useEffect(() => {
-    setSelectedPosition(mode === "tutorial" ? piece.position : null);
-  }, [mode, piece.position]);
+    setPiece(makePiece(pieceType, startPosition));
+    setSelectedPosition(mode === "tutorial" ? startPosition : null);
+    setMovesCount(0);
+  }, [pieceType, startPosition.file, startPosition.rank, mode]);
 
   const validTargets = useMemo(() => {
     if (!selectedPosition) return [];
