@@ -576,9 +576,9 @@ export default function PlayHubPage() {
           onConfirm={() => void handleConfirmPurchase()}
         />
 
-        {isMiniPay ? null : (
+        {isLocalhost && !isMiniPay ? (
           <p className="mt-4 text-xs text-cyan-100/65">{CTA_LABELS.claimBadge} and {CTA_LABELS.submitScore} are available here. Open MiniPay to confirm the live signing flow.</p>
-        )}
+        ) : null}
       </main>
     </div>
   );

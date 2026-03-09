@@ -29,3 +29,8 @@ export const BADGE_TITLES = {
   bishop: "Bishop Ascendant",
   knight: "Knight Ascendant",
 } as const;
+
+export const LEADERBOARD_COPY = {
+  description: "The best scores recorded on-chain.",
+  empty: "No scores recorded yet.",
+} as const;

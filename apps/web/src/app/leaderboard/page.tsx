@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { CTA_LABELS } from "@/lib/content/editorial";
+import { CTA_LABELS, LEADERBOARD_COPY } from "@/lib/content/editorial";
 import { fetchLeaderboard } from "@/lib/server/leaderboard";
 
 export const revalidate = 60;
@@ -11,13 +11,13 @@ export default async function LeaderboardPage() {
     <AppShell
       eyebrow="Leaderboard"
       title="Top 10"
-      description="Los mejores scores registrados on-chain."
+      description={LEADERBOARD_COPY.description}
       cta={{ href: "/play-hub", label: CTA_LABELS.backToPlay }}
       secondaryCta={{ href: "/", label: CTA_LABELS.startTrial }}
     >
       <div className="space-y-3">
         {rows.length === 0 && (
-          <p className="text-center text-sm text-slate-500">Aún no hay scores registrados.</p>
+          <p className="text-center text-sm text-slate-500">{LEADERBOARD_COPY.empty}</p>
         )}
         {rows.map((row) => (
           <div

@@ -30,17 +30,17 @@ export function ExerciseStarsBar({
             type="button"
             onClick={() => onSelect?.(index)}
             className={[
-              "flex flex-col items-center gap-0.5 rounded-lg px-2 py-1 transition",
+              "flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 transition",
               isActive
                 ? "bg-cyan-900/40 ring-1 ring-cyan-500/50"
-                : "opacity-60 hover:opacity-90",
+                : "opacity-75 hover:opacity-100",
             ].join(" ")}
             aria-label={`Trial ${index + 1}: ${exerciseStars} star${exerciseStars !== 1 ? "s" : ""}`}
           >
-            <span className="text-[0.6rem] font-semibold tracking-widest text-cyan-400">
+            <span className="text-xs font-semibold tracking-widest text-cyan-400">
               {index + 1}
             </span>
-            <div className="flex text-[0.65rem] leading-none">
+            <div className="flex text-sm leading-none">
               {[0, 1, 2].map((i) => (
                 <StarIcon key={i} filled={i < exerciseStars} />
               ))}

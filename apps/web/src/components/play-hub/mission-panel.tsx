@@ -99,7 +99,7 @@ export function MissionPanel({
         </div>
         <div className="chesscito-stats-item">
           <span className="chesscito-stats-label">TIME</span>
-          <span className="chesscito-stats-value">{timeMs} ms</span>
+          <span className="chesscito-stats-value">{Number(timeMs) / 1000}s</span>
         </div>
         <div className="chesscito-stats-item">
           <span className="chesscito-stats-label">TARGET</span>

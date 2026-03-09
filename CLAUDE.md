@@ -39,8 +39,14 @@ Enseña movimientos de piezas de ajedrez con mecánicas gamificadas on-chain.
 - `bg-playhub-forest-mobile.png` — fondo del play-hub móvil
 - `panel-frame-rune.png`, `shop-slot-frame.png` — marcos UI
 
+## Seguridad — Reglas Duras
+- **NUNCA** commitear ni mostrar en pantalla: `.env`, private keys, API keys, seeds, credenciales, datos personales, ni nada dentro de `private/`
+- **NUNCA** stagear archivos sensibles — siempre revisar `git diff --staged` antes de commitear
+- Usar `.env.example` como referencia pública; los valores reales van solo en `.env` (gitignored)
+- Si accidentalmente se expone un secreto: rotar inmediatamente, no solo eliminarlo del historial
+
 ## Convenciones
 - Commits: Conventional Commits (`feat:`, `fix:`, `style:`, `refactor:`)
 - Firma de commit: `Wolfcito 🐾 @akawolfcito`
 - No hay tests automatizados por ahora
-- Idioma de UI: español
+- Idioma de UI: English (ver `lib/content/editorial.ts`)
