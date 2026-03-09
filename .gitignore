@@ -124,5 +124,5 @@ test-results/
 # Generated non-code artifacts (presentations, exports)
 artifacts/
 
-# Playwright / Codex app-state capture snapshots
-design/app-state-*/
+# Design support folder — only promoted assets live in public/art/
+design/
