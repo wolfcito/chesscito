@@ -31,11 +31,11 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
       <SheetTrigger asChild>
         <button
           type="button"
-          aria-label="Tienda"
+          aria-label="Shop"
           className="mission-chip relative flex h-14 flex-1 items-center justify-center overflow-hidden rounded-2xl transition"
         >
           <img src="/art/shop-chesscito.png" alt="" aria-hidden="true" className="h-full w-full object-contain p-1.5" />
-          <span className="sr-only">Tienda</span>
+          <span className="sr-only">Shop</span>
         </button>
       </SheetTrigger>
       <SheetContent side="bottom" className="mission-shell sheet-bg-shop rounded-t-3xl border-slate-700">
