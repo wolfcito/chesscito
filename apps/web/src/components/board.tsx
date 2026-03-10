@@ -181,21 +181,34 @@ export function Board({
                         {square.isTarget && !square.piece ? (
                           <span className="playhub-board-target" />
                         ) : null}
-                        {square.piece ? (
-                          <picture>
-                            <source srcSet={PIECE_IMG[square.piece.type].replace(".png", ".avif")} type="image/avif" />
-                            <source srcSet={PIECE_IMG[square.piece.type].replace(".png", ".webp")} type="image/webp" />
-                            <img
-                              src={PIECE_IMG[square.piece.type]}
-                              alt={square.piece.type}
-                              className="playhub-board-piece"
-                            />
-                          </picture>
-                        ) : null}
+                        {/* Piece rendered as floating layer below */}
                       </button>
                     );
                   })()
                 )}
+              {/* Floating piece layer — same element moves with transition */}
+              {(() => {
+                const row = 7 - piece.position.rank;
+                const col = piece.position.file;
+                const center = interpolateQuad((col + 0.5) / 8, (row + 0.5) / 8);
+                return (
+                  <picture
+                    className="playhub-board-piece-float"
+                    style={{
+                      left: `${center.x}%`,
+                      top: `${center.y}%`,
+                    }}
+                  >
+                    <source srcSet={PIECE_IMG[piece.type].replace(".png", ".avif")} type="image/avif" />
+                    <source srcSet={PIECE_IMG[piece.type].replace(".png", ".webp")} type="image/webp" />
+                    <img
+                      src={PIECE_IMG[piece.type]}
+                      alt={piece.type}
+                      className="playhub-board-piece-img"
+                    />
+                  </picture>
+                );
+              })()}
               </div>
             </div>
           </div>

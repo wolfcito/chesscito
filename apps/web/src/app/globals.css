@@ -413,6 +413,23 @@
       drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
   }
 
+  .playhub-board-piece-float {
+    position: absolute;
+    z-index: 10;
+    transform: translate(-50%, -55%);
+    pointer-events: none;
+    transition: left 180ms ease-out, top 180ms ease-out;
+  }
+
+  .playhub-board-piece-img {
+    height: clamp(28px, 9.5vw, 42px);
+    width: auto;
+    object-fit: contain;
+    filter:
+      drop-shadow(0 0 6px rgba(103, 232, 249, 0.6))
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+  }
+
   .playhub-game-grid {
     position: relative;
     z-index: 1;
