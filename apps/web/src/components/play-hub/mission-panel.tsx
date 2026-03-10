@@ -22,12 +22,6 @@ type MissionPanelProps = {
   actionPanel: ReactNode;
 };
 
-const SELECTED_PIECE_ART: Record<PieceOption["key"], string> = {
-  rook: "/art/torre-selected.webp",
-  bishop: "/art/alfil-selected.webp",
-  knight: "/art/caballo-selected.webp",
-};
-
 type FlashConfig = { text: string; accent: string };
 
 const PHASE_FLASH: Record<MissionPanelProps["phase"], FlashConfig | null> = {
@@ -96,63 +90,62 @@ export function MissionPanel({
   actionPanel,
 }: MissionPanelProps) {
   return (
-    <section className="mission-shell flex h-[100dvh] flex-col overflow-hidden px-3 pb-3 pt-2">
-      {/* Top row: piece selector + level badge */}
-      <div className="flex shrink-0 items-center gap-2 pb-2">
-        {pieces.map((piece) => (
-          <button
-            key={piece.key}
-            type="button"
-            disabled={!piece.enabled}
-            onClick={() => onSelectPiece(piece.key)}
-            className={`relative h-9 min-w-[72px] shrink overflow-hidden rounded-full px-3 text-xs font-semibold uppercase tracking-[0.2em] transition disabled:opacity-40 ${
-              selectedPiece === piece.key
-                ? "text-cyan-50 shadow-[0_0_20px_rgba(103,232,249,0.45)]"
-                : "mission-chip"
-            }`}
-            style={
-              selectedPiece === piece.key
-                ? {
-                    backgroundImage: `linear-gradient(180deg, rgba(2,6,23,0.42), rgba(2,6,23,0.42)), url("${SELECTED_PIECE_ART[piece.key]}")`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }
-                : undefined
-            }
-          >
-            {piece.label}
-          </button>
-        ))}
-
-        <span className="ml-auto shrink-0 whitespace-nowrap text-xs text-cyan-300/80 tracking-[0.16em] uppercase">
-          Lv {level}
-        </span>
-      </div>
-
-      {/* Board — fills remaining space */}
-      <div className="min-h-0 flex-1">{board}</div>
-
-      {/* Exercise stars */}
-      <div className="mt-2 shrink-0">{starsBar}</div>
-
-      {/* Stats bar */}
-      <div className="chesscito-stats-bar mt-2 shrink-0">
-        <div className="chesscito-stats-item">
-          <span className="chesscito-stats-label">SCORE</span>
-          <span className="chesscito-stats-value">{score}</span>
-        </div>
-        <div className="chesscito-stats-item">
-          <span className="chesscito-stats-label">TIME</span>
-          <span className="chesscito-stats-value">{Number(timeMs) / 1000}s</span>
-        </div>
-        <div className="chesscito-stats-item">
-          <span className="chesscito-stats-label">TARGET</span>
-          <span className="chesscito-stats-value">h1</span>
+    <section className="mission-shell flex h-[100dvh] flex-col overflow-hidden">
+      {/* Zone 1: Floating HUD — piece selector + level */}
+      <div className="shrink-0 px-3 pt-2 pb-1">
+        <div className="hud-bar flex items-center gap-1">
+          {pieces.map((piece) => (
+            <button
+              key={piece.key}
+              type="button"
+              disabled={!piece.enabled}
+              onClick={() => onSelectPiece(piece.key)}
+              className={`relative h-8 px-3 text-xs font-semibold uppercase tracking-[0.16em] transition disabled:opacity-40 ${
+                selectedPiece === piece.key
+                  ? "text-cyan-50"
+                  : "text-cyan-200/50"
+              }`}
+            >
+              {piece.label}
+              {selectedPiece === piece.key ? (
+                <span className="absolute bottom-0 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(103,232,249,0.6)]" />
+              ) : null}
+            </button>
+          ))}
+          <span className="ml-auto shrink-0 text-xs text-cyan-300/70 tracking-[0.14em] uppercase">
+            Lv {level}
+          </span>
         </div>
       </div>
 
-      {/* Action panel */}
-      <div className="mt-2 shrink-0">{actionPanel}</div>
+      {/* Zone 2: Board Stage — hero, fills all remaining space */}
+      <div className="min-h-0 flex-1 px-1">
+        {board}
+        {/* Progress bar flush below board */}
+        <div className="px-2">{starsBar}</div>
+      </div>
+
+      {/* Zone 3: Bottom Dock — stats + actions */}
+      <div className="chesscito-dock shrink-0">
+        {/* Stats row */}
+        <div className="chesscito-stats-bar mb-2">
+          <div className="chesscito-stats-item">
+            <span className="chesscito-stats-label">SCORE</span>
+            <span className="chesscito-stats-value">{score}</span>
+          </div>
+          <div className="chesscito-stats-item">
+            <span className="chesscito-stats-label">TIME</span>
+            <span className="chesscito-stats-value">{Number(timeMs) / 1000}s</span>
+          </div>
+          <div className="chesscito-stats-item">
+            <span className="chesscito-stats-label">TARGET</span>
+            <span className="chesscito-stats-value">h1</span>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        {actionPanel}
+      </div>
 
       {/* Fullscreen phase flash — auto-fades */}
       <PhaseFlash phase={phase} />
