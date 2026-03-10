@@ -47,6 +47,11 @@ const SHOP_ITEMS = [
     label: "Founder Badge",
     subtitle: "Support Chesscito with an exclusive founder badge minted to your wallet.",
   },
+  {
+    itemId: 2n,
+    label: "Retry Shield",
+    subtitle: "Failed an exercise? Use a shield to try again without penalty. (3 uses)",
+  },
 ] as const;
 
 

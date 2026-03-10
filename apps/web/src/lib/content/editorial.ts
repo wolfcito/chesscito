@@ -93,3 +93,12 @@ export const CAPTURE_COPY = {
   statsLabel: "CAPTURE",
   tutorialBanner: "Capture the target — move your Rook to its square",
 } as const;
+
+export const SHIELD_COPY = {
+  label: "Retry Shield",
+  subtitle: "Failed an exercise? Use a shield to try again without penalty.",
+  useShield: "Use Shield",
+  shieldsLeft: (n: number) => `${n} left`,
+  shieldUsed: "Shield used!",
+  buyLabel: "Buy (3 uses)",
+} as const;
