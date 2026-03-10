@@ -3,18 +3,16 @@ import { CTA_LABELS } from "@/lib/content/editorial";
 
 type OnChainActionsPanelProps = {
   effectiveLevelId: string;
-  canClaim: boolean;
   canSubmit: boolean;
-  isClaimBusy: boolean;
   isSubmitBusy: boolean;
   isGlobalBusy: boolean;
   qaEnabled: boolean;
   qaLevelInput: string;
   isQaLevelValid: boolean;
   onQaLevelInputChange: (next: string) => void;
-  onClaim: () => void;
   onSubmit: () => void;
   onReset: () => void;
+  badgeControl: ReactNode;
   shopControl: ReactNode;
   leaderboardControl: ReactNode;
 };
@@ -69,18 +67,16 @@ function ActionBtn({
 
 export function OnChainActionsPanel({
   effectiveLevelId,
-  canClaim,
   canSubmit,
-  isClaimBusy,
   isSubmitBusy,
   isGlobalBusy,
   qaEnabled,
   qaLevelInput,
   isQaLevelValid,
   onQaLevelInputChange,
-  onClaim,
   onSubmit,
   onReset,
+  badgeControl,
   shopControl,
   leaderboardControl,
 }: OnChainActionsPanelProps) {
@@ -116,15 +112,7 @@ export function OnChainActionsPanel({
       {/* Icon action bar */}
       <div className="flex items-center justify-around">
         <ActionBtn icon="/art/refresh-chesscito.png" label={CTA_LABELS.resetTrial} onClick={onReset} disabled={isGlobalBusy} />
-        <ActionBtn
-          icon="/art/badge-chesscito.png"
-          label={CTA_LABELS.claimBadge}
-          onClick={onClaim}
-          disabled={!canClaim}
-          busy={isClaimBusy}
-          variant="primary"
-          showNotification={canClaim}
-        />
+        {badgeControl}
         <ActionBtn
           icon="/art/score-chesscito.png"
           label={CTA_LABELS.submitScore}

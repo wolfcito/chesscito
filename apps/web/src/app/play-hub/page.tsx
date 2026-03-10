@@ -36,6 +36,7 @@ import { shopAbi } from "@/lib/contracts/shop";
 import { CTA_LABELS, PIECE_LABELS } from "@/lib/content/editorial";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
+import { BadgeSheet } from "@/components/play-hub/badge-sheet";
 import { classifyTxError } from "@/lib/errors";
 import { BADGE_THRESHOLD } from "@/lib/game/exercises";
 import { computeStars } from "@/lib/game/scoring";
@@ -121,6 +122,7 @@ export default function PlayHubPage() {
     retryAction?: () => void;
   } | null>(null);
   const [showBadgeEarned, setShowBadgeEarned] = useState(false);
+  const [badgeSheetOpen, setBadgeSheetOpen] = useState(false);
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
 
@@ -231,16 +233,26 @@ export default function PlayHubPage() {
     },
   });
 
-  const { data: hasClaimedBadge, refetch: refetchClaimedBadge } = useReadContract({
-    address: badgesAddress ?? undefined,
-    abi: badgesAbi,
-    functionName: "hasClaimedBadge",
-    args: address && levelId > 0n ? [address, levelId] : undefined,
-    chainId,
+  // Read hasClaimedBadge for all 3 pieces (batched)
+  const { data: allBadgesData, refetch: refetchAllBadges } = useReadContracts({
+    contracts: ([1n, 2n, 3n] as const).map((lid) => ({
+      address: badgesAddress ?? undefined,
+      abi: badgesAbi,
+      functionName: "hasClaimedBadge" as const,
+      args: address ? [address, lid] as const : undefined,
+      chainId,
+    })),
     query: {
-      enabled: Boolean(address && badgesAddress && levelId > 0n),
+      enabled: Boolean(address && badgesAddress),
     },
   });
+
+  const badgesClaimed: Record<PieceKey, boolean | undefined> = {
+    rook: allBadgesData?.[0]?.result as boolean | undefined,
+    bishop: allBadgesData?.[1]?.result as boolean | undefined,
+    knight: allBadgesData?.[2]?.result as boolean | undefined,
+  };
+  const hasClaimedBadge = badgesClaimed[selectedPiece];
 
   const { isLoading: isShopConfirming } = useWaitForTransactionReceipt({
     chainId,
@@ -360,8 +372,9 @@ export default function PlayHubPage() {
     }, 500);
   }
 
-  async function handleClaimBadge() {
-    if (!canSendOnChain || !address || !badgesAddress) {
+  async function handleClaimBadge(piece?: PieceKey) {
+    const claimLevelId = piece ? getLevelId(piece) : levelId;
+    if (!address || !badgesAddress || !isConnected || !isCorrectChain || claimLevelId <= 0n) {
       return;
     }
 
@@ -370,34 +383,34 @@ export default function PlayHubPage() {
     try {
       const signed = await requestSignature("/api/sign-badge", {
         player: address,
-        levelId: Number(levelId),
+        levelId: Number(claimLevelId),
       });
 
       const txHash = await writeWithOptionalFeeCurrency({
         address: badgesAddress,
         abi: badgesAbi,
         functionName: "claimBadgeSigned" as const,
-        args: [levelId, BigInt(signed.nonce), BigInt(signed.deadline), signed.signature] as const,
+        args: [claimLevelId, BigInt(signed.nonce), BigInt(signed.deadline), signed.signature] as const,
         chainId,
         account: address,
       });
 
       setClaimTxHash(txHash);
-      void refetchClaimedBadge();
+      void refetchAllBadges();
       setResultOverlay({
         variant: "badge",
         txHash,
       });
-      console.info("[MiniPayTx] result", { label: "claim-badge", txHash, levelId: Number(levelId) });
+      console.info("[MiniPayTx] result", { label: "claim-badge", txHash, levelId: Number(claimLevelId) });
     } catch (error) {
       const message = toErrorMessage(error);
       setLastError(message);
       setResultOverlay({
         variant: "error",
         errorMessage: classifyTxError(error),
-        retryAction: () => void handleClaimBadge(),
+        retryAction: () => void handleClaimBadge(piece),
       });
-      console.warn("[MiniPayTx] error", { label: "claim-badge", levelId: Number(levelId), error: message });
+      console.warn("[MiniPayTx] error", { label: "claim-badge", levelId: Number(claimLevelId), error: message });
     }
   }
 
@@ -554,18 +567,25 @@ export default function PlayHubPage() {
             <div className="space-y-3">
               <OnChainActionsPanel
                 effectiveLevelId={levelId.toString()}
-                canClaim={qaEnabled ? canSendOnChain && isQaLevelValid : canSendOnChain && !Boolean(hasClaimedBadge)}
                 canSubmit={canSendOnChain}
-                isClaimBusy={isClaimBusy}
                 isSubmitBusy={isSubmitBusy}
                 isGlobalBusy={isWriting}
                 qaEnabled={qaEnabled}
                 qaLevelInput={qaLevelInput}
                 isQaLevelValid={isQaLevelValid}
                 onQaLevelInputChange={setQaLevelInput}
-                onClaim={() => void handleClaimBadge()}
                 onSubmit={() => void handleSubmitScore()}
                 onReset={resetBoard}
+                badgeControl={
+                  <BadgeSheet
+                    open={badgeSheetOpen}
+                    onOpenChange={setBadgeSheetOpen}
+                    badgesClaimed={badgesClaimed}
+                    onClaim={(piece) => void handleClaimBadge(piece)}
+                    isClaimBusy={isClaimBusy}
+                    showNotification={canSendOnChain && !Boolean(hasClaimedBadge)}
+                  />
+                }
                 shopControl={
                   <ShopSheet
                     open={storeOpen}
