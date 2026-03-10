@@ -35,8 +35,10 @@ import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
 import { CTA_LABELS, PIECE_LABELS } from "@/lib/content/editorial";
 import type { BoardPosition } from "@/lib/game/types";
-import { ResultOverlay } from "@/components/play-hub/result-overlay";
+import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { classifyTxError } from "@/lib/errors";
+import { BADGE_THRESHOLD } from "@/lib/game/exercises";
+import { computeStars, totalStars as totalStarsFn } from "@/lib/game/scoring";
 
 const SHOP_ITEMS = [
   {
@@ -118,6 +120,7 @@ export default function PlayHubPage() {
     errorMessage?: string;
     retryAction?: () => void;
   } | null>(null);
+  const [showBadgeEarned, setShowBadgeEarned] = useState(false);
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
 
@@ -307,6 +310,19 @@ export default function PlayHubPage() {
       setPhase("success");
       setElapsedMs(1000);
       completeExercise(movesCount);
+
+      // Check if this exercise completion earns the badge
+      const newStars = computeStars(movesCount, currentExercise.optimalMoves);
+      const prevStarValue = progress.stars[progress.exerciseIndex];
+      const starDelta = Math.max(0, newStars - prevStarValue);
+      const newTotal = totalStars + starDelta;
+      const justEarnedBadge = newTotal >= BADGE_THRESHOLD && totalStars < BADGE_THRESHOLD;
+
+      if (justEarnedBadge) {
+        setShowBadgeEarned(true);
+        return; // Don't start auto-advance timer
+      }
+
       autoResetTimer.current = setTimeout(() => {
         if (!isLastExercise) {
           // Hay más ejercicios en esta pieza → avanzar
@@ -331,6 +347,20 @@ export default function PlayHubPage() {
         resetBoard();
       }, 1500);
     }
+  }
+
+  function handleBadgeEarnedDismiss() {
+    setShowBadgeEarned(false);
+    // Resume auto-advance logic
+    autoResetTimer.current = setTimeout(() => {
+      if (!isLastExercise) {
+        advanceExercise();
+        resetBoard();
+      } else if (nextPiece) {
+        setSelectedPiece(nextPiece);
+        resetBoard();
+      }
+    }, 500);
   }
 
   async function handleClaimBadge() {
@@ -610,6 +640,22 @@ export default function PlayHubPage() {
           purchasePhase={purchasePhase}
           onConfirm={() => void handleConfirmPurchase()}
         />
+
+        {showBadgeEarned ? (
+          <BadgeEarnedPrompt
+            pieceType={selectedPiece}
+            totalStars={totalStars}
+            onClaimBadge={() => {
+              setShowBadgeEarned(false);
+              void handleClaimBadge();
+            }}
+            onSubmitScore={() => {
+              setShowBadgeEarned(false);
+              void handleSubmitScore();
+            }}
+            onLater={handleBadgeEarnedDismiss}
+          />
+        ) : null}
 
         {resultOverlay ? (
           <ResultOverlay
