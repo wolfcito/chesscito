@@ -34,3 +34,34 @@ export const LEADERBOARD_COPY = {
   description: "The best scores recorded on-chain.",
   empty: "No scores recorded yet.",
 } as const;
+
+export const RESULT_OVERLAY_COPY = {
+  badge: {
+    title: "Badge Claimed!",
+    subtitle: (piece: string) => `${piece} Ascendant is now in your wallet`,
+  },
+  score: {
+    title: "Score Recorded!",
+    subtitle: "Your score is now on-chain",
+  },
+  shop: {
+    title: "Purchase Complete!",
+    subtitle: (item: string) =>
+      `${item} acquired — thank you for supporting Chesscito`,
+  },
+  error: {
+    title: "Transaction Failed",
+    cancelled: "Transaction was cancelled",
+    insufficientFunds: "Not enough funds to complete this transaction",
+    network: "Network error — check your connection and try again",
+    revert:
+      "Transaction failed — this action may not be available right now",
+    unknown: "Something went wrong. Please try again",
+  },
+  cta: {
+    continue: "Continue",
+    tryAgain: "Try Again",
+    dismiss: "Dismiss",
+    viewOnCeloscan: "View on CeloScan",
+  },
+} as const;
