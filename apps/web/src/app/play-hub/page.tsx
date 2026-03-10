@@ -35,6 +35,8 @@ import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
 import { CTA_LABELS, PIECE_LABELS } from "@/lib/content/editorial";
 import type { BoardPosition } from "@/lib/game/types";
+import { ResultOverlay } from "@/components/play-hub/result-overlay";
+import { classifyTxError } from "@/lib/errors";
 
 const SHOP_ITEMS = [
   {
@@ -110,6 +112,12 @@ export default function PlayHubPage() {
   const [submitTxHash, setSubmitTxHash] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
   const [purchasePhase, setPurchasePhase] = useState<"idle" | "approving" | "buying">("idle");
+  const [resultOverlay, setResultOverlay] = useState<{
+    variant: "badge" | "score" | "shop" | "error";
+    txHash?: string;
+    errorMessage?: string;
+    retryAction?: () => void;
+  } | null>(null);
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
 
@@ -348,10 +356,19 @@ export default function PlayHubPage() {
 
       setClaimTxHash(txHash);
       void refetchClaimedBadge();
+      setResultOverlay({
+        variant: "badge",
+        txHash,
+      });
       console.info("[MiniPayTx] result", { label: "claim-badge", txHash, levelId: Number(levelId) });
     } catch (error) {
       const message = toErrorMessage(error);
       setLastError(message);
+      setResultOverlay({
+        variant: "error",
+        errorMessage: classifyTxError(error),
+        retryAction: () => void handleClaimBadge(),
+      });
       console.warn("[MiniPayTx] error", { label: "claim-badge", levelId: Number(levelId), error: message });
     }
   }
@@ -381,10 +398,19 @@ export default function PlayHubPage() {
       });
 
       setSubmitTxHash(txHash);
+      setResultOverlay({
+        variant: "score",
+        txHash,
+      });
       console.info("[MiniPayTx] result", { label: "submit-score", txHash, levelId: Number(levelId) });
     } catch (error) {
       const message = toErrorMessage(error);
       setLastError(message);
+      setResultOverlay({
+        variant: "error",
+        errorMessage: classifyTxError(error),
+        retryAction: () => void handleSubmitScore(),
+      });
       console.warn("[MiniPayTx] error", { label: "submit-score", levelId: Number(levelId), error: message });
     }
   }
@@ -453,6 +479,10 @@ export default function PlayHubPage() {
 
       setShopTxHash(buyHash);
       setConfirmOpen(false);
+      setResultOverlay({
+        variant: "shop",
+        txHash: buyHash,
+      });
       console.info("[MiniPayTx] result", {
         label: selectedItem.label,
         txHash: buyHash,
@@ -460,6 +490,10 @@ export default function PlayHubPage() {
     } catch (error) {
       const message = toErrorMessage(error);
       setLastError(message);
+      setResultOverlay({
+        variant: "error",
+        errorMessage: classifyTxError(error),
+      });
       console.warn("[MiniPayTx] error", {
         label: selectedItem.label,
         error: message,
@@ -575,6 +609,19 @@ export default function PlayHubPage() {
           purchasePhase={purchasePhase}
           onConfirm={() => void handleConfirmPurchase()}
         />
+
+        {resultOverlay ? (
+          <ResultOverlay
+            variant={resultOverlay.variant}
+            pieceType={selectedPiece}
+            itemLabel={selectedItem?.label}
+            txHash={resultOverlay.txHash}
+            celoscanHref={resultOverlay.txHash ? txLink(chainId, resultOverlay.txHash) : undefined}
+            errorMessage={resultOverlay.errorMessage}
+            onDismiss={() => setResultOverlay(null)}
+            onRetry={resultOverlay.retryAction}
+          />
+        ) : null}
 
         {isLocalhost && !isMiniPay ? (
           <p className="mt-4 text-xs text-cyan-100/65">{CTA_LABELS.claimBadge} and {CTA_LABELS.submitScore} are available here. Open MiniPay to confirm the live signing flow.</p>
