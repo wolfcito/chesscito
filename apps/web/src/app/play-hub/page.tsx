@@ -438,6 +438,12 @@ export default function PlayHubPage() {
     }
   }
 
+  function handleUseShield() {
+    if (shieldCount <= 0) return;
+    updateShieldCount(shieldCount - 1);
+    resetBoard();
+  }
+
   function handleBadgeEarnedDismiss() {
     setShowBadgeEarned(false);
     // Resume auto-advance logic
@@ -654,6 +660,8 @@ export default function PlayHubPage() {
           ]}
           phase={phase}
           targetLabel={targetLabel}
+          shieldCount={shieldCount}
+          onUseShield={handleUseShield}
           tutorialBanner={tutorialBanner}
           score={score.toString()}
           timeMs={timeMs.toString()}
