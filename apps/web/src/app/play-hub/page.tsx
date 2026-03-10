@@ -33,7 +33,7 @@ import {
 } from "@/lib/contracts/chains";
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
-import { CTA_LABELS, PIECE_LABELS } from "@/lib/content/editorial";
+import { CTA_LABELS, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { BadgeSheet } from "@/components/play-hub/badge-sheet";
@@ -95,6 +95,33 @@ function txLink(chainId: number | undefined, txHash: string) {
   return `https://${subdomain}celoscan.io/tx/${txHash}`;
 }
 
+function computeRookLanes(pos: BoardPosition): Set<string> {
+  const labels = new Set<string>();
+  for (let f = 0; f < 8; f++) {
+    labels.add(`${String.fromCharCode(97 + f)}${pos.rank + 1}`);
+  }
+  for (let r = 0; r < 8; r++) {
+    labels.add(`${String.fromCharCode(97 + pos.file)}${r + 1}`);
+  }
+  labels.delete(`${String.fromCharCode(97 + pos.file)}${pos.rank + 1}`);
+  return labels;
+}
+
+function TutorialBanner({ text }: { text: string }) {
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setFading(true), 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className={`tutorial-banner mx-auto mb-1 max-w-[360px] text-center text-xs font-medium text-cyan-100/90 ${fading ? "is-fading" : ""}`}>
+      {text}
+    </div>
+  );
+}
+
 export default function PlayHubPage() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -125,6 +152,7 @@ export default function PlayHubPage() {
   const [badgeSheetOpen, setBadgeSheetOpen] = useState(false);
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const {
     progress,
@@ -149,6 +177,26 @@ export default function PlayHubPage() {
     const host = window.location.hostname;
     setIsLocalhost(host === "localhost" || host === "127.0.0.1" || host === "::1");
   }, []);
+
+  useEffect(() => {
+    if (selectedPiece !== "rook") return;
+    const seen = localStorage.getItem("chesscito:tutorial:rook");
+    const hasProgress = localStorage.getItem("chesscito:progress:rook");
+    if (!seen && !hasProgress) {
+      setShowTutorial(true);
+    }
+  }, [selectedPiece]);
+
+  function dismissTutorial() {
+    if (!showTutorial) return;
+    setShowTutorial(false);
+    localStorage.setItem("chesscito:tutorial:rook", "1");
+  }
+
+  const tutorialHints = useMemo(() => {
+    if (!showTutorial || selectedPiece !== "rook") return undefined;
+    return computeRookLanes(currentExercise.startPos);
+  }, [showTutorial, selectedPiece, currentExercise.startPos]);
 
   const configuredChainId = useMemo(() => getConfiguredChainId(), []);
   const isCorrectChain = configuredChainId != null && chainId === configuredChainId;
@@ -312,6 +360,7 @@ export default function PlayHubPage() {
   }
 
   function handleMove(position: BoardPosition, movesCount: number) {
+    dismissTutorial();
     const isTarget =
       position.file === currentExercise.targetPos.file &&
       position.rank === currentExercise.targetPos.rank;
@@ -544,6 +593,10 @@ export default function PlayHubPage() {
     }
   }
 
+  const tutorialBanner = showTutorial ? (
+    <TutorialBanner text={TUTORIAL_COPY[selectedPiece]} />
+  ) : null;
+
   return (
     <div className="relative w-full overflow-x-hidden">
       <div className="playhub-intro-overlay" aria-hidden="true" />
@@ -560,6 +613,7 @@ export default function PlayHubPage() {
             { key: "knight", label: PIECE_LABELS.knight, enabled: true },
           ]}
           phase={phase}
+          tutorialBanner={tutorialBanner}
           score={score.toString()}
           timeMs={timeMs.toString()}
           level={levelId.toString()}
@@ -630,6 +684,7 @@ export default function PlayHubPage() {
               targetPosition={currentExercise.targetPos}
               isLocked={phase === "failure" || phase === "success"}
               onMove={handleMove}
+              tutorialHints={tutorialHints}
             />
           }
           starsBar={

@@ -20,6 +20,7 @@ type MissionPanelProps = {
   board: ReactNode;
   starsBar: ReactNode;
   actionPanel: ReactNode;
+  tutorialBanner?: ReactNode;
 };
 
 type FlashConfig = { text: string; accent: string };
@@ -88,6 +89,7 @@ export function MissionPanel({
   board,
   starsBar,
   actionPanel,
+  tutorialBanner,
 }: MissionPanelProps) {
   return (
     <section className="mission-shell flex h-[100dvh] flex-col overflow-hidden">
@@ -120,6 +122,7 @@ export function MissionPanel({
 
       {/* Zone 2: Board Stage — hero, fills all remaining space */}
       <div className="min-h-0 flex-1 px-1">
+        {tutorialBanner}
         {board}
         {/* Progress bar flush below board */}
         <div className="px-2">{starsBar}</div>
