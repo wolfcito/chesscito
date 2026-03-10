@@ -38,7 +38,7 @@ import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { classifyTxError } from "@/lib/errors";
 import { BADGE_THRESHOLD } from "@/lib/game/exercises";
-import { computeStars, totalStars as totalStarsFn } from "@/lib/game/scoring";
+import { computeStars } from "@/lib/game/scoring";
 
 const SHOP_ITEMS = [
   {
@@ -311,30 +311,27 @@ export default function PlayHubPage() {
       setElapsedMs(1000);
       completeExercise(movesCount);
 
-      // Check if this exercise completion earns the badge
-      const newStars = computeStars(movesCount, currentExercise.optimalMoves);
-      const prevStarValue = progress.stars[progress.exerciseIndex];
-      const starDelta = Math.max(0, newStars - prevStarValue);
-      const newTotal = totalStars + starDelta;
-      const justEarnedBadge = newTotal >= BADGE_THRESHOLD && totalStars < BADGE_THRESHOLD;
+      // On last exercise: check if badge is earned (including this completion)
+      if (isLastExercise) {
+        const newStars = computeStars(movesCount, currentExercise.optimalMoves);
+        const prevStarValue = progress.stars[progress.exerciseIndex];
+        const starDelta = Math.max(0, newStars - prevStarValue);
+        const newTotal = totalStars + starDelta;
 
-      if (justEarnedBadge) {
-        setShowBadgeEarned(true);
-        return; // Don't start auto-advance timer
+        if (newTotal >= BADGE_THRESHOLD) {
+          setShowBadgeEarned(true);
+          return; // Don't start auto-advance timer — prompt will handle it
+        }
       }
 
       autoResetTimer.current = setTimeout(() => {
         if (!isLastExercise) {
-          // Hay más ejercicios en esta pieza → avanzar
           advanceExercise();
           resetBoard();
         } else if (nextPiece) {
-          // Último ejercicio de la pieza → avanzar a la siguiente pieza
           setSelectedPiece(nextPiece);
           resetBoard();
         }
-        // Último ejercicio de la última pieza → no resetear,
-        // el jugador puede ver el estado y reclamar el badge
       }, 1500);
       return;
     }
