@@ -31,12 +31,12 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
         <button
           type="button"
           aria-label="Shop"
-          className="mission-chip relative flex h-14 flex-1 items-center justify-center overflow-hidden rounded-2xl transition"
+          className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-cyan-100/70 transition"
         >
           <picture className="h-full w-full">
             <source srcSet="/art/shop-chesscito.avif" type="image/avif" />
             <source srcSet="/art/shop-chesscito.webp" type="image/webp" />
-            <img src="/art/shop-chesscito.png" alt="" aria-hidden="true" className="h-full w-full object-contain p-1.5" />
+            <img src="/art/shop-chesscito.png" alt="" aria-hidden="true" className="h-full w-full object-contain p-0.5" />
           </picture>
           <span className="sr-only">Shop</span>
         </button>
