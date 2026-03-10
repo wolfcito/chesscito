@@ -33,7 +33,7 @@ import {
 } from "@/lib/contracts/chains";
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
-import { CTA_LABELS, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
+import { CAPTURE_COPY, CTA_LABELS, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { BadgeSheet } from "@/components/play-hub/badge-sheet";
@@ -153,6 +153,7 @@ export default function PlayHubPage() {
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [captureHintSeen, setCaptureHintSeen] = useState(false);
 
   const {
     progress,
@@ -179,6 +180,10 @@ export default function PlayHubPage() {
   }, []);
 
   useEffect(() => {
+    setCaptureHintSeen(false);
+  }, [selectedPiece]);
+
+  useEffect(() => {
     if (selectedPiece !== "rook") return;
     const seen = localStorage.getItem("chesscito:tutorial:rook");
     const hasProgress = localStorage.getItem("chesscito:progress:rook");
@@ -197,6 +202,8 @@ export default function PlayHubPage() {
     if (!showTutorial || selectedPiece !== "rook") return undefined;
     return computeRookLanes(currentExercise.startPos);
   }, [showTutorial, selectedPiece, currentExercise.startPos]);
+
+  const showCaptureHint = Boolean(currentExercise.isCapture) && !captureHintSeen && phase === "ready";
 
   const configuredChainId = useMemo(() => getConfiguredChainId(), []);
   const isCorrectChain = configuredChainId != null && chainId === configuredChainId;
@@ -361,6 +368,9 @@ export default function PlayHubPage() {
 
   function handleMove(position: BoardPosition, movesCount: number) {
     dismissTutorial();
+    if (!captureHintSeen && currentExercise.isCapture) {
+      setCaptureHintSeen(true);
+    }
     const isTarget =
       position.file === currentExercise.targetPos.file &&
       position.rank === currentExercise.targetPos.rank;
@@ -593,8 +603,14 @@ export default function PlayHubPage() {
     }
   }
 
+  const targetLabel = currentExercise.isCapture
+    ? CAPTURE_COPY.statsLabel
+    : `${String.fromCharCode(97 + currentExercise.targetPos.file)}${currentExercise.targetPos.rank + 1}`;
+
   const tutorialBanner = showTutorial ? (
     <TutorialBanner text={TUTORIAL_COPY[selectedPiece]} />
+  ) : showCaptureHint ? (
+    <TutorialBanner text={CAPTURE_COPY.tutorialBanner} />
   ) : null;
 
   return (
@@ -613,6 +629,7 @@ export default function PlayHubPage() {
             { key: "knight", label: PIECE_LABELS.knight, enabled: true },
           ]}
           phase={phase}
+          targetLabel={targetLabel}
           tutorialBanner={tutorialBanner}
           score={score.toString()}
           timeMs={timeMs.toString()}
@@ -685,6 +702,7 @@ export default function PlayHubPage() {
               isLocked={phase === "failure" || phase === "success"}
               onMove={handleMove}
               tutorialHints={tutorialHints}
+              isCapture={currentExercise.isCapture}
             />
           }
           starsBar={

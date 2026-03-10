@@ -14,6 +14,7 @@ type MissionPanelProps = {
   onSelectPiece: (piece: PieceOption["key"]) => void;
   pieces: readonly PieceOption[];
   phase: "ready" | "success" | "failure";
+  targetLabel: string;
   score: string;
   timeMs: string;
   level: string;
@@ -83,6 +84,7 @@ export function MissionPanel({
   onSelectPiece,
   pieces,
   phase,
+  targetLabel,
   score,
   timeMs,
   level,
@@ -142,7 +144,7 @@ export function MissionPanel({
           </div>
           <div className="chesscito-stats-item">
             <span className="chesscito-stats-label">TARGET</span>
-            <span className="chesscito-stats-value">h1</span>
+            <span className="chesscito-stats-value">{targetLabel}</span>
           </div>
         </div>
 
