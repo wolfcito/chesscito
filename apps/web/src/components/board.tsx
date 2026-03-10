@@ -53,6 +53,7 @@ type BoardProps = {
   mode?: "tutorial" | "practice";
   targetPosition?: BoardPosition | null;
   isLocked?: boolean;
+  isCapture?: boolean;
   onMove?: (position: BoardPosition, movesCount: number) => void;
   tutorialHints?: Set<string>;
 };
@@ -63,6 +64,7 @@ export function Board({
   mode = "practice",
   targetPosition = null,
   isLocked = false,
+  isCapture = false,
   onMove,
   tutorialHints,
 }: BoardProps) {
@@ -182,7 +184,7 @@ export function Board({
                         <span className="playhub-board-label">{square.label}</span>
                         {square.isHighlighted ? <span className="playhub-board-dot" /> : null}
                         {square.isTarget && !square.piece ? (
-                          <span className="playhub-board-target" />
+                          <span className={isCapture ? "playhub-board-target-capture" : "playhub-board-target"} />
                         ) : null}
                         {/* Piece rendered as floating layer below */}
                       </button>
