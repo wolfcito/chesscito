@@ -1,3 +1,33 @@
+## Session — 2026-03-09
+
+### Completed This Session
+- ✅ GitHub housekeeping: closed #22, #21, #14, #13, #10, #9, #4, #3 (completed work)
+- ✅ Milestones M0 y M1 cerrados
+- ✅ Issues #20, #12, #11 actualizados con scope correcto
+- ✅ 5 nuevos issues de visual polish creados (#44–#48) bajo M3
+- ✅ CLAUDE.md: sección "Seguridad — Reglas Duras" agregada
+- ✅ fix(ui): ExerciseStarsBar más visible (text-xs/sm, opacity-75, más padding)
+- ✅ fix(ui): TIME format "1000 ms" → "1s"
+- ✅ fix(ui): Sheet overlay backdrop-opacity 80% → 50%
+- ✅ fix(ui): /leaderboard idioma Spanish → English via LEADERBOARD_COPY editorial
+- ✅ fix(ui): "Claim Badge..." hint text gateado a isLocalhost (oculto en producción)
+
+### Open Issues Pending (M3)
+- #12 claimBadge tx — UI ready, falta validar en device MiniPay
+- #11 submitScore tx — idem
+- #15 Share Card (screenshotable result)
+- #16 Demo Video Script + Recording Checklist
+- #17 Deck (8-10 slides)
+- #18 Karma GAP Finalize
+
+### Pending / Known Issues
+- Shop sheet no captura en Playwright ([skip] button not found: "Shop")
+  — El SheetTrigger es un controlled component; investigar si el botón está en DOM
+- Stars bar: con los nuevos tamaños, verificar que los 5 botones caben bien en 390px
+  (se ve bien en capturas pero confirmar en device real)
+
+---
+
 ## Session — 2026-03-08
 
 ### Completed This Session

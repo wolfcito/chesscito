@@ -8,7 +8,7 @@
     <a href="https://docs.celo.org/build/build-on-minipay/overview"><img src="https://img.shields.io/badge/MiniPay-Compatible-35D07F?style=flat-square&labelColor=1A1A2E" alt="MiniPay" /></a>
     <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-14-white?style=flat-square&logo=next.js&labelColor=1A1A2E" alt="Next.js 14" /></a>
     <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&labelColor=1A1A2E" alt="TypeScript" /></a>
-    <img src="https://img.shields.io/badge/license-MIT-8B5CF6?style=flat-square&labelColor=1A1A2E" alt="MIT License" />
+    <img src="https://img.shields.io/badge/license-Apache--2.0-8B5CF6?style=flat-square&labelColor=1A1A2E" alt="Apache 2.0 License" />
   </p>
 </div>
 
@@ -108,6 +108,15 @@ pnpm contracts:deploy:celo        # deploy to Celo Mainnet
 | Presentation deck | [Google Slides](https://docs.google.com/presentation/d/e/2PACX-1vQpOSWoGHS1hKB5H9uHAHmWVVKfuOUADdVL0NV2jHzr3ZeQxelNS8tNjNKlxHRdm0ae5VYBWSpI3gLF/pub?start=false&loop=false&delayms=3000) |
 | Karma GAP project | [karmahq.xyz/project/chesscito](https://www.karmahq.xyz/project/chesscito) |
 | Public repo | [github.com/wolfcito/chesscito](https://github.com/wolfcito/chesscito) |
+
+## License
+
+The code in this repository is licensed under [Apache License 2.0](LICENSE).
+Project attribution and notice details are documented in [NOTICE](NOTICE).
+Chesscito branding, logos, official artwork, official badge artwork, and
+visual identity are reserved as described in
+[BRAND_POLICY.md](BRAND_POLICY.md). Commercial and white-label inquiries are
+outlined in [COMMERCIAL.md](COMMERCIAL.md).
 
 ---
 
