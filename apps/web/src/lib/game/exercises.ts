@@ -11,10 +11,10 @@ const ROOK_EXERCISES: Exercise[] = [
   { id: "rook-2", startPos: pos(0, 0), targetPos: pos(0, 7), optimalMoves: 1 },
   // 3. Desde el centro hacia arriba
   { id: "rook-3", startPos: pos(3, 3), targetPos: pos(3, 7), optimalMoves: 1 },
-  // 4. Distinta fila Y distinta columna — necesita 2 movimientos
-  { id: "rook-4", startPos: pos(0, 0), targetPos: pos(7, 7), optimalMoves: 2 },
-  // 5. Esquina a posición compleja
-  { id: "rook-5", startPos: pos(7, 7), targetPos: pos(1, 2), optimalMoves: 2 },
+  // 4. Captura — esquina a esquina diagonal
+  { id: "rook-4", startPos: pos(0, 0), targetPos: pos(7, 7), optimalMoves: 2, isCapture: true },
+  // 5. Captura — esquina a posición compleja
+  { id: "rook-5", startPos: pos(7, 7), targetPos: pos(1, 2), optimalMoves: 2, isCapture: true },
 ];
 
 const BISHOP_EXERCISES: Exercise[] = [

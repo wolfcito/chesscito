@@ -27,6 +27,7 @@ export type Exercise = {
   startPos: BoardPosition;   // posición inicial de la pieza
   targetPos: BoardPosition;  // casilla objetivo
   optimalMoves: number;      // mínimo teórico de movimientos
+  isCapture?: boolean;
 };
 
 export type PieceProgress = {

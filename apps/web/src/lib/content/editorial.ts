@@ -88,3 +88,8 @@ export const TUTORIAL_COPY = {
   bishop: "The Bishop moves diagonally — any distance",
   knight: "The Knight jumps in an L-shape — 2+1 squares",
 } as const;
+
+export const CAPTURE_COPY = {
+  statsLabel: "CAPTURE",
+  tutorialBanner: "Capture the target — move your Rook to its square",
+} as const;
