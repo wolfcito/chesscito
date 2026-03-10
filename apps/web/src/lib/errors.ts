@@ -15,6 +15,9 @@ export function classifyTxError(error: unknown): string {
   if (lower.includes("network") || lower.includes("timeout") || lower.includes("disconnected")) {
     return copy.network;
   }
+  if (lower.includes("badgealreadyclaimed") || lower.includes("already claimed")) {
+    return "You already own this badge!";
+  }
   if (lower.includes("revert") || lower.includes("execution reverted")) {
     return copy.revert;
   }

@@ -72,3 +72,13 @@ export const BADGE_EARNED_COPY = {
   submitScore: "Submit Score",
   later: "Later",
 } as const;
+
+export const BADGE_SHEET_COPY = {
+  title: "Your Badges",
+  subtitle: "Collect all three to master the board",
+  owned: "Owned",
+  claimBadge: "Claim Badge",
+  claiming: "Claiming...",
+  locked: (needed: number) => `Need ${needed} more ★ to unlock`,
+  notStarted: "Complete exercises to start",
+} as const;
