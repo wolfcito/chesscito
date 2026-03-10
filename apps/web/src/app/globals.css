@@ -389,6 +389,26 @@
     pointer-events: none;
   }
 
+  .playhub-board-target-capture {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: clamp(32px, 11.5vw, 52px);
+    height: clamp(32px, 11.5vw, 52px);
+    transform: translate(-50%, -50%) scaleY(0.52);
+    background-image: image-set(
+      url("/art/target-circle.avif") type("image/avif"),
+      url("/art/target-circle.webp") type("image/webp"),
+      url("/art/target-circle.png") type("image/png")
+    );
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: chesscito-target-pulse 2s ease-in-out infinite;
+    pointer-events: none;
+    filter: hue-rotate(160deg) saturate(1.8) brightness(1.1);
+  }
+
   @keyframes chesscito-target-pulse {
     0%, 100% {
       opacity: 0.85;
