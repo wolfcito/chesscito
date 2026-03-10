@@ -15,6 +15,7 @@ type OnChainActionsPanelProps = {
   badgeControl: ReactNode;
   shopControl: ReactNode;
   leaderboardControl: ReactNode;
+  shieldCount?: number;
 };
 
 function ActionBtn({
@@ -25,6 +26,7 @@ function ActionBtn({
   busy,
   variant = "default",
   showNotification,
+  badge,
 }: {
   icon: string;
   label: string;
@@ -33,6 +35,7 @@ function ActionBtn({
   busy?: boolean;
   variant?: "default" | "primary";
   showNotification?: boolean;
+  badge?: number;
 }) {
   return (
     <button
@@ -61,6 +64,11 @@ function ActionBtn({
           <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-400" />
         </span>
       ) : null}
+      {badge && badge > 0 ? (
+        <span className="absolute -left-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[0.5rem] font-bold text-white shadow">
+          {badge}
+        </span>
+      ) : null}
     </button>
   );
 }
@@ -79,6 +87,7 @@ export function OnChainActionsPanel({
   badgeControl,
   shopControl,
   leaderboardControl,
+  shieldCount,
 }: OnChainActionsPanelProps) {
   return (
     <div className="space-y-2">
@@ -111,7 +120,7 @@ export function OnChainActionsPanel({
 
       {/* Icon action bar */}
       <div className="flex items-center justify-around">
-        <ActionBtn icon="/art/refresh-chesscito.png" label={CTA_LABELS.resetTrial} onClick={onReset} disabled={isGlobalBusy} />
+        <ActionBtn icon="/art/refresh-chesscito.png" label={CTA_LABELS.resetTrial} onClick={onReset} disabled={isGlobalBusy} badge={shieldCount} />
         {badgeControl}
         <ActionBtn
           icon="/art/score-chesscito.png"

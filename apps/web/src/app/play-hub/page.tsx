@@ -679,6 +679,7 @@ export default function PlayHubPage() {
                 onQaLevelInputChange={setQaLevelInput}
                 onSubmit={() => void handleSubmitScore()}
                 onReset={resetBoard}
+                shieldCount={shieldCount}
                 badgeControl={
                   <BadgeSheet
                     open={badgeSheetOpen}
