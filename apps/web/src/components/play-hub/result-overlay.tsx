@@ -16,6 +16,7 @@ type ResultOverlayProps = {
   errorMessage?: string;
   onDismiss: () => void;
   onRetry?: () => void;
+  totalStars?: number;
 };
 
 const VARIANT_IMG: Record<SuccessVariant, string> = {
@@ -68,6 +69,29 @@ function SuccessImage({ variant, pieceType }: { variant: SuccessVariant; pieceTy
   );
 }
 
+const EXERCISES_PER_PIECE = 5;
+const MAX_STARS = EXERCISES_PER_PIECE * 3;
+
+function StarsRow({ totalStars }: { totalStars: number }) {
+  const filled = Math.min(EXERCISES_PER_PIECE, Math.ceil(totalStars / 3));
+  return (
+    <div className="flex items-center gap-1.5">
+      {Array.from({ length: EXERCISES_PER_PIECE }, (_, i) => (
+        <span
+          key={i}
+          className={i < filled ? "text-amber-400" : "text-amber-400/30"}
+          aria-hidden="true"
+        >
+          ★
+        </span>
+      ))}
+      <span className="ml-1 text-xs text-cyan-100/70">
+        {totalStars}/{MAX_STARS}
+      </span>
+    </div>
+  );
+}
+
 export function ResultOverlay({
   variant,
   pieceType,
@@ -77,6 +101,7 @@ export function ResultOverlay({
   errorMessage,
   onDismiss,
   onRetry,
+  totalStars,
 }: ResultOverlayProps) {
   const isError = variant === "error";
   const title = getTitle(variant);
@@ -108,6 +133,11 @@ export function ResultOverlay({
         <p className={`text-sm leading-relaxed ${isError ? "text-rose-200/80" : "text-cyan-100/80"}`}>
           {subtitle}
         </p>
+
+        {/* Stars (badge/score only) */}
+        {!isError && variant !== "shop" && totalStars != null ? (
+          <StarsRow totalStars={totalStars} />
+        ) : null}
 
         {/* CeloScan link (success only) */}
         {!isError && txHash && celoscanHref ? (
