@@ -82,3 +82,9 @@ export const BADGE_SHEET_COPY = {
   locked: (needed: number) => `Need ${needed} more ★ to unlock`,
   notStarted: "Complete exercises to start",
 } as const;
+
+export const TUTORIAL_COPY = {
+  rook: "The Rook moves in straight lines — horizontal or vertical",
+  bishop: "The Bishop moves diagonally — any distance",
+  knight: "The Knight jumps in an L-shape — 2+1 squares",
+} as const;
