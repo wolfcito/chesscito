@@ -125,6 +125,7 @@ export default function PlayHubPage() {
     progress,
     currentExercise,
     isLastExercise,
+    totalStars,
     badgeEarned,
     completeExercise,
     advanceExercise,
@@ -618,6 +619,7 @@ export default function PlayHubPage() {
             txHash={resultOverlay.txHash}
             celoscanHref={resultOverlay.txHash ? txLink(chainId, resultOverlay.txHash) : undefined}
             errorMessage={resultOverlay.errorMessage}
+            totalStars={totalStars}
             onDismiss={() => setResultOverlay(null)}
             onRetry={resultOverlay.retryAction}
           />
