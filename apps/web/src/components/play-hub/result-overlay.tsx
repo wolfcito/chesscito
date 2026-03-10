@@ -175,6 +175,14 @@ export function ResultOverlay({
             {isError ? RESULT_OVERLAY_COPY.cta.dismiss : RESULT_OVERLAY_COPY.cta.continue}
           </button>
         </div>
+
+        {/* Branding footer (success only) */}
+        {!isError ? (
+          <div className="mt-4 flex flex-col items-center gap-0.5">
+            <span className="fantasy-title text-sm text-cyan-100/50">chesscito</span>
+            <span className="text-[0.65rem] text-cyan-100/30">on Celo</span>
+          </div>
+        ) : null}
       </div>
     </div>
   );
