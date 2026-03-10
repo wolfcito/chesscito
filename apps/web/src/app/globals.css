@@ -418,7 +418,7 @@
     z-index: 10;
     transform: translate(-50%, -55%);
     pointer-events: none;
-    transition: left 180ms ease-out, top 180ms ease-out;
+    transition: left 320ms ease-in-out, top 320ms ease-in-out;
   }
 
   .playhub-board-piece-img {
