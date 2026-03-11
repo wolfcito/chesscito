@@ -154,7 +154,8 @@ export function MissionPanel({
 
       {/* Zone 2: Board Stage — hero, fills all remaining space */}
       <div className="min-h-0 flex-1 px-1">
-        {tutorialBanner}
+        {/* Fixed-height slot so the board never shifts when the banner fades */}
+        <div className="min-h-[32px]">{tutorialBanner}</div>
         {board}
         {/* Progress bar flush below board */}
         <div className="px-2">{starsBar}</div>
