@@ -189,7 +189,7 @@ export function BadgeSheet({
           ) : null}
         </button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="mission-shell rounded-t-3xl border-slate-700">
+      <SheetContent side="bottom" className="mission-shell sheet-bg-badges rounded-t-3xl border-slate-700">
         <SheetHeader>
           <SheetTitle className="fantasy-title text-cyan-50">{BADGE_SHEET_COPY.title}</SheetTitle>
           <SheetDescription className="text-cyan-100/75">{BADGE_SHEET_COPY.subtitle}</SheetDescription>

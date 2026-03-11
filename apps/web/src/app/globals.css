@@ -198,13 +198,15 @@
 
   /* Sheet backgrounds: blurred image + dark overlay */
   .sheet-bg-leaderboard,
-  .sheet-bg-shop {
+  .sheet-bg-shop,
+  .sheet-bg-badges {
     position: relative;
     overflow: hidden;
   }
 
   .sheet-bg-leaderboard::before,
-  .sheet-bg-shop::before {
+  .sheet-bg-shop::before,
+  .sheet-bg-badges::before {
     content: "";
     position: absolute;
     inset: -12px;
@@ -230,8 +232,17 @@
     );
   }
 
+  .sheet-bg-badges::before {
+    background-image: image-set(
+      url("/art/bg-badges-chesscito.avif") type("image/avif"),
+      url("/art/bg-badges-chesscito.webp") type("image/webp"),
+      url("/art/bg-badges-chesscito.png") type("image/png")
+    );
+  }
+
   .sheet-bg-leaderboard::after,
-  .sheet-bg-shop::after {
+  .sheet-bg-shop::after,
+  .sheet-bg-badges::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -240,7 +251,8 @@
   }
 
   .sheet-bg-leaderboard > *,
-  .sheet-bg-shop > * {
+  .sheet-bg-shop > *,
+  .sheet-bg-badges > * {
     position: relative;
     z-index: 1;
   }
