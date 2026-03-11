@@ -37,7 +37,7 @@ import { CAPTURE_COPY, CTA_LABELS, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/con
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { BadgeSheet } from "@/components/play-hub/badge-sheet";
-import { classifyTxError } from "@/lib/errors";
+import { classifyTxError, isUserCancellation } from "@/lib/errors";
 import { BADGE_THRESHOLD } from "@/lib/game/exercises";
 import { computeStars } from "@/lib/game/scoring";
 
@@ -489,6 +489,7 @@ export default function PlayHubPage() {
       });
       console.info("[MiniPayTx] result", { label: "claim-badge", txHash, levelId: Number(claimLevelId) });
     } catch (error) {
+      if (isUserCancellation(error)) return;
       const message = toErrorMessage(error);
       setLastError(message);
       setResultOverlay({
@@ -531,6 +532,7 @@ export default function PlayHubPage() {
       });
       console.info("[MiniPayTx] result", { label: "submit-score", txHash, levelId: Number(levelId) });
     } catch (error) {
+      if (isUserCancellation(error)) return;
       const message = toErrorMessage(error);
       setLastError(message);
       setResultOverlay({
@@ -618,6 +620,7 @@ export default function PlayHubPage() {
         txHash: buyHash,
       });
     } catch (error) {
+      if (isUserCancellation(error)) return;
       const message = toErrorMessage(error);
       setLastError(message);
       setResultOverlay({
@@ -706,7 +709,7 @@ export default function PlayHubPage() {
                 }
               />
 
-              {isLocalhost ? (
+              {qaEnabled ? (
                 <StatusStrip
                   chainId={chainId}
                   isConnected={isConnected}
@@ -794,7 +797,7 @@ export default function PlayHubPage() {
           />
         ) : null}
 
-        {isLocalhost && !isMiniPay ? (
+        {qaEnabled && !isMiniPay ? (
           <p className="mt-4 text-xs text-cyan-100/65">{CTA_LABELS.claimBadge} and {CTA_LABELS.submitScore} are available here. Open MiniPay to confirm the live signing flow.</p>
         ) : null}
       </main>
