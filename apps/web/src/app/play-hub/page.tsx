@@ -295,7 +295,11 @@ export default function PlayHubPage() {
 
   useEffect(() => {
     if (isShopConfirmed && pendingShieldCredit) {
-      updateShieldCount(shieldCount + 3);
+      setShieldCount((prev) => {
+        const next = Math.max(0, Math.min(prev + 3, MAX_SHIELDS));
+        localStorage.setItem("chesscito:shields", String(next));
+        return next;
+      });
       setPendingShieldCredit(false);
     }
   }, [isShopConfirmed, pendingShieldCredit]);
@@ -348,7 +352,7 @@ export default function PlayHubPage() {
     setMoves(0);
     setElapsedMs(0);
     timerStart.current = 0;
-    if (showBriefingOverlay) setShowBriefing(true);
+    setShowBriefing(showBriefingOverlay);
   }
 
   function handleMove(position: BoardPosition, movesCount: number) {
