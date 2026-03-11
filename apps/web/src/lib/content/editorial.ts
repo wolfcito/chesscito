@@ -109,3 +109,20 @@ export const PASSPORT_COPY = {
   ctaLabel: "Get verified",
   passportUrl: "https://passport.gitcoin.co",
 } as const;
+
+export const MISSION_BRIEFING_COPY = {
+  label: "MISSION",
+  play: "PLAY",
+  moveHint: {
+    rook: "The Rook moves in straight lines",
+    bishop: "The Bishop moves diagonally",
+    knight: "The Knight jumps in an L-shape",
+  },
+  captureHint: "Capture the target piece",
+  pieceHint: {
+    rook: "♜ Straight lines",
+    bishop: "♝ Diagonal moves",
+    knight: "♞ L-shaped jumps",
+  },
+  captureHintCompact: "♜ Capture the target",
+} as const;
