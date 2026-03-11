@@ -15,6 +15,7 @@ import {
 import { Board } from "@/components/board";
 import { ExerciseStarsBar } from "@/components/play-hub/exercise-stars-bar";
 import { LeaderboardSheet } from "@/components/play-hub/leaderboard-sheet";
+import { MissionBriefing } from "@/components/play-hub/mission-briefing";
 import { MissionPanel } from "@/components/play-hub/mission-panel";
 import { OnChainActionsPanel } from "@/components/play-hub/onchain-actions-panel";
 import { PurchaseConfirmSheet } from "@/components/play-hub/purchase-confirm-sheet";
@@ -33,7 +34,7 @@ import {
 } from "@/lib/contracts/chains";
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
-import { CAPTURE_COPY, CTA_LABELS, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
+import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS } from "@/lib/content/editorial";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { BadgeSheet } from "@/components/play-hub/badge-sheet";
@@ -100,33 +101,6 @@ function txLink(chainId: number | undefined, txHash: string) {
   return `https://${subdomain}celoscan.io/tx/${txHash}`;
 }
 
-function computeRookLanes(pos: BoardPosition): Set<string> {
-  const labels = new Set<string>();
-  for (let f = 0; f < 8; f++) {
-    labels.add(`${String.fromCharCode(97 + f)}${pos.rank + 1}`);
-  }
-  for (let r = 0; r < 8; r++) {
-    labels.add(`${String.fromCharCode(97 + pos.file)}${r + 1}`);
-  }
-  labels.delete(`${String.fromCharCode(97 + pos.file)}${pos.rank + 1}`);
-  return labels;
-}
-
-function TutorialBanner({ text }: { text: string }) {
-  const [fading, setFading] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setFading(true), 4000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className={`tutorial-banner mx-auto mb-1 max-w-[360px] text-center text-xs font-medium text-cyan-100/90 ${fading ? "is-fading" : ""}`}>
-      {text}
-    </div>
-  );
-}
-
 export default function PlayHubPage() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -158,8 +132,7 @@ export default function PlayHubPage() {
   const [shieldCount, setShieldCount] = useState(0);
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [captureHintSeen, setCaptureHintSeen] = useState(false);
+  const [showBriefing, setShowBriefing] = useState(true);
 
   const {
     progress,
@@ -200,31 +173,6 @@ export default function PlayHubPage() {
     localStorage.setItem("chesscito:shields", String(clamped));
   }
 
-  useEffect(() => {
-    setCaptureHintSeen(false);
-  }, [selectedPiece]);
-
-  useEffect(() => {
-    if (selectedPiece !== "rook") return;
-    const seen = localStorage.getItem("chesscito:tutorial:rook");
-    const hasProgress = localStorage.getItem("chesscito:progress:rook");
-    if (!seen && !hasProgress) {
-      setShowTutorial(true);
-    }
-  }, [selectedPiece]);
-
-  function dismissTutorial() {
-    if (!showTutorial) return;
-    setShowTutorial(false);
-    localStorage.setItem("chesscito:tutorial:rook", "1");
-  }
-
-  const tutorialHints = useMemo(() => {
-    if (!showTutorial || selectedPiece !== "rook") return undefined;
-    return computeRookLanes(currentExercise.startPos);
-  }, [showTutorial, selectedPiece, currentExercise.startPos]);
-
-  const showCaptureHint = Boolean(currentExercise.isCapture) && !captureHintSeen && phase === "ready";
 
   const configuredChainId = useMemo(() => getConfiguredChainId(), []);
   const isCorrectChain = configuredChainId != null && chainId === configuredChainId;
@@ -385,13 +333,10 @@ export default function PlayHubPage() {
     setPhase("ready");
     setMoves(0);
     setElapsedMs(0);
+    setShowBriefing(true);
   }
 
   function handleMove(position: BoardPosition, movesCount: number) {
-    dismissTutorial();
-    if (!captureHintSeen && currentExercise.isCapture) {
-      setCaptureHintSeen(true);
-    }
     const isTarget =
       position.file === currentExercise.targetPos.file &&
       position.rank === currentExercise.targetPos.rank;
@@ -640,11 +585,9 @@ export default function PlayHubPage() {
     ? CAPTURE_COPY.statsLabel
     : `${String.fromCharCode(97 + currentExercise.targetPos.file)}${currentExercise.targetPos.rank + 1}`;
 
-  const tutorialBanner = showTutorial ? (
-    <TutorialBanner text={TUTORIAL_COPY[selectedPiece]} />
-  ) : showCaptureHint ? (
-    <TutorialBanner text={CAPTURE_COPY.tutorialBanner} />
-  ) : null;
+  const pieceHint = currentExercise.isCapture
+    ? MISSION_BRIEFING_COPY.captureHintCompact
+    : MISSION_BRIEFING_COPY.pieceHint[selectedPiece];
 
   return (
     <div className="relative w-full overflow-x-hidden">
@@ -665,7 +608,7 @@ export default function PlayHubPage() {
           targetLabel={targetLabel}
           shieldCount={shieldCount}
           onUseShield={handleUseShield}
-          tutorialBanner={tutorialBanner}
+          pieceHint={pieceHint}
           score={score.toString()}
           timeMs={timeMs.toString()}
           level={levelId.toString()}
@@ -737,7 +680,6 @@ export default function PlayHubPage() {
               targetPosition={currentExercise.targetPos}
               isLocked={phase === "failure" || phase === "success"}
               onMove={handleMove}
-              tutorialHints={tutorialHints}
               isCapture={currentExercise.isCapture}
             />
           }
@@ -766,6 +708,15 @@ export default function PlayHubPage() {
           purchasePhase={purchasePhase}
           onConfirm={() => void handleConfirmPurchase()}
         />
+
+        {showBriefing ? (
+          <MissionBriefing
+            pieceType={selectedPiece}
+            targetLabel={targetLabel}
+            isCapture={Boolean(currentExercise.isCapture)}
+            onPlay={() => setShowBriefing(false)}
+          />
+        ) : null}
 
         {showBadgeEarned ? (
           <BadgeEarnedPrompt
