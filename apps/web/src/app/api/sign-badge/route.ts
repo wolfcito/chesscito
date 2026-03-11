@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   createDeadline,
   createNonce,
+  enforceOrigin,
   enforceRateLimit,
   getDemoConfig,
   getRequestIp,
@@ -14,10 +15,11 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    enforceRateLimit(getRequestIp(request));
+    enforceOrigin(request);
 
     const body = (await request.json()) as { player?: string; levelId?: number };
     const player = parseAddress(body.player);
+    enforceRateLimit(getRequestIp(request), player);
     const levelId = parseInteger(body.levelId, "levelId", 1, 10_000);
     const nonce = createNonce();
     const deadline = createDeadline();
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not sign badge claim";
-    const status = message === "Rate limit exceeded" ? 429 : 400;
+    const status = message === "Rate limit exceeded" ? 429 : message === "Forbidden" ? 403 : 400;
     return NextResponse.json({ error: message }, { status });
   }
 }

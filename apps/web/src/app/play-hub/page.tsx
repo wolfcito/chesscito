@@ -146,6 +146,7 @@ export default function PlayHubPage() {
   } = useExerciseProgress(selectedPiece);
 
   const autoResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerStart = useRef<number>(0);
 
   const PIECE_ORDER: PieceKey[] = ["rook", "bishop", "knight"];
   const currentPieceIndex = PIECE_ORDER.indexOf(selectedPiece);
@@ -192,14 +193,14 @@ export default function PlayHubPage() {
     () => (qaEnabled ? (isQaLevelValid ? BigInt(qaLevel) : 0n) : defaultLevelId),
     [defaultLevelId, isQaLevelValid, qaEnabled, qaLevel]
   );
-  const score = 100n;
+  const POINTS_PER_STAR = 100n;
+  const score = useMemo(() => BigInt(Math.max(1, totalStars)) * POINTS_PER_STAR, [totalStars]);
   const timeMs = useMemo(() => {
     if (phase !== "success") {
       return 1000n;
     }
 
-    const seconds = Math.max(1, Math.floor(elapsedMs / 1000));
-    return BigInt(seconds * 1000);
+    return BigInt(Math.max(1, elapsedMs));
   }, [elapsedMs, phase]);
 
   const { data: onChainItems } = useReadContracts({
@@ -341,6 +342,7 @@ export default function PlayHubPage() {
     setPhase("ready");
     setMoves(0);
     setElapsedMs(0);
+    timerStart.current = 0;
     if (showBriefingOverlay) setShowBriefing(true);
   }
 
@@ -350,10 +352,11 @@ export default function PlayHubPage() {
       position.rank === currentExercise.targetPos.rank;
 
     setMoves(movesCount);
+    if (movesCount === 1) timerStart.current = Date.now();
 
     if (isTarget) {
       setPhase("success");
-      setElapsedMs(1000);
+      setElapsedMs(timerStart.current > 0 ? Date.now() - timerStart.current : 1000);
       completeExercise(movesCount);
 
       // On last exercise: check if badge is earned (including this completion)

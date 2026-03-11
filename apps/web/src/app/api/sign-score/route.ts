@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   createDeadline,
   createNonce,
+  enforceOrigin,
   enforceRateLimit,
   getDemoConfig,
   getRequestIp,
@@ -14,7 +15,7 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    enforceRateLimit(getRequestIp(request));
+    enforceOrigin(request);
 
     const body = (await request.json()) as {
       player?: string;
@@ -23,8 +24,11 @@ export async function POST(request: Request) {
       timeMs?: number;
     };
     const player = parseAddress(body.player);
+    enforceRateLimit(getRequestIp(request), player);
+
     const levelId = parseInteger(body.levelId, "levelId", 1, 10_000);
-    const score = parseInteger(body.score, "score", 0, 1_000_000_000);
+    // Max score: 15 stars × 100 pts = 1500 per piece level
+    const score = parseInteger(body.score, "score", 0, 1_500);
     const timeMs = parseInteger(body.timeMs, "timeMs", 1, 3_600_000);
     const nonce = createNonce();
     const deadline = createDeadline();
@@ -68,7 +72,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not sign score submission";
-    const status = message === "Rate limit exceeded" ? 429 : 400;
+    const status = message === "Rate limit exceeded" ? 429 : message === "Forbidden" ? 403 : 400;
     return NextResponse.json({ error: message }, { status });
   }
 }
