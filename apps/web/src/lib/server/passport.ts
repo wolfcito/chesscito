@@ -24,7 +24,7 @@ export async function checkPassportScore(address: string): Promise<boolean> {
 export async function checkPassportScores(
   addresses: string[]
 ): Promise<Map<string, boolean>> {
-  const results = await Promise.allSettled(
+  const results = await Promise.all(
     addresses.map(async (addr) => ({
       addr,
       verified: await checkPassportScore(addr),
@@ -32,9 +32,7 @@ export async function checkPassportScores(
   );
   const map = new Map<string, boolean>();
   for (const r of results) {
-    if (r.status === "fulfilled") {
-      map.set(r.value.addr, r.value.verified);
-    }
+    map.set(r.addr, r.verified);
   }
   return map;
 }
