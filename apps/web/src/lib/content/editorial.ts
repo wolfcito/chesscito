@@ -13,9 +13,17 @@ export const CTA_LABELS = {
   continue: "Continue",
   claimBadge: GLOSSARY.claimBadge,
   submitScore: GLOSSARY.submitScore,
-  resetTrial: "Try Again",
+  retry: "Retry",
   viewLeaderboard: "View Leaderboard",
   backToPlay: "Back to Play",
+} as const;
+
+export const FOOTER_CTA_COPY = {
+  submitScore: { label: "Submit Score", loading: "Submitting..." },
+  useShield: { label: "Use Shield", loading: "Using Shield..." },
+  claimBadge: { label: "Claim Badge", loading: "Claiming..." },
+  retry: { label: "Retry", loading: null },
+  shieldsLeft: (n: number) => `${n} left`,
 } as const;
 
 export const PIECE_LABELS = {
