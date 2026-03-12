@@ -811,7 +811,13 @@ export default function PlayHubPage() {
             celoscanHref={resultOverlay.txHash ? txLink(chainId, resultOverlay.txHash) : undefined}
             errorMessage={resultOverlay.errorMessage}
             totalStars={totalStars}
-            onDismiss={() => setResultOverlay(null)}
+            onDismiss={() => {
+              setResultOverlay(null);
+              if (resultOverlay.variant === "shop") {
+                setStoreOpen(false);
+                setSelectedItemId(null);
+              }
+            }}
             onRetry={resultOverlay.retryAction}
           />
         ) : null}
