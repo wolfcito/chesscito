@@ -29,11 +29,12 @@ async function main() {
   console.log(`Safe owner: ${safeOwner}`);
   console.log(`Treasury: ${treasuryAddress}`);
 
-  // Deploy proxy
+  // Deploy proxy — deployer is initial contract owner so we can configure items,
+  // then transfer ownership to safeOwner at the end.
   const shopFactory = await ethers.getContractFactory("ShopUpgradeable");
   const shop = await upgrades.deployProxy(
     shopFactory,
-    [treasuryAddress, maxQuantityPerTx, safeOwner],
+    [treasuryAddress, maxQuantityPerTx, deployer.address],
     {
       kind: "transparent",
       initializer: "initialize",
@@ -70,6 +71,14 @@ async function main() {
   const tx2 = await shop.setItem(2n, 25_000n, true);
   await tx2.wait();
   console.log("  Item 2 (Retry Shield): $0.025");
+
+  // Transfer contract ownership to safeOwner
+  if (deployer.address.toLowerCase() !== safeOwner.toLowerCase()) {
+    console.log(`\nTransferring ownership to Safe: ${safeOwner}`);
+    const txOwner = await shop.transferOwnership(safeOwner);
+    await txOwner.wait();
+    console.log("  Ownership transferred");
+  }
 
   // Append to existing deployment record
   const outputDir = path.join(process.cwd(), "deployments");
