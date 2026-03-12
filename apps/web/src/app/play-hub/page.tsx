@@ -16,7 +16,8 @@ import { ExerciseStarsBar } from "@/components/play-hub/exercise-stars-bar";
 import { LeaderboardSheet } from "@/components/play-hub/leaderboard-sheet";
 import { MissionBriefing } from "@/components/play-hub/mission-briefing";
 import { MissionPanel } from "@/components/play-hub/mission-panel";
-import { OnChainActionsPanel } from "@/components/play-hub/onchain-actions-panel";
+import { ContextualActionSlot } from "@/components/play-hub/contextual-action-slot";
+import { PersistentDock } from "@/components/play-hub/persistent-dock";
 import { PurchaseConfirmSheet } from "@/components/play-hub/purchase-confirm-sheet";
 import { ShopSheet } from "@/components/play-hub/shop-sheet";
 import { StatusStrip } from "@/components/play-hub/status-strip";
@@ -39,6 +40,7 @@ import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
 import { BadgeSheet } from "@/components/play-hub/badge-sheet";
 import { classifyTxError, isUserCancellation } from "@/lib/errors";
+import { getContextAction } from "@/lib/game/context-action";
 import { BADGE_THRESHOLD } from "@/lib/game/exercises";
 import { computeStars } from "@/lib/game/scoring";
 
@@ -354,6 +356,15 @@ export default function PlayHubPage() {
     !pieceCompleted;
   const isClaimBusy = isWriting || isClaimConfirming;
   const isSubmitBusy = isWriting || isSubmitConfirming;
+
+  const contextAction = getContextAction({
+    phase,
+    shieldsAvailable: shieldCount,
+    scorePending: canSendOnChain,
+    badgeClaimable: badgeEarned && !hasClaimedBadge,
+    isConnected,
+    isCorrectChain,
+  });
 
   async function writeWithOptionalFeeCurrency(request: Parameters<typeof writeContractAsync>[0]) {
     try {
@@ -673,72 +684,50 @@ export default function PlayHubPage() {
           ]}
           phase={phase}
           targetLabel={targetLabel}
-          shieldCount={shieldCount}
-          onUseShield={handleUseShield}
           pieceHint={pieceHint}
           score={score.toString()}
           timeMs={timeMs.toString()}
           level={levelId.toString()}
-          actionPanel={
-            <div className="space-y-3">
-              <OnChainActionsPanel
-                effectiveLevelId={levelId.toString()}
-                canSubmit={canSendOnChain}
-                isSubmitBusy={isSubmitBusy}
-                isGlobalBusy={isWriting}
-                qaEnabled={qaEnabled}
-                qaLevelInput={qaLevelInput}
-                isQaLevelValid={isQaLevelValid}
-                onQaLevelInputChange={setQaLevelInput}
-                onSubmit={() => void handleSubmitScore()}
-                onReset={resetBoard}
-                shieldCount={shieldCount}
-                badgeControl={
-                  <BadgeSheet
-                    open={badgeSheetOpen}
-                    onOpenChange={setBadgeSheetOpen}
-                    badgesClaimed={badgesClaimed}
-                    onClaim={(piece) => void handleClaimBadge(piece)}
-                    isClaimBusy={isClaimBusy}
-                    showNotification={canSendOnChain && !Boolean(hasClaimedBadge)}
-                  />
-                }
-                shopControl={
-                  <ShopSheet
-                    open={storeOpen}
-                    onOpenChange={setStoreOpen}
-                    items={shopCatalog}
-                    onSelectItem={(itemId) => {
-                      setSelectedItemId(itemId);
-                      const item = shopCatalog.find((i) => i.itemId === itemId);
-                      if (item) setPaymentToken(selectPaymentToken(item.onChainPrice));
-                      setConfirmOpen(true);
-                    }}
-                  />
-                }
-                leaderboardControl={
-                  <LeaderboardSheet open={leaderboardOpen} onOpenChange={setLeaderboardOpen} />
-                }
-              />
-
-              {qaEnabled ? (
-                <StatusStrip
-                  chainId={chainId}
-                  isConnected={isConnected}
-                  isCorrectChain={isCorrectChain}
-                  missionCompleted={phase === "success"}
-                  hasClaimedBadge={hasClaimedBadge}
-                  shopTxHash={shopTxHash}
-                  claimTxHash={claimTxHash}
-                  submitTxHash={submitTxHash}
-                  isShopConfirming={isShopConfirming}
-                  isClaimConfirming={isClaimConfirming}
-                  isSubmitConfirming={isSubmitConfirming}
-                  lastError={lastError}
-                  txLink={(txHash) => txLink(chainId, txHash)}
+          contextualAction={
+            <ContextualActionSlot
+              action={contextAction}
+              shieldsAvailable={shieldCount}
+              isBusy={isWriting || isSubmitConfirming || isClaimConfirming}
+              onSubmitScore={() => void handleSubmitScore()}
+              onUseShield={handleUseShield}
+              onClaimBadge={() => void handleClaimBadge()}
+              onRetry={() => resetBoard()}
+            />
+          }
+          persistentDock={
+            <PersistentDock
+              badgeControl={
+                <BadgeSheet
+                  open={badgeSheetOpen}
+                  onOpenChange={setBadgeSheetOpen}
+                  badgesClaimed={badgesClaimed}
+                  onClaim={(piece) => void handleClaimBadge(piece)}
+                  isClaimBusy={isClaimBusy}
+                  showNotification={canSendOnChain && !Boolean(hasClaimedBadge)}
                 />
-              ) : null}
-            </div>
+              }
+              shopControl={
+                <ShopSheet
+                  open={storeOpen}
+                  onOpenChange={setStoreOpen}
+                  items={shopCatalog}
+                  onSelectItem={(itemId) => {
+                    setSelectedItemId(itemId);
+                    const item = shopCatalog.find((i) => i.itemId === itemId);
+                    if (item) setPaymentToken(selectPaymentToken(item.onChainPrice));
+                    setConfirmOpen(true);
+                  }}
+                />
+              }
+              leaderboardControl={
+                <LeaderboardSheet open={leaderboardOpen} onOpenChange={setLeaderboardOpen} />
+              }
+            />
           }
           board={
             <Board
@@ -819,7 +808,45 @@ export default function PlayHubPage() {
         ) : null}
 
         {qaEnabled && !isMiniPay ? (
-          <p className="mt-4 text-xs text-cyan-100/65">{CTA_LABELS.claimBadge} and {CTA_LABELS.submitScore} are available here. Open MiniPay to confirm the live signing flow.</p>
+          <details className="fixed bottom-2 left-2 right-2 z-30 rounded-xl bg-slate-900/95 px-3 py-2 text-xs text-slate-200 shadow-lg backdrop-blur">
+            <summary className="cursor-pointer list-none font-semibold uppercase tracking-[0.2em] text-cyan-300">
+              QA mode
+            </summary>
+            <div className="mt-2 space-y-2">
+              <label className="block">
+                Level ID override
+                <input
+                  type="number"
+                  min={1}
+                  max={9999}
+                  step={1}
+                  value={qaLevelInput}
+                  onChange={(event) => setQaLevelInput(event.target.value)}
+                  className="mt-1 w-full rounded-lg border border-cyan-600/45 bg-slate-900/90 px-3 py-2 text-sm text-cyan-50"
+                />
+              </label>
+              {!isQaLevelValid ? (
+                <p className="text-rose-300">Use a whole number between 1 and 9999.</p>
+              ) : (
+                <p className="text-emerald-300">{CTA_LABELS.claimBadge} and {CTA_LABELS.submitScore} will use levelId {levelId.toString()}.</p>
+              )}
+              <StatusStrip
+                chainId={chainId}
+                isConnected={isConnected}
+                isCorrectChain={isCorrectChain}
+                missionCompleted={phase === "success"}
+                hasClaimedBadge={hasClaimedBadge}
+                shopTxHash={shopTxHash}
+                claimTxHash={claimTxHash}
+                submitTxHash={submitTxHash}
+                isShopConfirming={isShopConfirming}
+                isClaimConfirming={isClaimConfirming}
+                isSubmitConfirming={isSubmitConfirming}
+                lastError={lastError}
+                txLink={(txHash) => txLink(chainId, txHash)}
+              />
+            </div>
+          </details>
         ) : null}
       </main>
     </div>
