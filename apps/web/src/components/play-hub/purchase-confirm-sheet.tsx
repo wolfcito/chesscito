@@ -1,6 +1,5 @@
-import { formatUnits } from "viem";
-
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { formatUsd } from "@/lib/contracts/tokens";
 
 type SelectedItem = {
   label: string;
@@ -15,7 +14,7 @@ type PurchaseConfirmSheetProps = {
   selectedItem: SelectedItem | null;
   chainId: number | undefined;
   shopAddress: string | null;
-  usdcAddress: string | null;
+  paymentTokenSymbol: string | null;
   isConnected: boolean;
   isCorrectChain: boolean;
   isWriting: boolean;
@@ -29,7 +28,7 @@ export function PurchaseConfirmSheet({
   selectedItem,
   chainId,
   shopAddress,
-  usdcAddress,
+  paymentTokenSymbol,
   isConnected,
   isCorrectChain,
   isWriting,
@@ -49,8 +48,13 @@ export function PurchaseConfirmSheet({
               Label: <span className="font-semibold text-slate-100">{selectedItem.label}</span>
             </p>
             <p>
-              Price: <span className="font-semibold text-slate-100">{formatUnits(selectedItem.onChainPrice, 6)} USDC</span>
+              Price: <span className="font-semibold text-slate-100">{formatUsd(selectedItem.onChainPrice)}</span>
             </p>
+            {paymentTokenSymbol ? (
+              <p>
+                Paying with: <span className="font-semibold text-slate-100">{paymentTokenSymbol}</span>
+              </p>
+            ) : null}
             <p>
               Status:{" "}
               <span className="font-semibold text-slate-100">
@@ -63,9 +67,6 @@ export function PurchaseConfirmSheet({
             <p>
               Shop: <span className="break-all font-mono text-xs">{shopAddress ?? "missing"}</span>
             </p>
-            <p>
-              USDC: <span className="break-all font-mono text-xs">{usdcAddress ?? "missing"}</span>
-            </p>
             <p className="rounded-xl border border-amber-400/45 bg-amber-900/30 px-3 py-2 text-xs text-amber-100">
               MiniPay may show &quot;Unknown transaction&quot;. This screen describes the expected action before signing.
             </p>
@@ -76,7 +77,7 @@ export function PurchaseConfirmSheet({
                 isWriting ||
                 purchasePhase !== "idle" ||
                 !shopAddress ||
-                !usdcAddress ||
+                !paymentTokenSymbol ||
                 !isConnected ||
                 !isCorrectChain ||
                 !selectedItem.configured ||
@@ -85,7 +86,7 @@ export function PurchaseConfirmSheet({
               onClick={onConfirm}
             >
               {purchasePhase === "approving"
-                ? "Approving USDC..."
+                ? `Approving ${paymentTokenSymbol ?? ""}...`
                 : purchasePhase === "buying"
                   ? "Buying..."
                   : "Confirm purchase"}

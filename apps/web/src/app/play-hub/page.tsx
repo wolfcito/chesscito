@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { erc20Abi } from "viem";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useAccount,
   useChainId,
@@ -30,10 +29,10 @@ import {
   getMiniPayFeeCurrency,
   getScoreboardAddress,
   getShopAddress,
-  getUsdcAddress,
 } from "@/lib/contracts/chains";
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
+import { ACCEPTED_TOKENS, erc20Abi, normalizePrice } from "@/lib/contracts/tokens";
 import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS } from "@/lib/content/editorial";
 import { getPositionLabel, getValidTargets } from "@/lib/game/board";
 import type { BoardPosition } from "@/lib/game/types";
@@ -187,7 +186,7 @@ export default function PlayHubPage() {
   const badgesAddress = useMemo(() => getBadgesAddress(chainId), [chainId]);
   const scoreboardAddress = useMemo(() => getScoreboardAddress(chainId), [chainId]);
   const shopAddress = useMemo(() => getShopAddress(chainId), [chainId]);
-  const usdcAddress = useMemo(() => getUsdcAddress(chainId), [chainId]);
+  const [paymentToken, setPaymentToken] = useState<typeof ACCEPTED_TOKENS[number] | null>(null);
   const feeCurrency = useMemo(() => getMiniPayFeeCurrency(chainId), [chainId]);
   const defaultLevelId = useMemo(() => getLevelId(selectedPiece), [selectedPiece]);
   const qaEnabled = useMemo(
@@ -254,16 +253,42 @@ export default function PlayHubPage() {
     [selectedItemId, shopCatalog]
   );
 
-  const { data: usdcAllowance } = useReadContract({
-    address: usdcAddress ?? undefined,
+  const { data: tokenBalances } = useReadContracts({
+    contracts: ACCEPTED_TOKENS.map((t) => ({
+      address: t.address,
+      abi: erc20Abi,
+      functionName: "balanceOf" as const,
+      args: address ? [address] as const : undefined,
+      chainId,
+    })),
+    allowFailure: true,
+    query: { enabled: Boolean(address) },
+  });
+
+  const { data: paymentAllowance } = useReadContract({
+    address: paymentToken?.address,
     abi: erc20Abi,
     functionName: "allowance",
     args: address && shopAddress ? [address, shopAddress] : undefined,
     chainId,
-    query: {
-      enabled: Boolean(address && shopAddress && usdcAddress),
-    },
+    query: { enabled: Boolean(address && shopAddress && paymentToken) },
   });
+
+  const selectPaymentToken = useCallback(
+    (priceUsd6: bigint) => {
+      if (!tokenBalances) return null;
+      for (let i = 0; i < ACCEPTED_TOKENS.length; i++) {
+        const t = ACCEPTED_TOKENS[i];
+        const result = tokenBalances[i];
+        if (result?.status !== "success") continue;
+        const balance = result.result as bigint;
+        const needed = normalizePrice(priceUsd6, t.decimals);
+        if (balance >= needed) return t;
+      }
+      return null;
+    },
+    [tokenBalances]
+  );
 
   // Read hasClaimedBadge for all 3 pieces (batched)
   const { data: allBadgesData, refetch: refetchAllBadges } = useReadContracts({
@@ -520,7 +545,7 @@ export default function PlayHubPage() {
   }
 
   async function handleConfirmPurchase() {
-    if (!selectedItem || !address || !shopAddress || !usdcAddress || !isCorrectChain) {
+    if (!selectedItem || !address || !shopAddress || !isCorrectChain) {
       return;
     }
     if (!selectedItem.configured) {
@@ -531,34 +556,37 @@ export default function PlayHubPage() {
       setLastError(`Item ${selectedItem.itemId.toString()} is disabled`);
       return;
     }
+    if (!paymentToken) {
+      setLastError("No accepted token with sufficient balance");
+      return;
+    }
 
     const unitPrice = selectedItem.onChainPrice;
-    const total = unitPrice;
+    const normalizedTotal = normalizePrice(unitPrice, paymentToken.decimals);
 
     setLastError(null);
     console.info("[MiniPayTx] request", {
       label: selectedItem.label,
       itemId: selectedItem.itemId.toString(),
-      total: total.toString(),
-      currency: "USDC",
+      total: normalizedTotal.toString(),
+      currency: paymentToken.symbol,
       chainId,
       shopAddress,
-      usdcAddress,
     });
 
     try {
-      if (!usdcAllowance || usdcAllowance < total) {
+      if (!paymentAllowance || paymentAllowance < normalizedTotal) {
         setPurchasePhase("approving");
         const approveHash = await writeWithOptionalFeeCurrency({
-          address: usdcAddress,
+          address: paymentToken.address,
           abi: erc20Abi,
           functionName: "approve" as const,
-          args: [shopAddress, total] as const,
+          args: [shopAddress, normalizedTotal] as const,
           chainId,
           account: address,
         });
         console.info("[MiniPayTx] result", {
-          label: `${selectedItem.label} approve`,
+          label: `${selectedItem.label} approve (${paymentToken.symbol})`,
           txHash: approveHash,
         });
 
@@ -576,7 +604,7 @@ export default function PlayHubPage() {
         address: shopAddress,
         abi: shopAbi,
         functionName: "buyItem" as const,
-        args: [selectedItem.itemId, 1n] as const,
+        args: [selectedItem.itemId, 1n, paymentToken.address] as const,
         chainId,
         account: address,
       });
@@ -680,6 +708,8 @@ export default function PlayHubPage() {
                     items={shopCatalog}
                     onSelectItem={(itemId) => {
                       setSelectedItemId(itemId);
+                      const item = shopCatalog.find((i) => i.itemId === itemId);
+                      if (item) setPaymentToken(selectPaymentToken(item.onChainPrice));
                       setConfirmOpen(true);
                     }}
                   />
@@ -739,7 +769,7 @@ export default function PlayHubPage() {
           selectedItem={selectedItem}
           chainId={chainId}
           shopAddress={shopAddress}
-          usdcAddress={usdcAddress}
+          paymentTokenSymbol={paymentToken?.symbol ?? null}
           isConnected={isConnected}
           isCorrectChain={isCorrectChain}
           isWriting={isWriting}
