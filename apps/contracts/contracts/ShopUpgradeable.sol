@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
@@ -13,13 +14,13 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Pau
  *         Prices are stored in USD with 6 decimals and normalized per token at purchase time.
  *         Entitlements are handled off-chain via the `ItemPurchased` event.
  * @dev Deploy behind a TransparentUpgradeableProxy.
- *      Reentrancy guard is implemented inline using ERC-7201 namespaced storage
- *      (same pattern as OZ v5 ReentrancyGuard) so no constructor is called.
+ *      OZ v5 ReentrancyGuard uses ERC-7201 namespaced storage, so it is proxy-safe.
  */
 contract ShopUpgradeable is
     Initializable,
     OwnableUpgradeable,
-    PausableUpgradeable
+    PausableUpgradeable,
+    ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -34,7 +35,6 @@ contract ShopUpgradeable is
     error InvalidDecimals();
     error SameTreasury();
     error LengthMismatch();
-    error ReentrancyGuardReentrantCall();
 
     // ─────────────────────────── Events ────────────────────────────────────
     event ItemPurchased(
@@ -58,13 +58,6 @@ contract ShopUpgradeable is
         bool enabled;
     }
 
-    // ── Reentrancy guard (ERC-7201 namespaced slot) ────────────────────────
-    // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ReentrancyGuard")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant _REENTRANCY_SLOT =
-        0x9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f00;
-    uint256 private constant _NOT_ENTERED = 1;
-    uint256 private constant _ENTERED = 2;
-
     // ── Own storage (4 slots) ─────────────────────────────────────────────
     // slot 0: acceptedTokens mapping — decimals per token (0 = not accepted)
     mapping(address => uint8) public acceptedTokens;
@@ -77,44 +70,6 @@ contract ShopUpgradeable is
 
     // ── Gap (46 free = 50 budget − 4 own) ─────────────────────────────────
     uint256[46] private __gap;
-
-    // ─────────────────────────── Reentrancy modifier ───────────────────────
-    modifier nonReentrant() {
-        _requireNotEntered();
-        _setEntered();
-        _;
-        _setNotEntered();
-    }
-
-    function _requireNotEntered() private view {
-        uint256 status;
-        bytes32 slot = _REENTRANCY_SLOT;
-        assembly {
-            status := sload(slot)
-        }
-        if (status == _ENTERED) revert ReentrancyGuardReentrantCall();
-    }
-
-    function _setEntered() private {
-        bytes32 slot = _REENTRANCY_SLOT;
-        assembly {
-            sstore(slot, 2) // _ENTERED
-        }
-    }
-
-    function _setNotEntered() private {
-        bytes32 slot = _REENTRANCY_SLOT;
-        assembly {
-            sstore(slot, 1) // _NOT_ENTERED
-        }
-    }
-
-    function _initReentrancyGuard() private {
-        bytes32 slot = _REENTRANCY_SLOT;
-        assembly {
-            sstore(slot, 1) // _NOT_ENTERED
-        }
-    }
 
     // ─────────────────────────── Constructor ───────────────────────────────
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -131,7 +86,6 @@ contract ShopUpgradeable is
         if (initialTreasury == address(0)) revert InvalidAddress();
         __Ownable_init(initialOwner);
         __Pausable_init();
-        _initReentrancyGuard();
         treasury = initialTreasury;
         maxQuantityPerTx = initialMaxQuantityPerTx;
     }
