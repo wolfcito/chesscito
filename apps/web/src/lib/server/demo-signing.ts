@@ -56,9 +56,6 @@ export function enforceRateLimit(ip: string, playerAddress?: string) {
 }
 
 export function enforceOrigin(request: Request) {
-  const allowedHost = process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_URL;
-  if (!allowedHost) return; // skip check in dev if not configured
-
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
   const source = origin ?? referer;
@@ -74,8 +71,18 @@ export function enforceOrigin(request: Request) {
     throw new Error("Forbidden");
   }
 
-  const normalizedAllowed = allowedHost.replace(/^https?:\/\//, "");
-  if (sourceHost !== allowedHost && sourceHost !== normalizedAllowed) {
+  // Collect all allowed hosts: explicit app URL, Vercel deployment URL, and production alias
+  const allowedHosts = new Set<string>();
+  for (const envVar of [process.env.NEXT_PUBLIC_APP_URL, process.env.VERCEL_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL]) {
+    if (envVar) {
+      allowedHosts.add(envVar.replace(/^https?:\/\//, ""));
+    }
+  }
+
+  // No allowed hosts configured — skip check (dev environment)
+  if (allowedHosts.size === 0) return;
+
+  if (!allowedHosts.has(sourceHost)) {
     throw new Error("Forbidden");
   }
 }
