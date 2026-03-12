@@ -110,8 +110,10 @@ private/
 
 # AI-tool config directories
 .agents/
+.claude/projects/
 .cursor/
 .gemini/
+.superpowers/
 
 # BMAD agent workspace
 _bmad/
