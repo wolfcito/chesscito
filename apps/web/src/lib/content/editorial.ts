@@ -111,6 +111,73 @@ export const SHIELD_COPY = {
   buyLabel: "Buy (3 uses)",
 } as const;
 
+export const PHASE_FLASH_COPY = {
+  success: "Well done!",
+  failure: "Try again",
+} as const;
+
+export const SHOP_SHEET_COPY = {
+  title: "Arcane Store",
+  description: "Choose an item to purchase with USDC.",
+  buyButton: "Buy with USDC",
+  status: {
+    available: "Available",
+    unavailable: "Unavailable",
+    notConfigured: "Not configured",
+  },
+} as const;
+
+export const LEADERBOARD_SHEET_COPY = {
+  title: "Hall of Rooks",
+  description: "Check the leaderboard without leaving the board.",
+  loading: "Loading...",
+  empty: "No scores recorded yet.",
+  error: "Could not load the leaderboard.",
+} as const;
+
+export const PURCHASE_CONFIRM_COPY = {
+  title: "Confirm purchase",
+  description: "Review the details before signing.",
+  confirmButton: "Confirm purchase",
+  approving: (token: string) => `Approving ${token}...`,
+  buying: "Buying...",
+  miniPayWarning: "MiniPay may show \"Unknown transaction\". This screen describes the expected action before signing.",
+} as const;
+
+export const STATUS_STRIP_COPY = {
+  walletNotConnected: "Wallet not connected",
+  networkReady: "Network ready",
+  switchNetwork: "Switch to the supported network",
+  piecePathComplete: "Piece Path complete",
+  piecePathInProgress: "Piece Path in progress",
+  badgeClaimed: "Claimed",
+  badgeReady: "Ready to claim",
+  submittingScore: "Submitting score",
+  scoreSubmitted: "Score submitted",
+  claimingBadge: "Claiming badge",
+  badgeClaimed2: "Badge claimed",
+  processingPurchase: "Processing purchase",
+  purchaseComplete: "Purchase complete",
+  waitingConfirmation: "Waiting for onchain confirmation.",
+  scoreOnchain: "Your score is now recorded onchain.",
+  badgeOnchain: "Your badge is now confirmed onchain.",
+  purchaseOnchain: "Your purchase is now confirmed onchain.",
+} as const;
+
+export const ERROR_PAGE_COPY = {
+  title: "Something went wrong",
+  fallback: "An unexpected error occurred.",
+  tryAgain: "Try again",
+  boardCrashed: "Oops! Board crashed",
+  gameFallback: "Something went wrong loading the game.",
+  reloadGame: "Reload game",
+} as const;
+
+export const CONNECT_BUTTON_COPY = {
+  miniPayDetected: "MiniPay detected",
+  openInMiniPay: "Open in MiniPay",
+} as const;
+
 export const PASSPORT_COPY = {
   verifiedLabel: "Verified",
   infoBanner: "Verify with Gitcoin Passport to earn a ✓",

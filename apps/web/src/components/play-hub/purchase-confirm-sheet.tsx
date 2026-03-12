@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { formatUsd } from "@/lib/contracts/tokens";
+import { PURCHASE_CONFIRM_COPY, SHOP_SHEET_COPY } from "@/lib/content/editorial";
 
 type SelectedItem = {
   label: string;
@@ -39,8 +40,8 @@ export function PurchaseConfirmSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="mission-shell sheet-bg-shop rounded-t-3xl border-slate-700">
         <SheetHeader>
-          <SheetTitle className="fantasy-title text-cyan-50">Confirm purchase</SheetTitle>
-          <SheetDescription className="text-cyan-100/75">Review the details before signing.</SheetDescription>
+          <SheetTitle className="fantasy-title text-cyan-50">{PURCHASE_CONFIRM_COPY.title}</SheetTitle>
+          <SheetDescription className="text-cyan-100/75">{PURCHASE_CONFIRM_COPY.description}</SheetDescription>
         </SheetHeader>
         {selectedItem ? (
           <div className="mission-soft rune-frame mt-4 space-y-2 rounded-2xl p-3 text-sm text-slate-200">
@@ -58,7 +59,7 @@ export function PurchaseConfirmSheet({
             <p>
               Status:{" "}
               <span className="font-semibold text-slate-100">
-                {selectedItem.configured ? (selectedItem.enabled ? "Available" : "Unavailable") : "Not configured"}
+                {selectedItem.configured ? (selectedItem.enabled ? SHOP_SHEET_COPY.status.available : SHOP_SHEET_COPY.status.unavailable) : SHOP_SHEET_COPY.status.notConfigured}
               </span>
             </p>
             <p>
@@ -68,7 +69,7 @@ export function PurchaseConfirmSheet({
               Shop: <span className="break-all font-mono text-xs">{shopAddress ?? "missing"}</span>
             </p>
             <p className="rounded-xl border border-amber-400/45 bg-amber-900/30 px-3 py-2 text-xs text-amber-100">
-              MiniPay may show &quot;Unknown transaction&quot;. This screen describes the expected action before signing.
+              {PURCHASE_CONFIRM_COPY.miniPayWarning}
             </p>
             <button
               type="button"
@@ -86,10 +87,10 @@ export function PurchaseConfirmSheet({
               onClick={onConfirm}
             >
               {purchasePhase === "approving"
-                ? `Approving ${paymentTokenSymbol ?? ""}...`
+                ? PURCHASE_CONFIRM_COPY.approving(paymentTokenSymbol ?? "")
                 : purchasePhase === "buying"
-                  ? "Buying..."
-                  : "Confirm purchase"}
+                  ? PURCHASE_CONFIRM_COPY.buying
+                  : PURCHASE_CONFIRM_COPY.confirmButton}
             </button>
           </div>
         ) : null}

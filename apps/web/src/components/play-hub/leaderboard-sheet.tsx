@@ -11,7 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { LeaderboardRow } from "@/lib/server/leaderboard";
-import { PASSPORT_COPY } from "@/lib/content/editorial";
+import { LEADERBOARD_SHEET_COPY, PASSPORT_COPY } from "@/lib/content/editorial";
 
 type LeaderboardSheetProps = {
   open: boolean;
@@ -30,7 +30,7 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
     fetch("/api/leaderboard")
       .then((r) => r.json())
       .then((data: LeaderboardRow[]) => setRows(data))
-      .catch(() => setError("Could not load the leaderboard."))
+      .catch(() => setError(LEADERBOARD_SHEET_COPY.error))
       .finally(() => setLoading(false));
   }, [open]);
 
@@ -52,8 +52,8 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
       </SheetTrigger>
       <SheetContent side="bottom" className="mission-shell sheet-bg-leaderboard rounded-t-3xl border-slate-700">
         <SheetHeader>
-          <SheetTitle className="fantasy-title text-cyan-50">Hall of Rooks</SheetTitle>
-          <SheetDescription className="text-cyan-100/75">Check the leaderboard without leaving the board.</SheetDescription>
+          <SheetTitle className="fantasy-title text-cyan-50">{LEADERBOARD_SHEET_COPY.title}</SheetTitle>
+          <SheetDescription className="text-cyan-100/75">{LEADERBOARD_SHEET_COPY.description}</SheetDescription>
         </SheetHeader>
         <p className="mt-3 text-center text-xs text-cyan-100/60">
           {PASSPORT_COPY.infoBanner}{" "}
@@ -68,13 +68,13 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
         </p>
         <div className="mt-4 space-y-2">
           {loading && (
-            <p className="text-center text-sm text-cyan-100/60">Loading...</p>
+            <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.loading}</p>
           )}
           {error && (
             <p className="text-center text-sm text-red-400">{error}</p>
           )}
           {!loading && !error && rows.length === 0 && (
-            <p className="text-center text-sm text-cyan-100/60">No scores recorded yet.</p>
+            <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.empty}</p>
           )}
           {rows.map((row) => (
             <div key={row.rank} className="mission-soft rune-frame grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-3 py-2">

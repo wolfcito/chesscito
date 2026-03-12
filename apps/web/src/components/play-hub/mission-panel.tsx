@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { PHASE_FLASH_COPY } from "@/lib/content/editorial";
 
 type PieceOption = {
   key: "rook" | "bishop" | "knight";
@@ -29,8 +30,8 @@ type FlashConfig = { text: string; accent: string };
 
 const PHASE_FLASH: Record<MissionPanelProps["phase"], FlashConfig | null> = {
   ready: null,
-  success: { text: "Well done!", accent: "text-emerald-300" },
-  failure: { text: "Try again", accent: "text-rose-300" },
+  success: { text: PHASE_FLASH_COPY.success, accent: "text-emerald-300" },
+  failure: { text: PHASE_FLASH_COPY.failure, accent: "text-rose-300" },
 };
 
 function PhaseFlash({ phase }: { phase: MissionPanelProps["phase"] }) {

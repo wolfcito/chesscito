@@ -4,6 +4,7 @@ import { ConnectButton as RainbowKitConnectButton } from "@rainbow-me/rainbowkit
 import Link from "next/link";
 
 import { useMiniPay } from "@/hooks/use-minipay";
+import { CONNECT_BUTTON_COPY } from "@/lib/content/editorial";
 
 export function ConnectButton() {
   const { hasProvider, isMiniPay, isReady } = useMiniPay();
@@ -15,7 +16,7 @@ export function ConnectButton() {
   if (isMiniPay) {
     return (
       <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-        MiniPay detected
+        {CONNECT_BUTTON_COPY.miniPayDetected}
       </span>
     );
   }
@@ -28,7 +29,7 @@ export function ConnectButton() {
         rel="noopener noreferrer"
         className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-primary/30 hover:text-primary"
       >
-        Open in MiniPay
+        {CONNECT_BUTTON_COPY.openInMiniPay}
       </Link>
     );
   }

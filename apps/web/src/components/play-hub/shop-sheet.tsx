@@ -7,6 +7,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { formatUnits } from "viem";
+import { SHOP_SHEET_COPY } from "@/lib/content/editorial";
 
 type CatalogItem = {
   itemId: bigint;
@@ -43,8 +44,8 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
       </SheetTrigger>
       <SheetContent side="bottom" className="mission-shell sheet-bg-shop rounded-t-3xl border-slate-700">
         <SheetHeader>
-          <SheetTitle className="fantasy-title text-cyan-50">Arcane Store</SheetTitle>
-          <SheetDescription className="text-cyan-100/75">Choose an item to purchase with USDC.</SheetDescription>
+          <SheetTitle className="fantasy-title text-cyan-50">{SHOP_SHEET_COPY.title}</SheetTitle>
+          <SheetDescription className="text-cyan-100/75">{SHOP_SHEET_COPY.description}</SheetDescription>
         </SheetHeader>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {items.map((item) => (
@@ -52,10 +53,10 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
               <p className="text-sm font-semibold text-slate-100">{item.label}</p>
               <p className="text-xs text-slate-400">{item.subtitle}</p>
               <p className="mt-2 text-sm text-slate-200">
-                {item.configured ? `${formatUnits(item.onChainPrice, 6)} USDC` : "Not configured"}
+                {item.configured ? `${formatUnits(item.onChainPrice, 6)} USDC` : SHOP_SHEET_COPY.status.notConfigured}
               </p>
               <p className="text-xs text-slate-400">
-                {item.configured ? (item.enabled ? "Available" : "Unavailable") : "Unavailable"}
+                {item.configured ? (item.enabled ? SHOP_SHEET_COPY.status.available : SHOP_SHEET_COPY.status.unavailable) : SHOP_SHEET_COPY.status.unavailable}
               </p>
               <button
                 type="button"
@@ -63,7 +64,7 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
                 disabled={!item.configured || !item.enabled}
                 onClick={() => onSelectItem(item.itemId)}
               >
-                Buy with USDC
+                {SHOP_SHEET_COPY.buyButton}
               </button>
             </div>
           ))}
