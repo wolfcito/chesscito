@@ -34,7 +34,7 @@ import {
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
 import { ACCEPTED_TOKENS, erc20Abi, normalizePrice } from "@/lib/contracts/tokens";
-import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS } from "@/lib/content/editorial";
+import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS, SHIELD_COPY } from "@/lib/content/editorial";
 import { getPositionLabel, getValidTargets } from "@/lib/game/board";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
@@ -53,7 +53,7 @@ const SHOP_ITEMS = [
   {
     itemId: 2n,
     label: "Retry Shield",
-    subtitle: "Failed an exercise? Use a shield to try again without penalty. (3 uses)",
+    subtitle: `${SHIELD_COPY.subtitle} (3 uses)`,
   },
 ] as const;
 

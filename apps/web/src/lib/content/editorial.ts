@@ -88,7 +88,7 @@ export const BADGE_SHEET_COPY = {
   claimBadge: "Claim Badge",
   claiming: "Claiming...",
   locked: (needed: number) => `Need ${needed} more ★ to unlock`,
-  notStarted: "Complete exercises to start",
+  notStarted: "Complete trials to start",
 } as const;
 
 export const TUTORIAL_COPY = {
@@ -104,7 +104,7 @@ export const CAPTURE_COPY = {
 
 export const SHIELD_COPY = {
   label: "Retry Shield",
-  subtitle: "Failed an exercise? Use a shield to try again without penalty.",
+  subtitle: "Failed a trial? Use a shield to try again without penalty.",
   useShield: "Use Shield",
   shieldsLeft: (n: number) => `${n} left`,
   shieldUsed: "Shield used!",
