@@ -13,10 +13,9 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Cross-origin isolation required globally for SharedArrayBuffer (Stockfish WASM).
-        // Using "credentialless" instead of "require-corp" so external resources
-        // (images, fonts, etc.) still load without explicit CORP headers.
-        source: "/:path*",
+        // Cross-origin isolation for SharedArrayBuffer (Stockfish WASM).
+        // Scoped to /arena only — global COOP breaks MiniPay wallet injection.
+        source: "/arena",
         headers: [
           { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
