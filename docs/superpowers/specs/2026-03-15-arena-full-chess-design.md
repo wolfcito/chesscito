@@ -117,9 +117,25 @@ Difficulty mapping:
 - `bestmove` timeout (10s) → terminate worker, show "AI timed out" + restart option
 - All errors keep the game state intact so the user doesn't lose their position
 
-**Next.js config:**
-- Add `headers()` in `next.config.js` for `/engines/*` MIME type (`application/wasm`) and cache headers
-- No webpack WASM loader needed — Stockfish loads via Worker `importScripts()`
+**Stockfish distribution:**
+- `lila-stockfish-web` ships as npm package with `.js` loader + `.wasm` binary
+- Build step: copy WASM files from `node_modules/lila-stockfish-web/` to `public/engines/` (via `postinstall` script or manual copy)
+- Worker uses the package's ESM loader API, not raw `importScripts()`
+- Alternative: if ESM in Worker is problematic in MiniPay WebView, copy the standalone `.js`+`.wasm` to `public/engines/` and load via `importScripts()`
+
+**Next.js config (`next.config.js`, CommonJS):**
+```js
+// Add to existing module.exports:
+async headers() {
+  return [{
+    source: '/engines/:path*',
+    headers: [
+      { key: 'Content-Type', value: 'application/wasm' },
+      { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+    ],
+  }];
+},
+```
 
 ### Board Component Architecture (split approach)
 
@@ -199,7 +215,7 @@ When a pawn reaches the last rank:
 │ ♟ Hard   AI 🤔      │  HUD: difficulty + thinking indicator
 ├─────────────────────┤
 │                     │
-│     Board (full)    │  board.tsx mode="full"
+│     Board (full)    │  ArenaBoard component
 │     32 pieces       │
 │                     │
 ├─────────────────────┤
@@ -272,6 +288,14 @@ All handled by chess.js — no custom logic needed:
 | `apps/web/public/engines/` | Stockfish WASM files (lila-stockfish-web) |
 | `apps/web/next.config.js` | Add headers for /engines/* MIME type + cache |
 | `apps/web/src/components/play-hub/mission-panel.tsx` | Add "Free Play" entry point |
+
+## Implementation Notes
+
+- **board-geometry.ts extraction**: move `Point` type, `interpolateQuad`, `lerp`, corner constants, `BOARD_V_GAMMA`, and `cellClipPath` logic. `board.tsx` imports from this module — verify no behavior change.
+- **`fenToPieces()` mapping**: chess.js uses single chars (`p`,`n`,`b`,`r`,`q`,`k`). Map to `ChessPieceId` strings (`"pawn"`,`"knight"`,`"bishop"`,`"rook"`,`"queen"`,`"king"`). Note: `n` = knight, `k` = king.
+- **`ARENA_PIECE_IMG`**: expanded `Record<ChessPieceId, string>` with all 6 piece types (pawn, queen, king added to existing rook/bishop/knight paths).
+- **Worker cleanup**: `useChessGame` hook must `Worker.terminate()` in `useEffect` cleanup return to avoid leaking workers on route navigation.
+- **Tint spike**: validate CSS filter tint on Chesscito piece art early in implementation. If results are muddy, escalate to create separate black piece PNGs before building full board.
 
 ## Accessibility
 
