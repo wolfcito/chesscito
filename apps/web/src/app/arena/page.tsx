@@ -63,12 +63,26 @@ export default function ArenaPage() {
             onSquareClick={game.selectSquare}
           />
           {game.pendingPromotion && (
-            <PromotionOverlay onSelect={game.promoteWith} />
+            <PromotionOverlay onSelect={game.promoteWith} onCancel={game.cancelPromotion} />
           )}
         </div>
 
+        {/* Error banner */}
+        {game.errorMessage && (
+          <div className="flex items-center justify-center gap-3 px-4 py-2">
+            <span className="text-sm text-rose-300">{game.errorMessage}</span>
+            <button
+              type="button"
+              onClick={game.reset}
+              className="rounded-lg bg-rose-500/20 px-3 py-1 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/30 active:scale-95"
+            >
+              {ARENA_COPY.restartMatch}
+            </button>
+          </div>
+        )}
+
         {/* Actions bar */}
-        {!isEndState && (
+        {!isEndState && !game.errorMessage && (
           <div className="flex items-center justify-center gap-3 px-4 py-3">
             <button
               type="button"
