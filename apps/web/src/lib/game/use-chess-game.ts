@@ -140,6 +140,22 @@ export function useChessGame(): ChessGameState {
     };
 
     worker.postMessage({ type: "init" });
+
+    // Timeout: if engine doesn't become ready in 15s, show error
+    const loadTimeout = setTimeout(() => {
+      if (!workerRef.current) {
+        worker.terminate();
+        workerSpawnedRef.current = false;
+        setErrorMessage("Your browser doesn't support the AI engine");
+        setStatus("selecting");
+      }
+    }, 15_000);
+
+    // Clear timeout if worker becomes ready (status changes from "loading")
+    const clearOnReady = () => clearTimeout(loadTimeout);
+    workerRef.current === null && worker.addEventListener("message", (e) => {
+      if (e.data?.type === "ready") clearOnReady();
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
