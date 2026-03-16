@@ -14,8 +14,10 @@ const nextConfig = {
     return [
       {
         // Cross-origin isolation for SharedArrayBuffer (Stockfish WASM).
-        // Scoped to /arena only — global COOP breaks MiniPay wallet injection.
-        source: "/arena",
+        // Applied globally because Next.js SPA navigation skips headers on
+        // route-scoped responses. Using "credentialless" COEP to avoid
+        // blocking external resources. TODO: test in MiniPay WebView.
+        source: "/:path*",
         headers: [
           { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
