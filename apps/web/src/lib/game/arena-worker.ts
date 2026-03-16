@@ -23,13 +23,37 @@ const DIFFICULTY_CONFIG = {
 } as const;
 
 let engine: { uci: (cmd: string) => void } | null = null;
+let uciReady = false;
 let resolveMove: ((move: string) => void) | null = null;
+// Queue search requests that arrive before UCI is ready
+let pendingSearch: { fen: string; difficulty: SearchMessage["difficulty"] } | null = null;
 
 function postOut(msg: OutMessage) {
   self.postMessage(msg);
 }
 
 function handleLine(line: string) {
+  // UCI protocol initialization
+  if (line === "uciok") {
+    engine?.uci("isready");
+    return;
+  }
+
+  if (line === "readyok") {
+    if (!uciReady) {
+      uciReady = true;
+      postOut({ type: "ready" });
+      // If a search was queued while initializing, run it now
+      if (pendingSearch) {
+        const { fen, difficulty } = pendingSearch;
+        pendingSearch = null;
+        search(fen, difficulty);
+      }
+    }
+    return;
+  }
+
+  // Best move response
   if (line.startsWith("bestmove")) {
     const move = line.split(" ")[1];
     if (move && resolveMove) {
@@ -53,7 +77,9 @@ async function initEngine() {
     });
 
     engine = sf;
-    postOut({ type: "ready" });
+
+    // Start UCI protocol handshake — "ready" is sent when we receive "readyok"
+    engine.uci("uci");
   } catch (err) {
     postOut({ type: "error", message: `Engine load failed: ${err}` });
   }
@@ -93,8 +119,11 @@ self.onmessage = (e: MessageEvent<InMessage>) => {
       initEngine();
       break;
     case "search":
-      if (engine) {
+      if (uciReady && engine) {
         search(msg.fen, msg.difficulty);
+      } else if (engine && !uciReady) {
+        // Engine loaded but UCI not ready yet — queue it
+        pendingSearch = { fen: msg.fen, difficulty: msg.difficulty };
       } else {
         postOut({ type: "error", message: "Engine not ready" });
       }
