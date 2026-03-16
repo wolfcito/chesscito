@@ -43,8 +43,9 @@ function handleLine(line: string) {
 async function initEngine() {
   try {
     // Dynamic import of the Stockfish ES module from public/engines/
-    // @ts-expect-error — runtime URL, not a TS module
-    const { default: StockfishFactory } = await import("/engines/sf171-79.js");
+    // @ts-expect-error — runtime URL served from public/, not a TS module
+    const mod = await import(/* webpackIgnore: true */ "/engines/sf171-79.js");
+    const StockfishFactory = mod.default;
 
     const sf = await StockfishFactory({
       listen: (line: string) => handleLine(line),
