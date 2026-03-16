@@ -13,6 +13,14 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // Arena page needs cross-origin isolation for SharedArrayBuffer (Stockfish WASM)
+        source: "/arena",
+        headers: [
+          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+        ],
+      },
+      {
         source: "/engines/:path*",
         headers: [
           { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
