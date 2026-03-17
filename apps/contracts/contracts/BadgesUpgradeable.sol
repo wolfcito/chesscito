@@ -29,6 +29,7 @@ contract BadgesUpgradeable is
     error InvalidSigner();
     error InvalidBaseURI();
     error InvalidLevel(uint256 levelId);
+    error CanOnlyIncreaseMaxLevel(uint256 current, uint256 requested);
 
     // ─────────────────────────── Events ────────────────────────────────────
     event BadgeClaimed(
@@ -136,6 +137,20 @@ contract BadgesUpgradeable is
         return string.concat(baseMetadataURI, Strings.toString(tokenId), ".json");
     }
 
+    // ─────────────────────────── Soulbound ─────────────────────────────────
+    /**
+     * @dev Badges are non-transferable (soulbound). Only minting (from == address(0)) is allowed.
+     */
+    function _update(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory values
+    ) internal override {
+        if (from != address(0)) revert("Badges: non-transferable");
+        super._update(from, to, ids, values);
+    }
+
     // ─────────────────────────── ERC-165 ───────────────────────────────────
     /**
      * @dev Explicit override required when multiple parents expose supportsInterface.
@@ -156,9 +171,10 @@ contract BadgesUpgradeable is
         emit SignerUpdated(nextSigner);
     }
 
-    /// @notice Call this whenever a new batch of levels goes live.
+    /// @notice Call this whenever a new batch of levels goes live. Cannot decrease.
     function setMaxLevelId(uint256 nextMaxLevelId) external onlyOwner {
         if (nextMaxLevelId == 0) revert InvalidLevel(nextMaxLevelId);
+        if (nextMaxLevelId < maxLevelId) revert CanOnlyIncreaseMaxLevel(maxLevelId, nextMaxLevelId);
         maxLevelId = nextMaxLevelId;
         emit MaxLevelUpdated(nextMaxLevelId);
     }
