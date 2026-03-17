@@ -1,6 +1,6 @@
 "use client";
 
-import { ARENA_COPY } from "@/lib/content/editorial";
+import { ARENA_COPY, VICTORY_MINT_COPY } from "@/lib/content/editorial";
 import type { ArenaStatus } from "@/lib/game/types";
 
 type Props = {
@@ -8,6 +8,10 @@ type Props = {
   isPlayerWin: boolean;
   onPlayAgain: () => void;
   onBackToHub: () => void;
+  onMintVictory?: () => void;
+  isMinting?: boolean;
+  hasMinted?: boolean;
+  mintPrice?: string;
 };
 
 function getResultText(status: ArenaStatus, isPlayerWin: boolean): string {
@@ -27,7 +31,16 @@ function getResultText(status: ArenaStatus, isPlayerWin: boolean): string {
   }
 }
 
-export function ArenaEndState({ status, isPlayerWin, onPlayAgain, onBackToHub }: Props) {
+export function ArenaEndState({
+  status,
+  isPlayerWin,
+  onPlayAgain,
+  onBackToHub,
+  onMintVictory,
+  isMinting,
+  hasMinted,
+  mintPrice,
+}: Props) {
   const text = getResultText(status, isPlayerWin);
   if (!text) return null;
 
@@ -55,21 +68,37 @@ export function ArenaEndState({ status, isPlayerWin, onPlayAgain, onBackToHub }:
         <h2 className={`fantasy-title text-2xl font-bold ${accentClass}`}>
           {text}
         </h2>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={onPlayAgain}
-            className="rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 px-6 py-2.5 font-semibold text-white shadow-[0_0_16px_rgba(34,211,238,0.3)] transition-all hover:shadow-[0_0_24px_rgba(34,211,238,0.5)] active:scale-95"
-          >
-            {ARENA_COPY.playAgain}
-          </button>
-          <button
-            type="button"
-            onClick={onBackToHub}
-            className="rounded-2xl border border-white/10 bg-white/5 px-6 py-2.5 font-semibold text-white/70 transition-all hover:bg-white/10 active:scale-95"
-          >
-            {ARENA_COPY.backToHub}
-          </button>
+        <div className="flex flex-col items-center gap-3">
+          {isPlayerWin && onMintVictory && (
+            <button
+              type="button"
+              onClick={onMintVictory}
+              disabled={isMinting || hasMinted}
+              className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 px-6 py-2.5 font-semibold text-white shadow-[0_0_16px_rgba(245,158,11,0.3)] transition-all hover:shadow-[0_0_24px_rgba(245,158,11,0.5)] active:scale-95 disabled:opacity-50"
+            >
+              {hasMinted
+                ? VICTORY_MINT_COPY.mintedButton
+                : isMinting
+                  ? VICTORY_MINT_COPY.minting
+                  : `${VICTORY_MINT_COPY.mintButton} — ${mintPrice ?? ""}`}
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onPlayAgain}
+              className="rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 px-6 py-2.5 font-semibold text-white shadow-[0_0_16px_rgba(34,211,238,0.3)] transition-all hover:shadow-[0_0_24px_rgba(34,211,238,0.5)] active:scale-95"
+            >
+              {ARENA_COPY.playAgain}
+            </button>
+            <button
+              type="button"
+              onClick={onBackToHub}
+              className="rounded-2xl border border-white/10 bg-white/5 px-6 py-2.5 font-semibold text-white/70 transition-all hover:bg-white/10 active:scale-95"
+            >
+              {ARENA_COPY.backToHub}
+            </button>
+          </div>
         </div>
       </div>
     </div>

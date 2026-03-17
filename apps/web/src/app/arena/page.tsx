@@ -1,6 +1,14 @@
 "use client";
 
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  useAccount,
+  useChainId,
+  usePublicClient,
+  useReadContracts,
+  useWriteContract,
+} from "wagmi";
 import { useChessGame } from "@/lib/game/use-chess-game";
 import { ArenaBoard } from "@/components/arena/arena-board";
 import { DifficultySelector } from "@/components/arena/difficulty-selector";
@@ -8,18 +16,155 @@ import { ArenaHud } from "@/components/arena/arena-hud";
 import { PromotionOverlay } from "@/components/arena/promotion-overlay";
 import { ArenaEndState } from "@/components/arena/arena-end-state";
 import { ARENA_COPY } from "@/lib/content/editorial";
+import { getConfiguredChainId, getVictoryNFTAddress } from "@/lib/contracts/chains";
+import { victoryAbi } from "@/lib/contracts/victory";
+import {
+  ACCEPTED_TOKENS,
+  DIFFICULTY_TO_CHAIN,
+  VICTORY_PRICES,
+  erc20Abi,
+  formatUsd,
+  normalizePrice,
+} from "@/lib/contracts/tokens";
+
+type SignatureResponse =
+  | { nonce: string; deadline: string; signature: `0x${string}`; error?: never }
+  | { error: string };
 
 export default function ArenaPage() {
   const router = useRouter();
   const game = useChessGame();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const publicClient = usePublicClient({ chainId });
+  const { writeContractAsync } = useWriteContract();
+
+  const [hasMinted, setHasMinted] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
 
   const isEndState = ["checkmate", "stalemate", "draw", "resigned"].includes(game.status);
-
-  // After checkmate, chess.js turn belongs to the mated side.
-  // If black to move (" b ") → black is mated → player (white) wins.
   const isPlayerWin = game.status === "checkmate" && game.fen.includes(" b ");
 
+  const configuredChainId = useMemo(() => getConfiguredChainId(), []);
+  const isCorrectChain = configuredChainId != null && chainId === configuredChainId;
+  const victoryNFTAddress = useMemo(() => getVictoryNFTAddress(chainId), [chainId]);
+
+  const chainDifficulty = DIFFICULTY_TO_CHAIN[game.difficulty];
+  const mintPriceUsd6 = VICTORY_PRICES[chainDifficulty] ?? 0n;
+  const mintPriceLabel = formatUsd(mintPriceUsd6);
+
+  const canMint = isConnected && isCorrectChain && isPlayerWin && victoryNFTAddress != null;
+
+  // Token balances for payment selection
+  const { data: tokenBalances } = useReadContracts({
+    contracts: ACCEPTED_TOKENS.map((t) => ({
+      address: t.address,
+      abi: erc20Abi,
+      functionName: "balanceOf" as const,
+      args: address ? [address] as const : undefined,
+      chainId,
+    })),
+    allowFailure: true,
+    query: { enabled: Boolean(address && canMint) },
+  });
+
+  const selectPaymentToken = useCallback(
+    (priceUsd6: bigint) => {
+      if (!tokenBalances) return null;
+      for (let i = 0; i < ACCEPTED_TOKENS.length; i++) {
+        const t = ACCEPTED_TOKENS[i];
+        const result = tokenBalances[i];
+        if (result?.status !== "success") continue;
+        const balance = result.result as bigint;
+        const needed = normalizePrice(priceUsd6, t.decimals);
+        if (balance >= needed) return t;
+      }
+      return null;
+    },
+    [tokenBalances]
+  );
+
   const handleBackToHub = () => router.push("/play-hub");
+
+  async function handleMintVictory() {
+    if (!canMint || !address || !victoryNFTAddress || !publicClient) return;
+
+    setIsMinting(true);
+    try {
+      // 1. Get server signature
+      const res = await fetch("/api/sign-victory", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          player: address,
+          difficulty: chainDifficulty,
+          totalMoves: game.moveCount,
+          timeMs: game.elapsedMs,
+        }),
+      });
+      const payload = (await res.json()) as SignatureResponse;
+      if (!res.ok || "error" in payload) {
+        throw new Error(payload.error ?? "Could not fetch signature");
+      }
+
+      // 2. Select payment token
+      const token = selectPaymentToken(mintPriceUsd6);
+      if (!token) throw new Error("No token with sufficient balance");
+
+      const normalizedAmount = normalizePrice(mintPriceUsd6, token.decimals);
+
+      // 3. Check allowance and approve if needed
+      const allowance = await publicClient.readContract({
+        address: token.address,
+        abi: erc20Abi,
+        functionName: "allowance",
+        args: [address, victoryNFTAddress],
+      });
+
+      if ((allowance as bigint) < normalizedAmount) {
+        const approveHash = await writeContractAsync({
+          address: token.address,
+          abi: erc20Abi,
+          functionName: "approve",
+          args: [victoryNFTAddress, normalizedAmount],
+          chainId,
+          account: address,
+        });
+        await publicClient.waitForTransactionReceipt({ hash: approveHash });
+      }
+
+      // 4. Mint
+      await writeContractAsync({
+        address: victoryNFTAddress,
+        abi: victoryAbi,
+        functionName: "mintSigned",
+        args: [
+          chainDifficulty,
+          game.moveCount,
+          game.elapsedMs,
+          token.address,
+          BigInt(payload.nonce),
+          BigInt(payload.deadline),
+          payload.signature,
+        ],
+        chainId,
+        account: address,
+      });
+
+      setHasMinted(true);
+    } catch (err) {
+      console.error("Mint failed:", err);
+    } finally {
+      setIsMinting(false);
+    }
+  }
+
+  // Reset mint state when starting a new game
+  const handlePlayAgain = () => {
+    setHasMinted(false);
+    setIsMinting(false);
+    game.reset();
+  };
 
   // Difficulty selection
   if (game.status === "selecting") {
@@ -96,8 +241,12 @@ export default function ArenaPage() {
         <ArenaEndState
           status={game.status}
           isPlayerWin={isPlayerWin}
-          onPlayAgain={game.reset}
+          onPlayAgain={handlePlayAgain}
           onBackToHub={handleBackToHub}
+          onMintVictory={canMint ? () => void handleMintVictory() : undefined}
+          isMinting={isMinting}
+          hasMinted={hasMinted}
+          mintPrice={mintPriceLabel}
         />
       )}
     </main>
