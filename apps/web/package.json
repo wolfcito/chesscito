@@ -11,7 +11,8 @@
     "test:server": "rm -rf .tmp/server-tests .tmp/tsconfig.test-server.tsbuildinfo && tsc -p tsconfig.test-server.json && node --test .tmp/server-tests/lib/server/__tests__/demo-signing.test.js && rm -rf .tmp/server-tests .tmp/tsconfig.test-server.tsbuildinfo",
     "test": "npm run test:server && npm run test:game",
     "type-check": "rm -rf .next && next build >/dev/null && tsc --noEmit",
-    "art:optimize": "bash scripts/optimize-art-assets.sh"
+    "art:optimize": "bash scripts/optimize-art-assets.sh",
+    "postinstall": "bash scripts/copy-stockfish.sh"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
