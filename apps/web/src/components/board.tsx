@@ -163,7 +163,7 @@ export function Board({
                     <source srcSet={PIECE_IMG[piece.type].replace(".png", ".webp")} type="image/webp" />
                     <img
                       src={PIECE_IMG[piece.type]}
-                      alt={piece.type}
+                      alt={`White ${piece.type}`}
                       className="playhub-board-piece-img"
                     />
                   </picture>
