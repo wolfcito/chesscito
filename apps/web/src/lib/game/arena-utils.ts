@@ -26,26 +26,31 @@ export const ARENA_PIECE_IMG: Record<ChessPieceId, string> = {
  * Uses chess.js board() which returns an 8x8 grid.
  */
 export function fenToPieces(fen: string): ChessBoardPiece[] {
-  const game = new Chess(fen);
-  const board = game.board();
-  const pieces: ChessBoardPiece[] = [];
+  try {
+    const game = new Chess(fen);
+    const board = game.board();
+    const pieces: ChessBoardPiece[] = [];
 
-  for (let rank = 0; rank < 8; rank++) {
-    for (let file = 0; file < 8; file++) {
-      const cell = board[rank][file];
-      if (cell) {
-        const fileChar = String.fromCharCode(97 + file);
-        const rankNum = 8 - rank;
-        pieces.push({
-          type: PIECE_MAP[cell.type],
-          color: cell.color as PieceColor,
-          square: `${fileChar}${rankNum}`,
-        });
+    for (let rank = 0; rank < 8; rank++) {
+      for (let file = 0; file < 8; file++) {
+        const cell = board[rank][file];
+        if (cell) {
+          const fileChar = String.fromCharCode(97 + file);
+          const rankNum = 8 - rank;
+          pieces.push({
+            type: PIECE_MAP[cell.type],
+            color: cell.color as PieceColor,
+            square: `${fileChar}${rankNum}`,
+          });
+        }
       }
     }
-  }
 
-  return pieces;
+    return pieces;
+  } catch {
+    console.error("fenToPieces: invalid FEN", fen);
+    return [];
+  }
 }
 
 /**
