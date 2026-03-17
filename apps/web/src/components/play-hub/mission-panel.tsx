@@ -62,7 +62,7 @@ function PhaseFlash({ phase }: { phase: MissionPanelProps["phase"] }) {
 
   return (
     <div
-      className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-[400ms] ${fading ? "opacity-0" : "opacity-100"}`}
+      className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-400 ${fading ? "opacity-0" : "opacity-100"}`}
     >
       <div className="flex flex-col items-center gap-4 animate-in zoom-in-90 duration-300">
         <img

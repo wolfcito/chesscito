@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MISSION_BRIEFING_COPY } from "@/lib/content/editorial";
+import Link from "next/link";
+import { ARENA_COPY, MISSION_BRIEFING_COPY } from "@/lib/content/editorial";
 import type { PieceId } from "@/lib/game/types";
 
 type MissionBriefingProps = {
@@ -60,6 +61,12 @@ export function MissionBriefing({
         >
           {MISSION_BRIEFING_COPY.play}
         </button>
+        <Link
+          href="/arena"
+          className="mt-3 block text-center text-[11px] text-cyan-300/50 underline underline-offset-4 transition-colors hover:text-cyan-200/70"
+        >
+          or try {ARENA_COPY.title} vs AI
+        </Link>
       </div>
     </div>
   );
