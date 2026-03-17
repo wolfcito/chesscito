@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import type { Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
@@ -24,6 +24,8 @@ export type ChessGameState = {
   checkSquare: string | null;
   pendingPromotion: { from: string; to: string } | null;
   difficulty: ArenaDifficulty;
+  moveCount: number;
+  elapsedMs: number;
   errorMessage: string | null;
   selectSquare: (square: string) => void;
   promoteWith: (piece: "q" | "r" | "b" | "n") => void;
@@ -43,6 +45,9 @@ export function useChessGame(): ChessGameState {
   const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(null);
   const [pendingPromotion, setPendingPromotion] = useState<{ from: string; to: string } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [moveCount, setMoveCount] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const gameStartRef = useRef<number>(0);
 
   const gameRef = useRef(new Chess());
   const [fen, setFen] = useState(gameRef.current.fen());
@@ -66,6 +71,12 @@ export function useChessGame(): ChessGameState {
     return null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fen]);
+
+  useEffect(() => {
+    if (status === "checkmate" || status === "stalemate" || status === "draw" || status === "resigned") {
+      setElapsedMs(gameStartRef.current > 0 ? Date.now() - gameStartRef.current : 0);
+    }
+  }, [status]);
 
   const triggerAiMove = useCallback((currentDifficulty: ArenaDifficulty) => {
     const game = gameRef.current;
@@ -97,6 +108,7 @@ export function useChessGame(): ChessGameState {
         game.move({ from, to, promotion: isPromotion ? "q" : undefined });
         setFen(game.fen());
         setLastMove({ from, to });
+        setMoveCount(c => c + 1);
         setIsThinking(false);
 
         if (game.isCheckmate()) setStatus("checkmate");
@@ -140,6 +152,7 @@ export function useChessGame(): ChessGameState {
         game.move({ from: selectedSquare, to: square });
         setFen(game.fen());
         setLastMove({ from: selectedSquare, to: square });
+        setMoveCount(c => c + 1);
         setSelectedSquare(null);
         setLegalMoves([]);
 
@@ -167,6 +180,7 @@ export function useChessGame(): ChessGameState {
       game.move({ from: pendingPromotion.from, to: pendingPromotion.to, promotion: piece });
       setFen(game.fen());
       setLastMove({ from: pendingPromotion.from, to: pendingPromotion.to });
+      setMoveCount(c => c + 1);
       setPendingPromotion(null);
       setSelectedSquare(null);
       setLegalMoves([]);
@@ -201,6 +215,9 @@ export function useChessGame(): ChessGameState {
     setPendingPromotion(null);
     setIsThinking(false);
     setErrorMessage(null);
+    setMoveCount(0);
+    setElapsedMs(0);
+    gameStartRef.current = 0;
     setStatus("selecting");
   }, []);
 
@@ -217,6 +234,9 @@ export function useChessGame(): ChessGameState {
     setLastMove(null);
     setPendingPromotion(null);
     setErrorMessage(null);
+    setMoveCount(0);
+    setElapsedMs(0);
+    gameStartRef.current = Date.now();
     setStatus("playing");
   }, []);
 
@@ -231,6 +251,8 @@ export function useChessGame(): ChessGameState {
     checkSquare,
     pendingPromotion,
     difficulty,
+    moveCount,
+    elapsedMs,
     errorMessage,
     selectSquare,
     promoteWith,
