@@ -52,7 +52,6 @@ export type ChessBoardPiece = {
 export type ArenaDifficulty = "easy" | "medium" | "hard";
 
 export type ArenaStatus =
-  | "loading"
   | "selecting"
   | "playing"
   | "checkmate"

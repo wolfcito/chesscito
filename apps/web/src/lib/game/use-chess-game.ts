@@ -1,15 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import type { Square } from "chess.js";
+import { aiMove } from "js-chess-engine";
 import type { ArenaDifficulty, ArenaStatus, ChessBoardPiece } from "./types";
 import { fenToPieces } from "./arena-utils";
 
-type WorkerMessage =
-  | { type: "ready" }
-  | { type: "bestmove"; move: string }
-  | { type: "error"; message: string };
+const DIFFICULTY_LEVEL: Record<ArenaDifficulty, number> = {
+  easy: 1,
+  medium: 3,
+  hard: 5,
+};
 
 export type ChessGameState = {
   fen: string;
@@ -43,7 +45,6 @@ export function useChessGame(): ChessGameState {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const gameRef = useRef(new Chess());
-  const workerRef = useRef<Worker | null>(null);
   const [fen, setFen] = useState(gameRef.current.fen());
 
   const pieces = useMemo(() => fenToPieces(fen), [fen]);
@@ -66,107 +67,46 @@ export function useChessGame(): ChessGameState {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fen]);
 
-  const handleAiMove = useCallback((moveStr: string) => {
+  const triggerAiMove = useCallback((currentDifficulty: ArenaDifficulty) => {
     const game = gameRef.current;
-    const from = moveStr.slice(0, 2);
-    const to = moveStr.slice(2, 4);
-    const promotion = moveStr.length > 4 ? moveStr[4] as "q" | "r" | "b" | "n" : undefined;
-
-    try {
-      game.move({ from, to, promotion });
-      setFen(game.fen());
-      setLastMove({ from, to });
-      setIsThinking(false);
-
-      if (game.isCheckmate()) setStatus("checkmate");
-      else if (game.isStalemate()) setStatus("stalemate");
-      else if (game.isDraw()) setStatus("draw");
-    } catch {
-      console.error("Invalid AI move:", moveStr);
-      setIsThinking(false);
-    }
-  }, []);
-
-  const triggerAiMove = useCallback(() => {
-    const worker = workerRef.current;
-    const game = gameRef.current;
-    if (!worker || game.turn() !== "b") return;
+    if (game.turn() !== "b") return;
 
     setIsThinking(true);
-    worker.postMessage({
-      type: "search",
-      fen: game.fen(),
-      difficulty,
-    });
-  }, [difficulty]);
 
-  // Initialize worker once when status enters "loading".
-  // We use a ref to track whether we've already spawned a worker so the
-  // effect can depend on [status] without killing the worker when status
-  // transitions from "loading" → "playing".
-  const workerSpawnedRef = useRef(false);
-
-  useEffect(() => {
-    if (status !== "loading" || workerSpawnedRef.current) return;
-    workerSpawnedRef.current = true;
-
-    const worker = new Worker(
-      new URL("./arena-worker.ts", import.meta.url),
-      { type: "module" }
-    );
-
-    // Timeout: if engine doesn't become ready in 15s, show error
-    const loadTimeout = setTimeout(() => {
-      if (!workerRef.current) {
-        worker.terminate();
-        workerSpawnedRef.current = false;
-        setErrorMessage("Your browser doesn't support the AI engine");
-        setStatus("selecting");
-      }
-    }, 15_000);
-
-    worker.onmessage = (e: MessageEvent<WorkerMessage>) => {
-      const msg = e.data;
-      switch (msg.type) {
-        case "ready":
-          clearTimeout(loadTimeout);
-          workerRef.current = worker;
-          setStatus("playing");
-          break;
-        case "bestmove":
-          handleAiMove(msg.move);
-          break;
-        case "error":
-          console.error("Stockfish error:", msg.message);
+    // Use setTimeout to yield to the UI before computing
+    setTimeout(() => {
+      try {
+        const result = aiMove(game.fen(), DIFFICULTY_LEVEL[currentDifficulty]);
+        const entries = Object.entries(result);
+        if (entries.length === 0) {
           setIsThinking(false);
-          setErrorMessage(msg.message);
-          // If still loading (engine init failed), go back to selector
-          setStatus((prev) => prev === "loading" ? "selecting" : prev);
-          break;
+          return;
+        }
+
+        const [fromUpper, toUpper] = entries[0];
+        const from = fromUpper.toLowerCase();
+        const to = toUpper.toLowerCase();
+
+        // Detect AI pawn promotion
+        const movingPiece = game.get(from as Square);
+        const targetRank = Number(to[1]);
+        const isPromotion = movingPiece?.type === "p" &&
+          ((movingPiece.color === "w" && targetRank === 8) ||
+           (movingPiece.color === "b" && targetRank === 1));
+
+        game.move({ from, to, promotion: isPromotion ? "q" : undefined });
+        setFen(game.fen());
+        setLastMove({ from, to });
+        setIsThinking(false);
+
+        if (game.isCheckmate()) setStatus("checkmate");
+        else if (game.isStalemate()) setStatus("stalemate");
+        else if (game.isDraw()) setStatus("draw");
+      } catch (err) {
+        console.error("AI move error:", err);
+        setIsThinking(false);
       }
-    };
-
-    worker.onerror = (err) => {
-      console.error("Worker crashed", err);
-      clearTimeout(loadTimeout);
-      worker.terminate();
-      workerSpawnedRef.current = false;
-      setIsThinking(false);
-      setErrorMessage("AI disconnected");
-      setStatus("selecting");
-    };
-
-    worker.postMessage({ type: "init" });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
-
-  // Cleanup worker on unmount only
-  useEffect(() => {
-    return () => {
-      workerRef.current?.terminate();
-      workerRef.current = null;
-      workerSpawnedRef.current = false;
-    };
+    }, 50);
   }, []);
 
   const selectSquare = useCallback((square: string) => {
@@ -206,7 +146,7 @@ export function useChessGame(): ChessGameState {
         if (game.isCheckmate()) setStatus("checkmate");
         else if (game.isStalemate()) setStatus("stalemate");
         else if (game.isDraw()) setStatus("draw");
-        else triggerAiMove();
+        else triggerAiMove(difficulty);
       } catch {
         setSelectedSquare(null);
         setLegalMoves([]);
@@ -217,7 +157,7 @@ export function useChessGame(): ChessGameState {
     // Deselect
     setSelectedSquare(null);
     setLegalMoves([]);
-  }, [status, isThinking, selectedSquare, legalMoves, triggerAiMove]);
+  }, [status, isThinking, selectedSquare, legalMoves, triggerAiMove, difficulty]);
 
   const promoteWith = useCallback((piece: "q" | "r" | "b" | "n") => {
     if (!pendingPromotion) return;
@@ -234,13 +174,13 @@ export function useChessGame(): ChessGameState {
       if (game.isCheckmate()) setStatus("checkmate");
       else if (game.isStalemate()) setStatus("stalemate");
       else if (game.isDraw()) setStatus("draw");
-      else triggerAiMove();
+      else triggerAiMove(difficulty);
     } catch {
       setPendingPromotion(null);
       setSelectedSquare(null);
       setLegalMoves([]);
     }
-  }, [pendingPromotion, triggerAiMove]);
+  }, [pendingPromotion, triggerAiMove, difficulty]);
 
   const cancelPromotion = useCallback(() => {
     if (!pendingPromotion) return;
@@ -253,10 +193,6 @@ export function useChessGame(): ChessGameState {
   }, [pendingPromotion]);
 
   const reset = useCallback(() => {
-    // Terminate old worker so a fresh one is created on next startGame
-    workerRef.current?.terminate();
-    workerRef.current = null;
-    workerSpawnedRef.current = false;
     gameRef.current = new Chess();
     setFen(gameRef.current.fen());
     setSelectedSquare(null);
@@ -281,7 +217,7 @@ export function useChessGame(): ChessGameState {
     setLastMove(null);
     setPendingPromotion(null);
     setErrorMessage(null);
-    setStatus("loading");
+    setStatus("playing");
   }, []);
 
   return {
