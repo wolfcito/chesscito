@@ -10,7 +10,7 @@ import {
   movePiece,
 } from "@/lib/game/board";
 import type { BoardPosition, PieceId } from "@/lib/game/types";
-import { interpolateQuad, type Point } from "@/lib/game/board-geometry";
+import { cellGeometry, cellCenter } from "@/lib/game/board-geometry";
 
 const PIECE_IMG: Record<PieceId, string> = {
   rook:   "/art/piece-rook.png",
@@ -115,28 +115,7 @@ export function Board({
             <div className="playhub-board-hitgrid" role="grid" aria-label="Chess board">
               {squares.map((square) =>
                 (() => {
-                    const row = 7 - square.rank;
-                    const col = square.file;
-                    const u0 = col / 8;
-                    const u1 = (col + 1) / 8;
-                    const v0 = row / 8;
-                    const v1 = (row + 1) / 8;
-                    const p00 = interpolateQuad(u0, v0);
-                    const p10 = interpolateQuad(u1, v0);
-                    const p01 = interpolateQuad(u0, v1);
-                    const p11 = interpolateQuad(u1, v1);
-                    const minX = Math.min(p00.x, p10.x, p01.x, p11.x);
-                    const maxX = Math.max(p00.x, p10.x, p01.x, p11.x);
-                    const minY = Math.min(p00.y, p10.y, p01.y, p11.y);
-                    const maxY = Math.max(p00.y, p10.y, p01.y, p11.y);
-                    const cW = maxX - minX || 0.01;
-                    const cH = maxY - minY || 0.01;
-
-                    function relPt(pt: Point) {
-                      return `${(((pt.x - minX) / cW) * 100).toFixed(1)}% ${(((pt.y - minY) / cH) * 100).toFixed(1)}%`;
-                    }
-
-                    const clipPath = `polygon(${relPt(p00)}, ${relPt(p10)}, ${relPt(p11)}, ${relPt(p01)})`;
+                    const geo = cellGeometry(square.file, square.rank);
 
                     return (
                       <button
@@ -146,11 +125,11 @@ export function Board({
                         aria-label={`Square ${square.label}`}
                         onClick={() => handleSquarePress(square.label)}
                         style={{
-                          left: `${minX}%`,
-                          top: `${minY}%`,
-                          width: `${cW}%`,
-                          height: `${cH}%`,
-                          clipPath,
+                          left: `${geo.left}%`,
+                          top: `${geo.top}%`,
+                          width: `${geo.width}%`,
+                          height: `${geo.height}%`,
+                          clipPath: geo.clipPath,
                         }}
                         className={[
                           "playhub-board-cell",
@@ -171,9 +150,7 @@ export function Board({
                 )}
               {/* Floating piece layer — same element moves with transition */}
               {(() => {
-                const row = 7 - piece.position.rank;
-                const col = piece.position.file;
-                const center = interpolateQuad((col + 0.5) / 8, (row + 0.5) / 8);
+                const center = cellCenter(piece.position.file, piece.position.rank);
                 return (
                   <picture
                     className="playhub-board-piece-float"
