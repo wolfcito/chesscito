@@ -111,8 +111,8 @@
     background-color: #0b1220;
     background-image: var(--playhub-game-bg);
     background-position: center top;
-    /* 1024/826 = safe-area fills viewport width; larger screens reveal bleed area */
-    background-size: calc(1024 / 826 * 100%) auto;
+    /* Cap bg to mobile width so it doesn't stretch on desktop */
+    background-size: min(calc(1024 / 826 * 100%), 484px) auto;
     background-repeat: no-repeat;
     background-attachment: scroll;
     min-height: 100vh;
