@@ -2,11 +2,11 @@
 
 export type Point = { x: number; y: number };
 
-// Corners calibrated from bg-with-grid.png pixel analysis (% of 1011×934 canvas)
-export const BOARD_TOP_LEFT: Point = { x: 11.6, y: 1.4 };
-export const BOARD_TOP_RIGHT: Point = { x: 88.2, y: 1.4 };
-export const BOARD_BOTTOM_LEFT: Point = { x: 0.1, y: 98.2 };
-export const BOARD_BOTTOM_RIGHT: Point = { x: 99.2, y: 98.2 };
+// Corners calibrated from new-board.png pixel analysis (% of 1024×1024 canvas)
+export const BOARD_TOP_LEFT: Point = { x: 12.0, y: 5.5 };
+export const BOARD_TOP_RIGHT: Point = { x: 88.0, y: 5.5 };
+export const BOARD_BOTTOM_LEFT: Point = { x: 0.5, y: 91.0 };
+export const BOARD_BOTTOM_RIGHT: Point = { x: 99.5, y: 91.0 };
 
 export function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;

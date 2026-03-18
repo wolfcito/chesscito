@@ -252,7 +252,7 @@
     position: relative;
     margin: 0 auto;
     width: min(100%, 23.5rem);
-    aspect-ratio: 1011 / 934;
+    aspect-ratio: 1 / 1;
     background-image: var(--playhub-board-bg);
     background-position: center;
     background-size: contain;

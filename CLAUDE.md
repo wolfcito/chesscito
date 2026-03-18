@@ -18,7 +18,7 @@ Enseña movimientos de piezas de ajedrez con mecánicas gamificadas on-chain.
 ## Arquitectura de tablero
 - Imagen del tablero: `apps/web/public/art/chesscito-board.png`
   - Vista **plana/ortográfica** desde arriba (8x8 cuadros uniformes)
-  - Aspect ratio: 1011/934
+  - Aspect ratio: 1/1 (1024×1024)
 - Componente: `apps/web/src/components/board.tsx`
 - Hit-grid: `.playhub-board-hitgrid` con `inset: 4.9% 4.4% 3.6% 4.6%`
 - Pieza actual: Torre (♖) — lógica en `apps/web/src/lib/game/board.ts`
