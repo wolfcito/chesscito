@@ -73,6 +73,7 @@ export function ArenaEndState({
         moves={moves}
         elapsedMs={elapsedMs}
         difficulty={difficulty}
+        isCheckmate={status === "checkmate"}
         onPlayAgain={onPlayAgain}
         onBackToHub={onBackToHub}
         onMintVictory={onMintVictory}

@@ -230,11 +230,14 @@ export const VICTORY_MINT_COPY = {
 } as const;
 
 export const VICTORY_CELEBRATION_COPY = {
-  title: "Victory!",
+  title: "Victory",
+  performanceLine: (moves: number, time: string) =>
+    `Solved in ${moves} moves — ${time}`,
+  performanceLineCheckmate: (moves: number, time: string) =>
+    `Checkmate in ${moves} moves — ${time}`,
   mintedTitle: (id: number | bigint) => `Victory #${id} Minted!`,
   mintedTitleFallback: "Victory Minted!",
   mintedSubtitle: "on Celo blockchain",
-  shareWin: "Share Win",
   shareVictory: "Share Victory",
   mintingMessage: "Minting your victory...",
   copiedToast: "Copied!",
@@ -242,6 +245,7 @@ export const VICTORY_CELEBRATION_COPY = {
     `♟ Checkmate in ${moves} moves. Can you beat that?\nPlay Chesscito on Celo 👉 ${url}`,
   shareTextMinted: (moves: number, tokenId: bigint | number, url: string) =>
     `♟ Checkmate in ${moves} moves. Can you beat that?\nVictory #${tokenId} minted on-chain 👉 ${url}`,
+  stats: { difficulty: "level", moves: "moves", time: "time" },
 } as const;
 
 export const ARENA_COPY = {
