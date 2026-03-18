@@ -48,7 +48,7 @@ export function Board({
 }: BoardProps) {
   const [piece, setPiece] = useState(() => makePiece(pieceType, startPosition));
   const [selectedPosition, setSelectedPosition] = useState<BoardPosition | null>(
-    mode === "tutorial" ? makePiece(pieceType, startPosition).position : null
+    startPosition
   );
   const [movesCount, setMovesCount] = useState(0);
 
@@ -59,7 +59,7 @@ export function Board({
   // to avoid false-positive re-runs when the parent creates a new object with the same coordinates.
   useEffect(() => {
     setPiece(makePiece(pieceType, startPosition));
-    setSelectedPosition(mode === "tutorial" ? startPosition : null);
+    setSelectedPosition(startPosition);
     setMovesCount(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pieceType, startPosition.file, startPosition.rank, mode]);
