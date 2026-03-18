@@ -6,7 +6,10 @@ import { WalletProvider } from "@/components/wallet-provider"
 export const metadata: Metadata = {
   title: 'chesscito',
   description: 'MiniPay MiniApp for playful cognitive enrichment through pre-chess challenges.',
-  icons: { icon: '/art/favicon-wolf.png' },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     title: 'chesscito',
     description: 'Learn chess piece movements with gamified on-chain challenges on Celo.',
