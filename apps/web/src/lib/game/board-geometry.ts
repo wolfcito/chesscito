@@ -3,21 +3,23 @@
 export type Point = { x: number; y: number };
 
 // Corners calibrated from chesscito-board.png grid-line analysis (% of 1024x1024 canvas)
-// Horizontal grid lines at y: 5.6%, 15.0%, 24.7%, 34.8%, 45.3%, 56.1%, 67.1%, 79.4%, 90.6%
+// Method: grayscale pixel scan -> horizontal brightness minima -> per-row vertical
+// line regression (6-point linear fit per column, max residual <4px)
+// Horizontal grid lines at y: 5.6%, 14.7%, 24.4%, 34.5%, 45.1%, 55.8%, 67.0%, 79.1%, 91.2%
 // Vertical edges converge toward top (perspective trapezoid)
-export const BOARD_TOP_LEFT: Point = { x: 9.0, y: 6.8 };
-export const BOARD_TOP_RIGHT: Point = { x: 89.2, y: 6.8 };
-export const BOARD_BOTTOM_LEFT: Point = { x: 0.0, y: 90.6 };
-export const BOARD_BOTTOM_RIGHT: Point = { x: 99.6, y: 90.6 };
+export const BOARD_TOP_LEFT: Point = { x: 9.4, y: 5.6 };
+export const BOARD_TOP_RIGHT: Point = { x: 89.5, y: 5.6 };
+export const BOARD_BOTTOM_LEFT: Point = { x: 0.0, y: 91.2 };
+export const BOARD_BOTTOM_RIGHT: Point = { x: 99.2, y: 91.2 };
 
 export function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
 // Gamma > 1 compresses top rows to match board perspective foreshortening
-// Measured row heights (top→bottom): 97, 99, 103, 108, 110, 113, 126, 115 px
-// Best-fit gamma via least-squares: 1.08
-export const BOARD_V_GAMMA = 1.08;
+// Measured row heights (top->bottom): 94, 99, 103, 109, 109, 115, 124, 124 px
+// Best-fit gamma via least-squares: 1.10
+export const BOARD_V_GAMMA = 1.10;
 
 export function interpolateQuad(u: number, v: number): Point {
   const vg = Math.pow(v, BOARD_V_GAMMA);
