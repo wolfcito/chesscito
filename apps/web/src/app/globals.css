@@ -478,8 +478,8 @@
   }
 
   .arena-piece-img {
-    height: clamp(28px, 9vw, 42px);
-    width: auto;
+    width: clamp(28px, 9vw, 42px);
+    height: auto;
     object-fit: contain;
   }
 
