@@ -539,13 +539,69 @@
   }
 
   .chesscito-footer {
-    background: rgba(2, 12, 24, 0.55);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+    background: rgba(2, 12, 24, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.35);
     border-radius: 20px 20px 0 0;
     padding: 10px 12px 0;
+  }
+
+  /* ── Dock navigation ── */
+  .chesscito-dock {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 6px 12px calc(4px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(160, 205, 225, 0.06);
+  }
+
+  .chesscito-dock-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Consistent framing for all dock trigger buttons */
+  .chesscito-dock-item > button,
+  .chesscito-dock-item > [role="button"] {
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 200ms, border-color 200ms;
+  }
+
+  .chesscito-dock-item > button:active,
+  .chesscito-dock-item > [role="button"]:active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(160, 205, 225, 0.15);
+  }
+
+  /* Center tab — primary focus with glow pill */
+  .chesscito-dock-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    overflow: hidden;
+    width: 3.5rem;
+    height: 3rem;
+    border-radius: 16px;
+    background: rgba(20, 184, 166, 0.12);
+    border: 1px solid rgba(20, 184, 166, 0.2);
+    color: rgba(160, 225, 220, 0.8);
+    box-shadow: 0 0 12px rgba(20, 184, 166, 0.1);
+    transition: all 200ms;
+  }
+
+  .chesscito-dock-center:active {
+    background: rgba(20, 184, 166, 0.2);
+    box-shadow: 0 0 16px rgba(20, 184, 166, 0.2);
   }
 
   .chesscito-hud-strip {
