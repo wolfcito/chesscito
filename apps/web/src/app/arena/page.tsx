@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useAccount,
@@ -49,6 +49,7 @@ export default function ArenaPage() {
   });
   const [shareStatus, setShareStatus] = useState<ShareStatus>("locked");
   const [claimError, setClaimError] = useState<string | null>(null);
+  const claimingRef = useRef(false);
 
   const isEndState = ["checkmate", "stalemate", "draw", "resigned"].includes(game.status);
   const isPlayerWin = game.status === "checkmate" && game.fen.includes(" b ");
@@ -96,6 +97,8 @@ export default function ArenaPage() {
 
   async function handleClaimVictory() {
     if (!canClaim || !address || !victoryNFTAddress || !publicClient) return;
+    if (claimingRef.current) return; // Prevent double-click
+    claimingRef.current = true;
 
     setClaimPhase("claiming");
     setClaimError(null);
@@ -191,20 +194,29 @@ export default function ArenaPage() {
       setClaimError(null);
     } catch (err) {
       console.error("Claim failed:", err);
-      const msg = err instanceof Error ? err.message : "Claim failed";
-      const isUserCancel = /user (rejected|denied|cancelled)|ACTION_REJECTED/i.test(msg);
+      const raw = err instanceof Error ? err.message : "Claim failed";
+      const isUserCancel = /user (rejected|denied|cancelled)|ACTION_REJECTED/i.test(raw);
       if (isUserCancel) {
-        // User cancelled — go back to ready, not error
         setClaimPhase("ready");
+        claimingRef.current = false;
         return;
       }
-      setClaimError(msg);
+      // Sanitize error — map known patterns to user-friendly messages
+      const friendly = /insufficient/i.test(raw) ? "Insufficient balance"
+        : /network/i.test(raw) ? "Network error — check your connection"
+        : /timeout/i.test(raw) ? "Request timed out — try again"
+        : /revert/i.test(raw) ? "Transaction reverted"
+        : "Something went wrong — try again";
+      setClaimError(friendly);
       setClaimPhase("error");
+    } finally {
+      claimingRef.current = false;
     }
   }
 
   // Reset claim state when starting a new game
   const handlePlayAgain = () => {
+    claimingRef.current = false;
     setClaimPhase("ready");
     setClaimData({ tokenId: null, claimTxHash: null, shareCardUrl: null, shareLinkUrl: null });
     setShareStatus("locked");

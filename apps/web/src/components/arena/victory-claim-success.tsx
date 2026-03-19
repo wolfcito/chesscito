@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ARENA_COPY, SHARE_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
+import { StatCard } from "@/components/arena/stat-card";
 import { formatTime } from "@/lib/game/arena-utils";
 import type { ClaimData, ShareStatus } from "./arena-end-state";
 import sparklesData from "@/../public/animations/sparkles.json";
@@ -12,22 +13,11 @@ type Props = {
   moves: number;
   elapsedMs: number;
   difficulty: string;
-  isCheckmate?: boolean;
   onPlayAgain: () => void;
   onBackToHub: () => void;
   claimData: ClaimData;
   shareStatus: ShareStatus;
 };
-
-function StatCard({ icon, value, label }: { icon: string; value: string; label: string }) {
-  return (
-    <div className="flex flex-1 flex-col items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5">
-      <span className="text-sm leading-none opacity-60">{icon}</span>
-      <span className="text-base font-bold leading-none text-white/90">{value}</span>
-      <span className="text-[0.6rem] uppercase tracking-widest text-cyan-200/40">{label}</span>
-    </div>
-  );
-}
 
 function SocialButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
@@ -45,7 +35,6 @@ export function VictoryClaimSuccess({
   moves,
   elapsedMs,
   difficulty,
-  isCheckmate = true,
   onPlayAgain,
   onBackToHub,
   claimData,
@@ -53,9 +42,6 @@ export function VictoryClaimSuccess({
 }: Props) {
   const [copied, setCopied] = useState(false);
   const time = formatTime(elapsedMs);
-  const performanceLine = isCheckmate
-    ? VICTORY_CELEBRATION_COPY.performanceLineCheckmate(moves, time)
-    : VICTORY_CELEBRATION_COPY.performanceLine(moves, time);
 
   const shareText = claimData.tokenId != null
     ? VICTORY_CELEBRATION_COPY.shareTextClaimed(moves, claimData.tokenId, SHARE_COPY.url)
@@ -81,12 +67,12 @@ export function VictoryClaimSuccess({
   function handleShareToX() {
     const text = encodeURIComponent(shareText);
     const url = encodeURIComponent(shareUrl);
-    window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`, "_blank", "noopener");
+    window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`, "_blank", "noopener,noreferrer");
   }
 
   function handleShareToWhatsApp() {
     const text = encodeURIComponent(`${shareText}\n${shareUrl}`);
-    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener");
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
   }
 
   async function handleCopyLink() {

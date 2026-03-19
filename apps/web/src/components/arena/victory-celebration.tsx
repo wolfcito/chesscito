@@ -2,6 +2,7 @@
 
 import { ARENA_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
+import { StatCard } from "@/components/arena/stat-card";
 import { formatTime } from "@/lib/game/arena-utils";
 import sparklesData from "@/../public/animations/sparkles.json";
 import trophyData from "@/../public/animations/trophy.json";
@@ -16,16 +17,6 @@ type Props = {
   onClaimVictory?: () => void;
   claimPrice?: string;
 };
-
-function StatCard({ icon, value, label }: { icon: string; value: string; label: string }) {
-  return (
-    <div className="flex flex-1 flex-col items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5">
-      <span className="text-sm leading-none opacity-60">{icon}</span>
-      <span className="text-base font-bold leading-none text-white/90">{value}</span>
-      <span className="text-[0.6rem] uppercase tracking-widest text-cyan-200/40">{label}</span>
-    </div>
-  );
-}
 
 /** Locked teaser showing what the user unlocks on claim */
 function VictoryCardTeaser({ moves, time, difficulty }: { moves: number; time: string; difficulty: string }) {
@@ -43,11 +34,11 @@ function VictoryCardTeaser({ moves, time, difficulty }: { moves: number; time: s
           <span className="text-lg">🏆</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-white/80">Checkmate in {moves} moves</p>
+          <p className="text-xs font-semibold text-white/80">{VICTORY_CLAIM_COPY.teaserCheckmate(moves)}</p>
           <p className="text-[0.6rem] text-cyan-100/40">{difficulty.toUpperCase()} — {time}</p>
         </div>
         <div className="shrink-0 rounded-lg bg-white/[0.04] px-2 py-1">
-          <span className="text-[0.55rem] font-bold text-cyan-100/30">SHARE</span>
+          <span className="text-[0.55rem] font-bold text-cyan-100/30">{VICTORY_CLAIM_COPY.teaserShare}</span>
         </div>
       </div>
     </div>

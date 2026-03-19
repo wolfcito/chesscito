@@ -226,6 +226,8 @@ export const VICTORY_CLAIM_COPY = {
   claimHelper: "Claim your onchain victory and unlock your share card",
   claimValueHint: (price: string) => `Unlock your share card \u2022 ${price}`,
   teaserLabel: "Unlock on claim",
+  teaserCheckmate: (moves: number) => `Checkmate in ${moves} moves`,
+  teaserShare: "SHARE",
   claiming: "Claiming Victory...",
   claimProgress1: "Recording your result onchain",
   claimProgress2: "Preparing your victory card",
