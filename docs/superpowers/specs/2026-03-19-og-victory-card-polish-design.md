@@ -27,9 +27,10 @@ Elevate the existing OG victory card (`/api/og/victory/[id]`) from functional-mi
 
 - Chess king silhouette as inline SVG path
 - Size: ~280px height
-- Position: right-center, vertically centered
+- Position: right-center, vertically centered, using `position: absolute`
 - Opacity: `0.04–0.05` (must not compete with text, even in small previews)
 - Purpose: ambient texture reinforcing chess identity
+- **Absolute positioning rule**: `position: absolute` is allowed here because the king is a **non-critical decorative element** — if Satori misrenders it, nothing breaks. Critical content (headline, stats, challenge) must always stay in the normal flex flow.
 
 ### Content Layout (top to bottom, centered)
 
@@ -41,7 +42,7 @@ Elevate the existing OG victory card (`/api/og/victory/[id]`) from functional-mi
 - Color: `#5eead4` (teal)
 - Letter-spacing: `0.08em`
 - Text-shadow: `0 0 30px rgba(94,234,212,0.20)` — subtle glow, must NOT soften text edges. Keep blur moderate and opacity low so letterforms stay crisp.
-- Always shows "CHECKMATE" — all minted victories are wins, and the contract has no end-reason field
+- Always shows "CHECKMATE" — **product headline choice**, not inferred game-state truth. All minted victories are wins and the contract has no end-reason field. This is a deliberate branding decision; if future game modes introduce non-checkmate wins (timeout, resignation), this headline should be revisited as a product decision, not assumed correct.
 
 #### 2. Separator
 
@@ -120,12 +121,24 @@ Nothing may compete with levels 1–3. Levels 4–6 are informational only.
 
 ## Thumbnail-Proof Criteria
 
-The card must pass this test: **shrink to 300px wide — can you still read the headline and performance line?**
+### Mathematical check
+
+Shrink to 300px wide — can you still read the headline and performance line?
 
 - Headline: Cinzel 72px at 1200px = effective ~18px at 300px thumbnail. Readable.
 - Performance: 38px at 1200px = effective ~9.5px at 300px. Tight but readable with bold weight.
 - Challenge line: 28px = ~7px at thumbnail. Readable as amber accent.
 - Everything below challenge line is bonus context at thumbnail size.
+
+### Real-world validation (mandatory before merge)
+
+Math alone is not enough. The card must pass manual testing on actual platforms:
+
+- [ ] **WhatsApp**: send a victory link in a chat, verify the preview card looks strong and legible
+- [ ] **X (Twitter)**: paste the URL in a draft tweet, verify `summary_large_image` card renders correctly
+- [ ] **Facebook/Messenger**: optional but recommended — paste URL and check preview
+
+If the card looks weak or illegible on any platform, adjust before merging — regardless of what the math says.
 
 ## Route Hardening
 
@@ -167,7 +180,7 @@ When the contract call fails (RPC down, token doesn't exist, network error), do 
 - Text: "Victory not found" (centered, muted cyan, 36px)
 - Subtext: "This victory may not exist yet" (16px, muted)
 - Brand footer: same as success card
-- Return HTTP 200 (so crawlers don't retry) but with `Cache-Control: no-store` (so stale data doesn't persist)
+- Return **HTTP 404** with `Cache-Control: no-store` — semantically correct, and retry control is handled by cache headers, not by faking a 200
 
 This prevents fabricated stats from being indexed by social crawlers.
 
