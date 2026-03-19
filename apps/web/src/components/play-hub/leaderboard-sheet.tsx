@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BadgeCheck } from "lucide-react";
 
 import {
   Sheet,
@@ -78,9 +79,7 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
               <p className="text-sm text-slate-300">
                 {row.player}
                 {row.isVerified && (
-                  <span className="ml-1.5 inline-block text-emerald-400" title={PASSPORT_COPY.verifiedLabel}>
-                    ✓
-                  </span>
+                  <span title={PASSPORT_COPY.verifiedLabel}><BadgeCheck className="ml-1.5 inline-block h-3.5 w-3.5 text-emerald-400" /></span>
                 )}
               </p>
               <p className="text-sm font-semibold text-cyan-100">{row.score}</p>

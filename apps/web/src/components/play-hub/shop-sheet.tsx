@@ -1,3 +1,4 @@
+import { CheckCircle2, XCircle, CircleDashed } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -51,8 +52,14 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
               <p className="mt-2 text-sm text-slate-200">
                 {item.configured ? `${formatUnits(item.onChainPrice, 6)} USDC` : SHOP_SHEET_COPY.status.notConfigured}
               </p>
-              <p className="text-xs text-slate-400">
-                {item.configured ? (item.enabled ? SHOP_SHEET_COPY.status.available : SHOP_SHEET_COPY.status.unavailable) : SHOP_SHEET_COPY.status.unavailable}
+              <p className="flex items-center gap-1 text-xs">
+                {item.configured && item.enabled ? (
+                  <><CheckCircle2 className="h-3 w-3 text-emerald-400" /><span className="text-emerald-400">{SHOP_SHEET_COPY.status.available}</span></>
+                ) : item.configured ? (
+                  <><XCircle className="h-3 w-3 text-red-400" /><span className="text-red-400">{SHOP_SHEET_COPY.status.unavailable}</span></>
+                ) : (
+                  <><CircleDashed className="h-3 w-3 text-slate-500" /><span className="text-slate-500">{SHOP_SHEET_COPY.status.unavailable}</span></>
+                )}
               </p>
               <button
                 type="button"

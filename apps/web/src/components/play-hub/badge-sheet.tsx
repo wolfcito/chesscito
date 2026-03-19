@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -104,7 +105,7 @@ function BadgeCard({
       <div className="shrink-0">
         {isClaimed ? (
           <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400">
-            <span aria-hidden="true">✓</span> {BADGE_SHEET_COPY.owned}
+            <Check className="h-3.5 w-3.5" aria-hidden="true" /> {BADGE_SHEET_COPY.owned}
           </span>
         ) : isClaimable ? (
           <button

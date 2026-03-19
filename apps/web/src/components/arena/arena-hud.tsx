@@ -1,5 +1,6 @@
 "use client";
 
+import { Brain } from "lucide-react";
 import { ARENA_COPY } from "@/lib/content/editorial";
 import type { ArenaDifficulty } from "@/lib/game/types";
 
@@ -32,7 +33,8 @@ export function ArenaHud({ difficulty, isThinking, onBack }: Props) {
       </button>
       <span aria-live="polite" className="text-xs">
         {isThinking && (
-          <span className="animate-pulse text-amber-300/90 tracking-wide">
+          <span className="flex items-center gap-1.5 animate-pulse text-amber-300/90 tracking-wide">
+            <Brain className="h-3.5 w-3.5" />
             {ARENA_COPY.aiThinking}
           </span>
         )}
