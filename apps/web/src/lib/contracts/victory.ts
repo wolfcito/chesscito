@@ -1,6 +1,24 @@
 export const victoryAbi = [
   {
     type: "function",
+    stateMutability: "view",
+    name: "victories",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [
+      { name: "difficulty", type: "uint8" },
+      { name: "totalMoves", type: "uint16" },
+      { name: "timeMs", type: "uint32" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    name: "ownerOf",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "address" }],
+  },
+  {
+    type: "function",
     stateMutability: "nonpayable",
     name: "mintSigned",
     inputs: [

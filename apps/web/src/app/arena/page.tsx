@@ -219,23 +219,17 @@ export default function ArenaPage() {
         }
       }
 
-      // 6. Build share card URL from claim data
-      const timeStr = formatTime(game.elapsedMs);
-      const playerShort = `${address.slice(0, 6)}...${address.slice(-4)}`;
-      const ogParams = new URLSearchParams({
-        moves: String(game.moveCount),
-        time: timeStr,
-        difficulty: game.difficulty.toUpperCase(),
-        player: playerShort,
-      });
+      // 6. Build victory URL + OG image URL
       const origin = typeof window !== "undefined" ? window.location.origin : "";
-      const shareCardUrl = `${origin}/api/og/victory?${ogParams}`;
+      const victoryId = extractedTokenId ? String(extractedTokenId) : claimHash.slice(0, 10);
+      const victoryUrl = `${origin}/victory/${victoryId}`;
+      const ogImageUrl = `${origin}/api/og/victory/${victoryId}`;
 
       setClaimData({
         tokenId: extractedTokenId,
         claimTxHash: claimHash,
-        shareCardUrl,
-        shareLinkUrl: null,
+        shareCardUrl: ogImageUrl,
+        shareLinkUrl: victoryUrl,
       });
       setShareStatus("ready"); // For now, share is immediately ready post-claim
       setClaimPhase("success");
