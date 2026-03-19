@@ -26,10 +26,7 @@ const client = contractAddress
   ? createPublicClient({ chain: celo, transport: http() })
   : null;
 
-const CINZEL_FONT_URL = new URL(
-  "../../../../../assets/fonts/Cinzel-Bold.ttf",
-  import.meta.url,
-);
+const FONT_PATH = "/fonts/Cinzel-Bold.ttf";
 
 // R3: error card — "Victory not found" with 404 + no-store
 function errorCard() {
@@ -64,7 +61,7 @@ function errorCard() {
   );
 }
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   // R1: input validation
   const raw = params.id;
   if (!raw || !/^\d{1,78}$/.test(raw)) {
@@ -76,10 +73,11 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     return errorCard();
   }
 
-  // Font loading — graceful fallback to serif if fetch fails
+  // Font loading — fetch from public/ via HTTP (file:// not supported in edge runtime)
   let cinzelData: ArrayBuffer | null = null;
   try {
-    const res = await fetch(CINZEL_FONT_URL);
+    const fontUrl = new URL(FONT_PATH, req.url);
+    const res = await fetch(fontUrl);
     if (!res.ok) throw new Error(`Font fetch ${res.status}`);
     cinzelData = await res.arrayBuffer();
   } catch {
@@ -157,8 +155,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
           style={{
             position: "absolute",
             right: 100,
-            top: "50%",
-            transform: "translateY(-50%)",
+            top: 147,
             opacity: 0.045,
           }}
         />
