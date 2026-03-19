@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Play, ArrowLeft } from "lucide-react";
 import { ARENA_COPY } from "@/lib/content/editorial";
 import type { ArenaDifficulty } from "@/lib/game/types";
 
@@ -57,14 +58,14 @@ export function DifficultySelector({ selected, onSelect, onStart }: Props) {
         onClick={onStart}
         className="mt-1 w-full max-w-[320px] rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 py-3.5 font-bold text-white shadow-[0_0_24px_rgba(34,211,238,0.25)] transition-all hover:shadow-[0_0_32px_rgba(34,211,238,0.4)] active:scale-[0.97]"
       >
-        ▶ {ARENA_COPY.startMatch}
+        <Play size={18} className="inline -mt-0.5" fill="currentColor" /> {ARENA_COPY.startMatch}
       </button>
 
       <Link
         href="/play-hub"
         className="mt-1 text-sm text-white/35 transition-colors hover:text-white/55"
       >
-        ← {ARENA_COPY.backToHub}
+        <ArrowLeft size={14} className="inline -mt-0.5" /> {ARENA_COPY.backToHub}
       </Link>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { RotateCcw, Trophy } from "lucide-react";
 import { ARENA_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { StatCard } from "@/components/arena/stat-card";
@@ -108,7 +109,7 @@ export function VictoryCelebration({
             onClick={onPlayAgain}
             className="w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-teal-400 py-3 text-sm font-bold text-white shadow-[0_0_16px_rgba(20,184,166,0.25)] transition-all hover:shadow-[0_0_24px_rgba(20,184,166,0.4)] active:scale-[0.97]"
           >
-            {ARENA_COPY.playAgain}
+            <RotateCcw size={16} className="inline -mt-0.5" /> {ARENA_COPY.playAgain}
           </button>
 
           {/* Claim block: button + helper + teaser */}
@@ -120,8 +121,8 @@ export function VictoryCelebration({
                 onClick={onClaimVictory}
                 className="group w-full rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.08] py-3 transition-all hover:bg-emerald-500/[0.15] hover:border-emerald-400/30 hover:shadow-[0_0_20px_rgba(52,211,153,0.12)] active:scale-[0.97]"
               >
-                <span className="block text-sm font-bold text-emerald-300/90">
-                  {VICTORY_CLAIM_COPY.claimButton}
+                <span className="flex items-center justify-center gap-1.5 text-sm font-bold text-emerald-300/90">
+                  <Trophy size={16} /> {VICTORY_CLAIM_COPY.claimButton}
                 </span>
                 <span className="block text-[0.6rem] text-emerald-200/40 mt-0.5">
                   {VICTORY_CLAIM_COPY.claimValueHint(claimPrice ?? "")}

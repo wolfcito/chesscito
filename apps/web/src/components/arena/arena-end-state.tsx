@@ -1,5 +1,6 @@
 "use client";
 
+import { RotateCcw } from "lucide-react";
 import { ARENA_COPY } from "@/lib/content/editorial";
 import type { ArenaStatus } from "@/lib/game/types";
 import { VictoryCelebration } from "./victory-celebration";
@@ -129,7 +130,7 @@ export function ArenaEndState({
             onClick={onPlayAgain}
             className="rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 px-6 py-2.5 font-semibold text-white shadow-[0_0_16px_rgba(34,211,238,0.3)] transition-all hover:shadow-[0_0_24px_rgba(34,211,238,0.5)] active:scale-95"
           >
-            {ARENA_COPY.playAgain}
+            <RotateCcw size={16} className="inline -mt-0.5" /> {ARENA_COPY.playAgain}
           </button>
           <button
             type="button"

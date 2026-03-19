@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { Star, Timer, Crosshair } from "lucide-react";
 import { PHASE_FLASH_COPY } from "@/lib/content/editorial";
 
 type PieceOption = {
@@ -136,17 +137,17 @@ export function MissionPanel({
         {/* Layer 1: HUD strip (non-interactive) */}
         <div className="chesscito-hud-strip">
           <div className="chesscito-hud-item">
-            <span className="chesscito-hud-label">⭐</span>
+            <Star className="chesscito-hud-icon" size={14} />
             <span className="chesscito-hud-value">{score}</span>
           </div>
           <div className="chesscito-hud-divider" />
           <div className="chesscito-hud-item">
-            <span className="chesscito-hud-label">⏱</span>
+            <Timer className="chesscito-hud-icon" size={14} />
             <span className="chesscito-hud-value">{Number(timeMs) / 1000}s</span>
           </div>
           <div className="chesscito-hud-divider" />
           <div className="chesscito-hud-item">
-            <span className="chesscito-hud-label">🎯</span>
+            <Crosshair className="chesscito-hud-icon" size={14} />
             <span className="chesscito-hud-value chesscito-hud-target">{targetLabel}</span>
           </div>
         </div>

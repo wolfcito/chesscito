@@ -629,6 +629,11 @@
     text-transform: uppercase;
   }
 
+  .chesscito-hud-icon {
+    color: rgba(160, 205, 225, 0.5);
+    flex-shrink: 0;
+  }
+
   .chesscito-hud-value {
     font-size: 0.95rem;
     line-height: 1;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RotateCcw, Share2, Users, Link2 } from "lucide-react";
 import { ARENA_COPY, SHARE_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { StatCard } from "@/components/arena/stat-card";
@@ -127,7 +128,7 @@ export function VictoryClaimSuccess({
             disabled={!isShareReady}
             className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 py-3 text-sm font-bold text-white shadow-[0_0_16px_rgba(245,158,11,0.3)] transition-all hover:shadow-[0_0_24px_rgba(245,158,11,0.5)] active:scale-[0.97] disabled:opacity-50"
           >
-            {VICTORY_CLAIM_COPY.shareCard}
+            <Share2 size={16} className="inline -mt-0.5" /> {VICTORY_CLAIM_COPY.shareCard}
           </button>
 
           {/* Secondary row: Challenge + Copy Link */}
@@ -136,16 +137,16 @@ export function VictoryClaimSuccess({
               <button
                 type="button"
                 onClick={() => void handleChallengeFriend()}
-                className="flex-1 rounded-xl border border-amber-400/15 bg-amber-500/[0.06] px-2 py-2 text-[0.6rem] font-semibold text-amber-300/70 transition-all hover:bg-amber-500/[0.12] active:scale-95"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-amber-400/15 bg-amber-500/[0.06] px-2 py-2 text-[0.6rem] font-semibold text-amber-300/70 transition-all hover:bg-amber-500/[0.12] active:scale-95"
               >
-                {VICTORY_CLAIM_COPY.challengeFriend}
+                <Users size={12} /> {VICTORY_CLAIM_COPY.challengeFriend}
               </button>
               <button
                 type="button"
                 onClick={() => void handleCopyLink()}
-                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-2 text-[0.6rem] font-semibold text-cyan-100/60 transition-all hover:bg-white/[0.08] active:scale-95"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-2 text-[0.6rem] font-semibold text-cyan-100/60 transition-all hover:bg-white/[0.08] active:scale-95"
               >
-                {VICTORY_CLAIM_COPY.copyLink}
+                <Link2 size={12} /> {VICTORY_CLAIM_COPY.copyLink}
               </button>
             </div>
           )}
@@ -163,7 +164,7 @@ export function VictoryClaimSuccess({
             onClick={onPlayAgain}
             className="w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-teal-400 py-2.5 text-sm font-bold text-white shadow-[0_0_12px_rgba(20,184,166,0.2)] transition-all hover:shadow-[0_0_20px_rgba(20,184,166,0.35)] active:scale-[0.97]"
           >
-            {ARENA_COPY.playAgain}
+            <RotateCcw size={16} className="inline -mt-0.5" /> {ARENA_COPY.playAgain}
           </button>
 
           {/* Back to Hub */}
