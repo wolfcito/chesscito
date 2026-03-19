@@ -3,11 +3,13 @@ import { createPublicClient, http } from "viem";
 import { celo } from "viem/chains";
 import { victoryAbi } from "@/lib/contracts/victory";
 import { clampMoves, clampTime, formatPlayer, truncateId } from "@/lib/og/og-utils";
+import { KING_DATA_URI } from "@/lib/og/king-svg";
 
 export const runtime = "edge";
 
 const W = 1200;
 const H = 630;
+const PAD = 80;
 
 const DIFFICULTY_LABEL: Record<number, string> = { 1: "EASY", 2: "MEDIUM", 3: "HARD" };
 
@@ -24,6 +26,11 @@ const client = contractAddress
   ? createPublicClient({ chain: celo, transport: http() })
   : null;
 
+const CINZEL_FONT_URL = new URL(
+  "../../../../../assets/fonts/Cinzel-Bold.ttf",
+  import.meta.url,
+);
+
 // R3: error card — "Victory not found" with 404 + no-store
 function errorCard() {
   return new ImageResponse(
@@ -38,7 +45,7 @@ function errorCard() {
           justifyContent: "center",
           fontFamily: "sans-serif",
           color: "#e4f6fb",
-          background: "linear-gradient(160deg, #0a1424 0%, #0b1628 40%, #0f1d35 70%, #0a1424 100%)",
+          background: "radial-gradient(ellipse at 65% 50%, #0b1628 0%, #0a1424 70%)",
           position: "relative",
         }}
       >
@@ -67,6 +74,16 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   if (!client || !contractAddress) {
     return errorCard();
+  }
+
+  // Font loading — graceful fallback to serif if fetch fails
+  let cinzelData: ArrayBuffer | null = null;
+  try {
+    const res = await fetch(CINZEL_FONT_URL);
+    if (!res.ok) throw new Error(`Font fetch ${res.status}`);
+    cinzelData = await res.arrayBuffer();
+  } catch {
+    /* system serif fallback — card still renders */
   }
 
   let moves: string;
@@ -113,22 +130,70 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
           justifyContent: "center",
           fontFamily: "sans-serif",
           color: "#e4f6fb",
-          background: "linear-gradient(160deg, #0a1424 0%, #0b1628 40%, #0f1d35 70%, #0a1424 100%)",
+          background: "radial-gradient(ellipse at 65% 50%, #0b1628 0%, #0a1424 70%)",
           position: "relative",
+          padding: PAD,
         }}
       >
+        {/* Teal atmosphere glow — decorative */}
+        <div style={{
+          position: "absolute",
+          top: "10%",
+          left: "30%",
+          width: 600,
+          height: 400,
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(94,234,212,0.03) 0%, transparent 70%)",
+          display: "flex",
+        }} />
+
+        {/* King watermark — decorative */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={KING_DATA_URI}
+          alt=""
+          width={280}
+          height={336}
+          style={{
+            position: "absolute",
+            right: 100,
+            top: "50%",
+            transform: "translateY(-50%)",
+            opacity: 0.045,
+          }}
+        />
+
         {/* Headline */}
-        <div style={{ display: "flex", fontSize: 72, fontWeight: 900, letterSpacing: "0.06em", color: "#5eead4", lineHeight: 1, marginBottom: 20 }}>
+        <div style={{
+          display: "flex",
+          fontSize: 72,
+          fontWeight: 700,
+          fontFamily: cinzelData ? "Cinzel" : "serif",
+          letterSpacing: "0.08em",
+          color: "#5eead4",
+          textShadow: "0 0 30px rgba(94,234,212,0.20)",
+          lineHeight: 1,
+          marginBottom: 20,
+        }}>
           CHECKMATE
         </div>
 
+        {/* Separator */}
+        <div style={{
+          display: "flex",
+          width: 200,
+          height: 1,
+          background: "rgba(94,234,212,0.15)",
+          marginBottom: 20,
+        }} />
+
         {/* Performance */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 36, fontWeight: 700, color: "#f5f5f5", letterSpacing: "0.04em", marginBottom: 20 }}>
+        <div style={{ display: "flex", fontSize: 38, fontWeight: 700, color: "#f5f5f5", letterSpacing: "0.04em", marginBottom: 20 }}>
           {`${moves} MOVES \u2022 ${time}`}
         </div>
 
         {/* Difficulty pill */}
-        <div style={{ display: "flex", padding: "6px 24px", borderRadius: 20, border: "1px solid rgba(160,205,225,0.15)", background: "rgba(255,255,255,0.04)", fontSize: 14, fontWeight: 600, letterSpacing: "0.12em", color: "rgba(160,205,225,0.5)", marginBottom: 32 }}>
+        <div style={{ display: "flex", padding: "6px 24px", borderRadius: 20, border: "1px solid rgba(160,205,225,0.12)", background: "rgba(255,255,255,0.03)", fontSize: 14, fontWeight: 600, letterSpacing: "0.12em", color: "rgba(160,205,225,0.45)", marginBottom: 28 }}>
           {difficulty}
         </div>
 
@@ -143,11 +208,23 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
         </div>
 
         {/* Brand */}
-        <div style={{ display: "flex", fontSize: 14, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(20,184,166,0.35)" }}>
+        <div style={{ display: "flex", fontSize: 14, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(20,184,166,0.30)", alignSelf: "flex-end" }}>
           CHESSCITO
         </div>
       </div>
     ),
-    { width: W, height: H, headers: SUCCESS_HEADERS },
+    {
+      width: W,
+      height: H,
+      headers: SUCCESS_HEADERS,
+      ...(cinzelData ? {
+        fonts: [{
+          name: "Cinzel",
+          data: cinzelData,
+          weight: 700 as const,
+          style: "normal" as const,
+        }],
+      } : {}),
+    },
   );
 }
