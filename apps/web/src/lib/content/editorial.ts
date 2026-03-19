@@ -223,7 +223,9 @@ export const MISSION_BRIEFING_COPY = {
 
 export const VICTORY_CLAIM_COPY = {
   claimButton: "Claim Victory",
-  claimHelper: "Claim to unlock your share card",
+  claimHelper: "Claim your onchain victory and unlock your share card",
+  claimValueHint: (price: string) => `Unlock your share card \u2022 ${price}`,
+  teaserLabel: "Unlock on claim",
   claiming: "Claiming Victory...",
   claimProgress1: "Recording your result onchain",
   claimProgress2: "Preparing your victory card",

@@ -81,7 +81,7 @@ export function VictoryClaiming({
           <button
             type="button"
             disabled
-            className="w-full rounded-2xl border border-amber-400/20 bg-amber-500/[0.08] py-2.5 text-sm font-semibold text-amber-300/80 animate-pulse"
+            className="w-full rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.08] py-3 text-sm font-bold text-emerald-300/80 shadow-[0_0_20px_rgba(52,211,153,0.12)] animate-pulse"
           >
             {VICTORY_CLAIM_COPY.claiming}
           </button>
