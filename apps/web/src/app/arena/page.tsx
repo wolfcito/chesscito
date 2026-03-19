@@ -17,6 +17,7 @@ import { ArenaHud } from "@/components/arena/arena-hud";
 import { PromotionOverlay } from "@/components/arena/promotion-overlay";
 import { ArenaEndState, type ClaimPhase, type ShareStatus, type ClaimData } from "@/components/arena/arena-end-state";
 import { ARENA_COPY } from "@/lib/content/editorial";
+import { formatTime } from "@/lib/game/arena-utils";
 import { getConfiguredChainId, getVictoryNFTAddress } from "@/lib/contracts/chains";
 import { victoryAbi } from "@/lib/contracts/victory";
 import {
@@ -217,12 +218,23 @@ export default function ArenaPage() {
         }
       }
 
-      // 6. Update claim data and transition to success
+      // 6. Build share card URL from claim data
+      const timeStr = formatTime(game.elapsedMs);
+      const playerShort = `${address.slice(0, 6)}...${address.slice(-4)}`;
+      const ogParams = new URLSearchParams({
+        moves: String(game.moveCount),
+        time: timeStr,
+        difficulty: game.difficulty.toUpperCase(),
+        player: playerShort,
+      });
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const shareCardUrl = `${origin}/api/og/victory?${ogParams}`;
+
       setClaimData({
         tokenId: extractedTokenId,
         claimTxHash: claimHash,
-        shareCardUrl: null, // Future: generate card URL from tokenId
-        shareLinkUrl: null, // Future: generate share link from tokenId
+        shareCardUrl,
+        shareLinkUrl: null,
       });
       setShareStatus("ready"); // For now, share is immediately ready post-claim
       setClaimPhase("success");

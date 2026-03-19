@@ -243,6 +243,13 @@ export const VICTORY_CLAIM_COPY = {
   copyLink: "Copy Link",
   copiedToast: "Copied!",
   sharedToast: "Shared!",
+  card: {
+    headline: "CHECKMATE",
+    challengeLine: "Can you beat this?",
+    performanceLine: (moves: number, time: string) => `${moves} MOVES • ${time}`,
+    byLine: (player: string) => `by ${player}`,
+    brand: "Chesscito",
+  },
 } as const;
 
 export const VICTORY_CELEBRATION_COPY = {
