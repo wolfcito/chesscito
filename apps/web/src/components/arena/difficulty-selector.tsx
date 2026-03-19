@@ -57,7 +57,7 @@ export function DifficultySelector({ selected, onSelect, onStart }: Props) {
         onClick={onStart}
         className="mt-1 w-full max-w-[320px] rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 py-3.5 font-bold text-white shadow-[0_0_24px_rgba(34,211,238,0.25)] transition-all hover:shadow-[0_0_32px_rgba(34,211,238,0.4)] active:scale-[0.97]"
       >
-        {ARENA_COPY.startMatch}
+        ▶ {ARENA_COPY.startMatch}
       </button>
 
       <Link

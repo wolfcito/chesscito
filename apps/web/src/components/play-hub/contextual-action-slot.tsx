@@ -39,6 +39,13 @@ const ACTION_STYLES: Record<
   },
 };
 
+const ACTION_ICON: Record<Exclude<ContextAction, null>, string> = {
+  submitScore: "⭐",
+  useShield: "🛡",
+  claimBadge: "🏅",
+  retry: "↻",
+};
+
 function getHandler(
   action: Exclude<ContextAction, null>,
   props: ContextualActionSlotProps
@@ -71,7 +78,9 @@ export function ContextualActionSlot(props: ContextualActionSlotProps) {
       >
         {isBusy ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        ) : null}
+        ) : (
+          <span className="text-base leading-none">{ACTION_ICON[action]}</span>
+        )}
         <span>{label}</span>
         {action === "useShield" && !isBusy ? (
           <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">

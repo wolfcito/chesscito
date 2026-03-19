@@ -49,9 +49,8 @@ export function PromotionOverlay({ onSelect, onCancel }: Props) {
               <img
                 src={ARENA_PIECE_IMG.w[PIECE_KEY_MAP[key]]}
                 alt={label}
-                className="h-10 w-10 object-contain"
+                className="h-12 w-12 object-contain"
               />
-              <span className="text-xs text-white/60">{label}</span>
             </button>
           ))}
         </div>

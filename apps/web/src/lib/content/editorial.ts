@@ -222,7 +222,7 @@ export const MISSION_BRIEFING_COPY = {
 } as const;
 
 export const VICTORY_CLAIM_COPY = {
-  claimButton: "Claim Victory",
+  claimButton: "🏆 Claim Victory",
   claimHelper: "Claim your onchain victory and unlock your share card",
   claimValueHint: (price: string) => `Unlock your share card \u2022 ${price}`,
   teaserLabel: "Unlock on claim",
@@ -280,7 +280,7 @@ export const ARENA_COPY = {
   },
   startMatch: "Enter Arena",
   backToHub: "Back to Hub",
-  resign: "Resign",
+  resign: "🏳 Resign",
   newGame: "New Game",
   aiThinking: "AI is thinking...",
   preparingAi: "Preparing AI...",
@@ -294,7 +294,7 @@ export const ARENA_COPY = {
     draw: "Draw",
     resigned: "You Resigned",
   },
-  playAgain: "Play Again",
+  playAgain: "↻ Play Again",
   softGate: "Try learning a piece first?",
   softGateSkip: "Skip",
   aiError: "AI disconnected",
