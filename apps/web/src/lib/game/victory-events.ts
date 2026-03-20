@@ -16,7 +16,7 @@ export type VictoryEntry = {
 /** Known safe start block — VictoryNFT deployed 2026-03-17, no events before this. */
 export const EVENT_SCAN_START = 61_250_000n;
 
-const CHUNK_SIZE = 5_000n;
+const CHUNK_SIZE = 50_000n;
 
 const VictoryMintedEvent = parseAbiItem(
   "event VictoryMinted(address indexed player, uint256 indexed tokenId, uint8 difficulty, uint16 totalMoves, uint32 timeMs, address indexed token, uint256 totalAmount)"
