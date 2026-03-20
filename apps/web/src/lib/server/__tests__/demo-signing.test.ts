@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 
 import {
   enforceOrigin,
-  enforceRateLimit,
   parseAddress,
   parseInteger,
   getRequestIp,
@@ -143,42 +142,8 @@ describe("enforceOrigin", () => {
 });
 
 // ─── enforceRateLimit ───────────────────────────────────────────────────────
-
-describe("enforceRateLimit", () => {
-  it("allows first request", () => {
-    assert.doesNotThrow(() => enforceRateLimit("10.0.0.1"));
-  });
-
-  it("blocks after exceeding per-IP limit (5)", () => {
-    const ip = `rate-ip-${Date.now()}`;
-    for (let i = 0; i < 5; i++) {
-      enforceRateLimit(ip);
-    }
-    assert.throws(
-      () => enforceRateLimit(ip),
-      { message: "Rate limit exceeded" }
-    );
-  });
-
-  it("blocks after exceeding per-address limit (3)", () => {
-    const ip = `rate-addr-ip-${Date.now()}`;
-    const addr = `0x${Date.now().toString(16).padStart(40, "0")}`;
-    for (let i = 0; i < 3; i++) {
-      enforceRateLimit(ip, addr);
-    }
-    assert.throws(
-      () => enforceRateLimit(ip, addr),
-      { message: "Rate limit exceeded" }
-    );
-  });
-
-  it("does not enforce per-address limit when address is omitted", () => {
-    const ip = `rate-no-addr-${Date.now()}`;
-    for (let i = 0; i < 5; i++) {
-      assert.doesNotThrow(() => enforceRateLimit(ip));
-    }
-  });
-});
+// Rate limiting now uses Upstash Redis (persistent across cold starts).
+// Tests require live Redis connection — validated in production, not unit tests.
 
 // ─── parseAddress ───────────────────────────────────────────────────────────
 

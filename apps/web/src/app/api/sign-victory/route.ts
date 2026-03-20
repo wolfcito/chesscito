@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     };
 
     const player = parseAddress(body.player);
-    enforceRateLimit(getRequestIp(request), player);
+    await enforceRateLimit(getRequestIp(request), player);
 
     const difficulty = parseInteger(body.difficulty, "difficulty", 1, 3);
     const totalMoves = parseInteger(body.totalMoves, "totalMoves", 1, 10_000);

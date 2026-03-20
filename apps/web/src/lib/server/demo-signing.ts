@@ -1,11 +1,23 @@
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 import { ethers } from "ethers";
 
-// NOTE: In-memory rate limit resets on serverless cold starts.
-// For production, migrate to a persistent store (Upstash Redis / Vercel KV).
-const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_IP = 5;
 const MAX_REQUESTS_PER_ADDRESS = 3;
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+const redis = Redis.fromEnv();
+
+const ipLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(MAX_REQUESTS_PER_IP, "60s"),
+  prefix: "rl:ip",
+});
+
+const addrLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(MAX_REQUESTS_PER_ADDRESS, "60s"),
+  prefix: "rl:addr",
+});
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -33,27 +45,13 @@ export function getDemoConfig() {
   };
 }
 
-function checkRateLimit(key: string, max: number) {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
+export async function enforceRateLimit(ip: string, playerAddress?: string) {
+  const { success: ipOk } = await ipLimiter.limit(ip);
+  if (!ipOk) throw new Error("Rate limit exceeded");
 
-  if (!entry || entry.resetAt <= now) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return;
-  }
-
-  if (entry.count >= max) {
-    throw new Error("Rate limit exceeded");
-  }
-
-  entry.count += 1;
-  rateLimitStore.set(key, entry);
-}
-
-export function enforceRateLimit(ip: string, playerAddress?: string) {
-  checkRateLimit(`ip:${ip}`, MAX_REQUESTS_PER_IP);
   if (playerAddress) {
-    checkRateLimit(`addr:${playerAddress}`, MAX_REQUESTS_PER_ADDRESS);
+    const { success: addrOk } = await addrLimiter.limit(playerAddress);
+    if (!addrOk) throw new Error("Rate limit exceeded");
   }
 }
 
