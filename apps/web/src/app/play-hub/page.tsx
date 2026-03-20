@@ -24,6 +24,7 @@ import { ShopSheet } from "@/components/play-hub/shop-sheet";
 import { StatusStrip } from "@/components/play-hub/status-strip";
 import { useExerciseProgress } from "@/hooks/use-exercise-progress";
 import { useMiniPay } from "@/hooks/use-minipay";
+import { useSplashLoader } from "@/hooks/use-splash-loader";
 import { badgesAbi } from "@/lib/contracts/badges";
 import {
   getBadgesAddress,
@@ -135,7 +136,7 @@ export default function PlayHubPage() {
   const [shieldCount, setShieldCount] = useState(0);
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
-  const [showBriefing, setShowBriefing] = useState(true);
+  const { showSplash, showBriefing, markOnboarded } = useSplashLoader();
 
   const {
     progress,
@@ -392,14 +393,13 @@ export default function PlayHubPage() {
     }
   }
 
-  function resetBoard(showBriefingOverlay = false) {
+  function resetBoard() {
     if (autoResetTimer.current) clearTimeout(autoResetTimer.current);
     setBoardKey((previous) => previous + 1);
     setPhase("ready");
     setMoves(0);
     setElapsedMs(0);
     timerStart.current = 0;
-    setShowBriefing(showBriefingOverlay);
   }
 
   function handleMove(position: BoardPosition, movesCount: number) {
@@ -435,7 +435,7 @@ export default function PlayHubPage() {
         } else if (nextPiece && pieceCompleted) {
           // Only auto-advance to next piece if score was already submitted
           setSelectedPiece(nextPiece);
-          resetBoard(true);
+          resetBoard();
         } else {
           // Last exercise done but score not submitted yet — just reset board
           resetBoard();
@@ -469,7 +469,7 @@ export default function PlayHubPage() {
         resetBoard();
       } else if (nextPiece && pieceCompleted) {
         setSelectedPiece(nextPiece);
-        resetBoard(true);
+        resetBoard();
       } else {
         resetBoard();
       }
@@ -677,13 +677,19 @@ export default function PlayHubPage() {
 
   return (
     <div className="relative w-full overflow-x-hidden">
-      <div className="playhub-intro-overlay" aria-hidden="true" />
+      {showSplash && (
+        <div className="playhub-intro-overlay is-active" aria-hidden="true">
+          <p className="absolute bottom-16 left-1/2 -translate-x-1/2 text-xs font-medium text-cyan-100/50 animate-pulse">
+            Loading...
+          </p>
+        </div>
+      )}
       <main className="mission-shell min-h-screen w-full max-w-none px-0 pb-8 pt-0 sm:px-0">
         <MissionPanel
           selectedPiece={selectedPiece}
           onSelectPiece={(piece) => {
             setSelectedPiece(piece);
-            resetBoard(true);
+            resetBoard();
           }}
           pieces={[
             { key: "rook", label: PIECE_LABELS.rook, enabled: true },
@@ -782,7 +788,7 @@ export default function PlayHubPage() {
             pieceType={selectedPiece}
             targetLabel={targetLabel}
             isCapture={Boolean(currentExercise.isCapture)}
-            onPlay={() => setShowBriefing(false)}
+            onPlay={() => markOnboarded()}
           />
         ) : null}
 

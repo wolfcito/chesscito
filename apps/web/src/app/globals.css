@@ -707,7 +707,14 @@
   background-position: center top;
   background-size: cover;
   background-repeat: no-repeat;
-  animation: playhub-intro-fade 2250ms ease-out forwards;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.playhub-intro-overlay.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 @keyframes playhub-intro-fade {
