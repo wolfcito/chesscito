@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { fetchLeaderboard } from "@/lib/server/leaderboard";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export type { LeaderboardRow } from "@/lib/server/leaderboard";
 

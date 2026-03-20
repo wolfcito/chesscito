@@ -2,6 +2,7 @@ import { AppShell } from "@/components/app-shell";
 import { CTA_LABELS, LEADERBOARD_COPY, PASSPORT_COPY } from "@/lib/content/editorial";
 import { fetchLeaderboard } from "@/lib/server/leaderboard";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
 export default async function LeaderboardPage() {

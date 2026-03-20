@@ -15,7 +15,7 @@ const SCORE_SUBMITTED_TOPIC = ethers.id(
   "ScoreSubmitted(address,uint256,uint256,uint256,uint256,uint256)"
 );
 
-const CHUNK_SIZE = 5_000;
+const CHUNK_SIZE = 50_000;
 
 async function getLogsPaginated(
   provider: ethers.JsonRpcProvider,
