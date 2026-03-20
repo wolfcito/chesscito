@@ -274,6 +274,8 @@ export const TROPHY_VITRINE_COPY = {
   hallOfFame: "Hall of Fame",
   movesLabel: "moves",
   shareLabel: "Share",
+  loadingText: "Loading victories...",
+  copiedToast: "Link copied!",
   connectWallet: "Connect wallet to see your victories",
   noVictories: "No victories yet — win in the Arena to earn your first trophy",
   noGlobalVictories: "No victories recorded yet — be the first!",
