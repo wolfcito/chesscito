@@ -12,7 +12,7 @@ import {
 } from "wagmi";
 
 import { Board } from "@/components/board";
-import { ExerciseStarsBar } from "@/components/play-hub/exercise-stars-bar";
+import { ExerciseDrawer } from "@/components/play-hub/exercise-drawer";
 import { LeaderboardSheet } from "@/components/play-hub/leaderboard-sheet";
 import { MissionBriefing } from "@/components/play-hub/mission-briefing";
 import { MissionPanel } from "@/components/play-hub/mission-panel";
@@ -43,7 +43,7 @@ import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-o
 import { BadgeSheet } from "@/components/play-hub/badge-sheet";
 import { classifyTxError, isUserCancellation } from "@/lib/errors";
 import { getContextAction } from "@/lib/game/context-action";
-import { BADGE_THRESHOLD } from "@/lib/game/exercises";
+import { BADGE_THRESHOLD, EXERCISES } from "@/lib/game/exercises";
 import { computeStars } from "@/lib/game/scoring";
 
 const SHOP_ITEMS = [
@@ -137,6 +137,7 @@ export default function PlayHubPage() {
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
   const { showSplash, showBriefing, markOnboarded } = useSplashLoader();
+  const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false);
 
   const {
     progress,
@@ -145,6 +146,7 @@ export default function PlayHubPage() {
     totalStars,
     badgeEarned,
     pieceCompleted,
+    isReplay,
     completeExercise,
     advanceExercise,
     goToExercise,
@@ -416,15 +418,16 @@ export default function PlayHubPage() {
       completeExercise(movesCount);
 
       // On last exercise: check if badge is earned (including this completion)
-      if (isLastExercise) {
-        const newStars = computeStars(movesCount, currentExercise.optimalMoves);
+      if (isLastExercise && !isReplay) {
+        const exercise = EXERCISES[selectedPiece][progress.exerciseIndex];
+        const newStars = computeStars(movesCount, exercise.optimalMoves);
         const prevStarValue = progress.stars[progress.exerciseIndex];
         const starDelta = Math.max(0, newStars - prevStarValue);
         const newTotal = totalStars + starDelta;
 
         if (newTotal >= BADGE_THRESHOLD && !hasClaimedBadge) {
           setShowBadgeEarned(true);
-          return; // Don't start auto-advance timer — prompt will handle it
+          return;
         }
       }
 
@@ -460,14 +463,16 @@ export default function PlayHubPage() {
     resetBoard();
   }
 
+  function handleExerciseNavigate(index: number) {
+    if (autoResetTimer.current) clearTimeout(autoResetTimer.current);
+    goToExercise(index);
+    resetBoard();
+  }
+
   function handleBadgeEarnedDismiss() {
     setShowBadgeEarned(false);
-    // Resume auto-advance logic
     autoResetTimer.current = setTimeout(() => {
-      if (!isLastExercise) {
-        advanceExercise();
-        resetBoard();
-      } else if (nextPiece && pieceCompleted) {
+      if (nextPiece && pieceCompleted) {
         setSelectedPiece(nextPiece);
         resetBoard();
       } else {
@@ -757,13 +762,19 @@ export default function PlayHubPage() {
               tutorialHints={tutorialHints}
             />
           }
-          starsBar={
-            <ExerciseStarsBar
+          exerciseDrawer={
+            <ExerciseDrawer
+              open={exerciseDrawerOpen}
+              onOpenChange={setExerciseDrawerOpen}
+              piece={selectedPiece}
+              exercises={EXERCISES[selectedPiece]}
               stars={progress.stars}
               activeIndex={progress.exerciseIndex}
-              onSelect={goToExercise}
+              totalStars={totalStars}
+              onNavigate={handleExerciseNavigate}
             />
           }
+          isReplay={isReplay}
         />
 
         <PurchaseConfirmSheet
