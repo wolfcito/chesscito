@@ -321,3 +321,32 @@ export const ARENA_COPY = {
   aiTimeout: "AI timed out",
   restartMatch: "Restart Match",
 } as const;
+
+export const EXERCISE_DRAWER_COPY = {
+  title: "Exercises",
+  progressLabel: (earned: number, max: number) => `${earned}/${max}`,
+  badgeThresholdHint: (threshold: number) => `Badge at ${threshold} stars`,
+  locked: "Locked",
+} as const;
+
+export const EXERCISE_DESCRIPTIONS: Record<string, string> = {
+  "rook-1": "Horizontal move",
+  "rook-2": "Vertical move",
+  "rook-3": "Center to edge",
+  "rook-4": "Corner capture",
+  "rook-5": "Cross capture",
+  "bishop-1": "Main diagonal",
+  "bishop-2": "Anti diagonal",
+  "bishop-3": "Short diagonal",
+  "bishop-4": "Two-move path",
+  "bishop-5": "Tricky route",
+  "knight-1": "L-jump center",
+  "knight-2": "L-jump corner",
+  "knight-3": "Horizontal L",
+  "knight-4": "Two jumps",
+  "knight-5": "Long journey",
+};
+
+export const PRACTICE_COPY = {
+  label: "Practice mode",
+} as const;
