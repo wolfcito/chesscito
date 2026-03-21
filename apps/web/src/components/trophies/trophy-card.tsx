@@ -55,7 +55,6 @@ export function TrophyCard({ entry, variant, rank }: Props) {
       try {
         await navigator.share({
           text: VICTORY_CLAIM_COPY.challengeText(entry.totalMoves, victoryUrl),
-          url: victoryUrl,
         });
         return;
       } catch { /* cancelled */ }

@@ -46,7 +46,7 @@ export function VictoryClaimSuccess({
   async function handleShareCard() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ text: challengeText, url: shareUrl });
+        await navigator.share({ text: challengeText });
         showToast(VICTORY_CLAIM_COPY.sharedToast);
         return;
       } catch { /* cancelled */ }
@@ -62,7 +62,7 @@ export function VictoryClaimSuccess({
   async function handleChallengeFriend() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ text: challengeText, url: shareUrl });
+        await navigator.share({ text: challengeText });
         showToast(VICTORY_CLAIM_COPY.sharedToast);
         return;
       } catch { /* cancelled */ }
