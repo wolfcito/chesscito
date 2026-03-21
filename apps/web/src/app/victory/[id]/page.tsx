@@ -57,9 +57,11 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     ? `Can you beat that? Victory #${params.id} claimed onchain. ${v.difficulty} • ${formatTime(v.timeMs)}`
     : "Can you beat this? Play Chesscito on Celo.";
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "https://chesscito.vercel.app";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL
+    ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "https://chesscito.vercel.app");
 
   const ogImage = `${baseUrl}/api/og/victory/${params.id}`;
   const url = `${baseUrl}/victory/${params.id}`;
