@@ -2,7 +2,8 @@
 
 **Issue**: #66
 **Date**: 2026-03-21
-**Status**: Approved
+**Status**: Approved (updated with red team fixes)
+**Red team report**: `docs/reviews/red-team-2026-03-21.md`
 
 ## Problem
 
@@ -39,7 +40,7 @@ type ExerciseDrawerProps = {
   stars: PieceProgress["stars"];     // current stars per exercise
   activeIndex: number;               // progress.exerciseIndex
   totalStars: number;                // computed total
-  onNavigate: (index: number) => void; // calls goToExercise + resetBoard
+  onNavigate: (index: number) => void; // calls goToExercise + cancelTimer + resetBoard
 };
 ```
 
@@ -52,14 +53,14 @@ type ExerciseDrawerProps = {
   - Stars earned: ★★★ / ★★☆ / ★☆☆ / not attempted
   - State indicator:
     - **Completed**: amber stars, tappable — `stars[index] > 0`
-    - **Current**: cyan highlight ring, tappable — `index === activeIndex`
+    - **Current**: cyan highlight ring, tappable — `index === activeIndex` (where "current" = `progress.exerciseIndex`)
     - **Locked**: muted/grayed out, not tappable, shows 🔒 — `index > maxAllowed`
-- Progress summary at bottom: total stars earned vs max (e.g., "9/15"), with badge threshold marker at `BADGE_THRESHOLD` (currently 10) from `lib/game/exercises.ts`
+- Progress summary at bottom: total stars earned vs max (e.g., "9/15"), with badge threshold marker using `BADGE_THRESHOLD` constant (currently 10) from `lib/game/exercises.ts`
 
 **Behavior**:
-- Tapping a completed or current exercise: calls `onNavigate(index)` which closes the drawer, calls `goToExercise(index)`, and calls `resetBoard()`
+- Tapping a completed or current exercise: calls `onNavigate(index)` which cancels any pending `autoResetTimer`, closes the drawer, calls `goToExercise(index)`, and calls `resetBoard()`
 - Tapping a locked exercise: no action (visually disabled)
-- Navigation rule: "current" = `progress.exerciseIndex`. Allowed indices: any exercise where `stars[i] > 0`, plus `Math.min(lastCompleted + 1, EXERCISES_PER_PIECE - 1)`. This matches the existing `goToExercise` guard.
+- Navigation rule: allowed indices are any exercise where `stars[i] > 0`, plus `Math.min(lastCompleted + 1, EXERCISES_PER_PIECE - 1)`. This matches the existing `goToExercise` guard.
 
 ### 2. `isReplay` State
 
@@ -97,13 +98,76 @@ isReplay: boolean;
 
 ### 5. Reward Protections
 
-Existing code handles most replay safety. One addition needed:
+Existing code handles most replay safety. Additions needed:
 
 - `completeExercise` uses `Math.max(prev, new)` — never overwrites a better score ✓
 - `canSendOnChain` requires `!pieceCompleted` — no duplicate on-chain submissions ✓
 - `badgeEarned` is derived from total stars — replaying can't inflate it ✓
 - `markCompleted` is idempotent ✓
-- **Badge prompt suppression** (NEW): In `handleMove` (`page.tsx`), the badge-earned prompt (`setShowBadgeEarned(true)`) fires when completing the last exercise with enough stars. On replay, this should be suppressed: add `&& !isReplay` to the badge prompt condition to avoid re-triggering the congratulations overlay.
+- **Badge prompt suppression** (NEW): Add `&& !isReplay` to the badge prompt condition in `handleMove` to avoid re-triggering `setShowBadgeEarned(true)` on replay.
+
+## Red Team Fixes
+
+The following bugs were identified by adversarial audit and must be fixed as part of this implementation.
+
+### RT-1: Fix stale `optimalMoves` closure in `completeExercise` [BF-1]
+**File**: `hooks/use-exercise-progress.ts`
+**Problem**: `completeExercise` captures `currentExercise.optimalMoves` from the render closure. If `goToExercise` updates `exerciseIndex` before re-render, stars are computed against the wrong exercise.
+**Fix**: Derive `optimalMoves` from `prev.exerciseIndex` inside the `setProgress` updater:
+```ts
+const completeExercise = useCallback(
+  (movesUsed: number) => {
+    setProgress((prev) => {
+      const exercise = EXERCISES[piece][prev.exerciseIndex];
+      const stars = computeStars(movesUsed, exercise.optimalMoves);
+      // ...rest unchanged
+    });
+  },
+  [piece] // dep changes from [currentExercise.optimalMoves] to [piece]
+);
+```
+
+### RT-2: Cancel `autoResetTimer` on drawer navigation [BF-2, RC-1]
+**File**: `app/page.tsx`
+**Problem**: The 1500ms `autoResetTimer` closes over stale values and fires even if the user navigated via the drawer, causing phantom `advanceExercise()` calls.
+**Fix**: The `onNavigate` handler must cancel the timer before navigating:
+```ts
+function handleExerciseNavigate(index: number) {
+  if (autoResetTimer.current) clearTimeout(autoResetTimer.current);
+  goToExercise(index);
+  resetBoard();
+}
+```
+
+### RT-3: Force board remount on navigation via `resetBoard` [BF-3]
+**File**: `app/page.tsx`
+**Problem**: `goToExercise` alone doesn't reset the board. Board's `useEffect` depends on `startPosition.file/.rank` — if two exercises share the same `startPos` (e.g., rook-1 and rook-2 both at `pos(0,0)`), the effect doesn't fire and the board shows stale state.
+**Fix**: `onNavigate` always calls `resetBoard()` (which increments `boardKey`, forcing a full Board remount). This is already specified in the `onNavigate` behavior above.
+
+### RT-4: Unify star computation to avoid drift [SL-1]
+**File**: `app/page.tsx`
+**Problem**: `handleMove` independently computes `starDelta` and `newTotal` for the badge prompt decision, potentially diverging from what `completeExercise` actually saves (especially with the stale closure from BF-1).
+**Fix**: After fixing RT-1, both computations use the same exercise data. Additionally, `handleMove`'s local `newTotal` computation should reference the exercise from `EXERCISES[selectedPiece][progress.exerciseIndex]` directly instead of relying on `currentExercise` from the hook:
+```ts
+const exercise = EXERCISES[selectedPiece][progress.exerciseIndex];
+const newStars = computeStars(movesCount, exercise.optimalMoves);
+```
+
+### RT-5: Validate individual star values in `loadProgress` [SL-2]
+**File**: `hooks/use-exercise-progress.ts`
+**Problem**: `loadProgress` validates array length but not individual values. Corrupted localStorage with `stars: [99, -1, ...]` passes validation and permanently breaks `badgeEarned`.
+**Fix**: Add per-value validation:
+```ts
+const validStars = parsed.stars.every(
+  (s: unknown) => typeof s === "number" && s >= 0 && s <= 3
+);
+if (!validStars) return { piece, exerciseIndex: 0, stars: [...EMPTY_STARS] };
+```
+
+### RT-6: Remove dead code in `handleBadgeEarnedDismiss` [EC-2]
+**File**: `app/page.tsx`
+**Problem**: `if (!isLastExercise)` branch never executes because badge earned only triggers on `isLastExercise === true`.
+**Fix**: Remove the dead branch, simplify to only the `else` paths.
 
 ## Components to Create
 
@@ -115,9 +179,9 @@ Existing code handles most replay safety. One addition needed:
 
 | Component | File | Change |
 |-----------|------|--------|
-| `useExerciseProgress` | `hooks/use-exercise-progress.ts` | Expose `isReplay: boolean` (derived) |
+| `useExerciseProgress` | `hooks/use-exercise-progress.ts` | Expose `isReplay`; fix stale closure (RT-1); validate star values (RT-5) |
 | `MissionPanel` | `components/play-hub/mission-panel.tsx` | Replace `starsBar: ReactNode` with `exerciseDrawer: ReactNode` + `isReplay: boolean`; render practice pill |
-| `PlayHubPage` | `app/page.tsx` | Replace `ExerciseStarsBar` with `ExerciseDrawer`; pass `isReplay`; add `&& !isReplay` to badge prompt; wire `onNavigate` to `goToExercise` + `resetBoard` |
+| `PlayHubPage` | `app/page.tsx` | Replace `ExerciseStarsBar` with `ExerciseDrawer`; wire `onNavigate` with timer cancel (RT-2, RT-3); add `&& !isReplay` to badge prompt; unify star computation (RT-4); clean dead code (RT-6) |
 | Editorial | `lib/content/editorial.ts` | Add `EXERCISE_DRAWER_COPY` and `PRACTICE_COPY` constants |
 
 ## Components to Delete
@@ -175,5 +239,8 @@ Follows existing sheet pattern:
 - Verify practice mode pill appears/disappears correctly
 - Verify scores are never downgraded on replay (`Math.max` behavior)
 - Verify badge prompt does NOT re-trigger on replay of last exercise
-- Verify `onNavigate` correctly calls both `goToExercise` and `resetBoard`
+- Verify `onNavigate` cancels `autoResetTimer` before navigating
+- Verify `onNavigate` calls `resetBoard` (board remounts even with same `startPos`)
+- Verify `completeExercise` uses `prev.exerciseIndex` inside updater (not closure)
+- Verify corrupted localStorage stars values are sanitized on load
 - Asset integrity test continues to pass
