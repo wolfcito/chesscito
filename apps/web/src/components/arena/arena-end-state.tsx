@@ -114,7 +114,7 @@ export function ArenaEndState({
       role="alert"
       aria-live="assertive"
     >
-      <div className="flex flex-col items-center gap-6 rounded-3xl border border-white/10 bg-[#0b1628]/90 px-8 py-8 backdrop-blur-xl shadow-[0_0_40px_rgba(251,113,133,0.1)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col items-center gap-6 rounded-3xl border border-white/[0.08] bg-[#0a1424]/92 px-8 py-8 backdrop-blur-2xl shadow-[0_0_60px_rgba(251,113,133,0.08)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
         <picture>
           <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
           <img
