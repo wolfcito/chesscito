@@ -505,6 +505,7 @@
   }
 
   .mission-briefing-card {
+    position: relative;
     width: 85%;
     max-width: 280px;
     background: rgba(2, 12, 24, 0.92);

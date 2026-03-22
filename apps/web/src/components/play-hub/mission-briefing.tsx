@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ARENA_COPY, MISSION_BRIEFING_COPY } from "@/lib/content/editorial";
+import { X } from "lucide-react";
+import { ARENA_COPY, MISSION_BRIEFING_COPY, PIECE_LABELS } from "@/lib/content/editorial";
 import type { PieceId } from "@/lib/game/types";
 
 type MissionBriefingProps = {
@@ -20,24 +21,36 @@ export function MissionBriefing({
 }: MissionBriefingProps) {
   const [exiting, setExiting] = useState(false);
 
+  const pieceName = PIECE_LABELS[pieceType] ?? pieceType;
   const objective = isCapture
     ? MISSION_BRIEFING_COPY.captureHint
-    : `Move your ${pieceType.charAt(0).toUpperCase() + pieceType.slice(1)} to ${targetLabel}`;
+    : `Move your ${pieceName} to ${targetLabel}`;
   const hint = MISSION_BRIEFING_COPY.moveHint[pieceType];
 
-  function handlePlay() {
+  function handleDismiss() {
     setExiting(true);
     setTimeout(onPlay, 400);
   }
 
   return (
+    /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
     <div
       className={`mission-briefing-scrim ${exiting ? "is-exiting" : ""}`}
       aria-modal="true"
       role="dialog"
       aria-labelledby="mission-briefing-objective"
+      onClick={handleDismiss}
     >
-      <div className={`mission-briefing-card ${exiting ? "is-exiting" : ""}`}>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <div className={`mission-briefing-card ${exiting ? "is-exiting" : ""}`} onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={handleDismiss}
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-white/30 transition-colors hover:text-white/60"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
         <picture>
           <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
           <img
@@ -59,7 +72,7 @@ export function MissionBriefing({
         <button
           type="button"
           autoFocus
-          onClick={handlePlay}
+          onClick={handleDismiss}
           className="mt-5 w-full rounded-2xl bg-gradient-to-r from-cyan-600 to-cyan-500 py-3 text-sm font-bold tracking-wide text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] transition active:scale-95"
         >
           {MISSION_BRIEFING_COPY.play}
