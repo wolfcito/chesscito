@@ -49,7 +49,7 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
       <button
         type="button"
         onClick={onBack}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-colors hover:text-white"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-colors hover:text-white"
         aria-label={ARENA_COPY.backToHub}
       >
         <ArrowLeft className="h-4 w-4" />
@@ -74,10 +74,10 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
             type="button"
             onClick={handleResignClick}
             className={[
-              "flex h-8 shrink-0 items-center justify-center rounded-full border transition-all",
+              "flex h-11 shrink-0 items-center justify-center rounded-full border transition-all",
               confirmingResign
                 ? "w-auto gap-1.5 border-rose-400/40 bg-rose-500/15 px-3 text-rose-400 animate-pulse"
-                : "w-8 border-white/10 bg-white/5 text-white/35 hover:text-rose-400",
+                : "w-11 border-white/10 bg-white/5 text-white/35 hover:text-rose-400",
             ].join(" ")}
             aria-label={ARENA_COPY.resign}
           >
