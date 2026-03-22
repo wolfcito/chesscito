@@ -23,24 +23,44 @@ const CONFIRM_TIMEOUT_MS = 3000;
 
 export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState }: Props) {
   const [confirmingResign, setConfirmingResign] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [confirmingBack, setConfirmingBack] = useState(false);
+  const resignTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const backTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (resignTimerRef.current) clearTimeout(resignTimerRef.current);
+      if (backTimerRef.current) clearTimeout(backTimerRef.current);
     };
   }, []);
+
+  const needsBackConfirm = !!onResign && !isEndState;
+
+  function handleBackClick() {
+    if (!needsBackConfirm) {
+      onBack();
+      return;
+    }
+    if (confirmingBack) {
+      if (backTimerRef.current) clearTimeout(backTimerRef.current);
+      setConfirmingBack(false);
+      onBack();
+    } else {
+      setConfirmingBack(true);
+      backTimerRef.current = setTimeout(() => setConfirmingBack(false), CONFIRM_TIMEOUT_MS);
+    }
+  }
 
   function handleResignClick() {
     if (!onResign) return;
 
     if (confirmingResign) {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (resignTimerRef.current) clearTimeout(resignTimerRef.current);
       setConfirmingResign(false);
       onResign();
     } else {
       setConfirmingResign(true);
-      timerRef.current = setTimeout(() => setConfirmingResign(false), CONFIRM_TIMEOUT_MS);
+      resignTimerRef.current = setTimeout(() => setConfirmingResign(false), CONFIRM_TIMEOUT_MS);
     }
   }
 
@@ -48,11 +68,23 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
     <div className="hud-bar mx-2 mt-2 flex items-center justify-between">
       <button
         type="button"
-        onClick={onBack}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-colors hover:text-white"
+        onClick={handleBackClick}
+        className={[
+          "flex h-11 shrink-0 items-center justify-center rounded-full border transition-all",
+          confirmingBack
+            ? "w-auto gap-1.5 border-white/20 bg-white/10 px-3 text-white animate-pulse"
+            : "w-11 border-white/10 bg-white/5 text-white/70 hover:text-white",
+        ].join(" ")}
         aria-label={ARENA_COPY.backToHub}
       >
-        <ArrowLeft className="h-4 w-4" />
+        {confirmingBack ? (
+          <>
+            <Check className="h-3.5 w-3.5" />
+            <span className="text-[0.65rem] font-semibold">{ARENA_COPY.backToHub}</span>
+          </>
+        ) : (
+          <ArrowLeft className="h-4 w-4" />
+        )}
       </button>
 
       <div className="flex items-center gap-2">
