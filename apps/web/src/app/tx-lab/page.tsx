@@ -256,7 +256,7 @@ export default function TxLabPage() {
     <main className="mx-auto flex w-full max-w-[var(--app-max-width)] flex-col gap-4 px-4 py-8">
       <h1 className="text-2xl font-semibold text-slate-950">Tx Lab (MiniPay / Sepolia)</h1>
       <p className="text-sm text-slate-600">
-        Matriz de envio para aislar `eth_sendTransaction` en MiniPay con submitScoreSigned.
+        Send matrix to isolate `eth_sendTransaction` in MiniPay with submitScoreSigned.
       </p>
 
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">

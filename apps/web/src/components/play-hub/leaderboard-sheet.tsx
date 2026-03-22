@@ -79,8 +79,8 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
           {rows.map((row) => (
             <div key={row.rank} className="mission-soft rune-frame grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-3 py-2">
               <p className="text-sm font-semibold text-cyan-100">#{row.rank}</p>
-              <p className="text-sm text-slate-300">
-                {row.player}
+              <p className="truncate text-sm text-slate-300">
+                {`${row.player.slice(0, 6)}...${row.player.slice(-4)}`}
                 {row.isVerified && (
                   <span title={PASSPORT_COPY.verifiedLabel}><BadgeCheck className="ml-1.5 inline-block h-3.5 w-3.5 text-emerald-400" /></span>
                 )}

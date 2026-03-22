@@ -71,8 +71,8 @@ export function DifficultySelector({ selected, onSelect, onStart, onBack }: Prop
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-white/35 transition-colors hover:text-white/55"
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/5">
-          <ArrowLeft className="h-3.5 w-3.5" />
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5">
+          <ArrowLeft className="h-4 w-4" />
         </span>
         {ARENA_COPY.backToHub}
       </button>

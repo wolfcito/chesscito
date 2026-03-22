@@ -1,6 +1,6 @@
 "use client";
 
-import { VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
+import { ARENA_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { StatCard } from "@/components/arena/stat-card";
 import { formatTime } from "@/lib/game/arena-utils";
@@ -56,7 +56,7 @@ export function VictoryClaiming({
 
         {/* Stats — 3 mini-cards */}
         <div className="mb-6 flex w-full gap-2">
-          <StatCard icon="⚔" value={difficulty.toUpperCase()} label={VICTORY_CELEBRATION_COPY.stats.difficulty} />
+          <StatCard icon="⚔" value={ARENA_COPY.difficulty[difficulty as keyof typeof ARENA_COPY.difficulty] ?? difficulty} label={VICTORY_CELEBRATION_COPY.stats.difficulty} />
           <StatCard icon="♟" value={String(moves)} label={VICTORY_CELEBRATION_COPY.stats.moves} />
           <StatCard icon="⏱" value={time} label={VICTORY_CELEBRATION_COPY.stats.time} />
         </div>

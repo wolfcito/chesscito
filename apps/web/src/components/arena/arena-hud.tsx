@@ -70,9 +70,9 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
         type="button"
         onClick={handleBackClick}
         className={[
-          "flex h-11 shrink-0 items-center justify-center rounded-full border transition-all",
+          "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
           confirmingBack
-            ? "w-auto gap-1.5 border-white/20 bg-white/10 px-3 text-white animate-pulse"
+            ? "w-auto gap-1.5 border-white/20 bg-white/10 px-3 text-white"
             : "w-11 border-white/10 bg-white/5 text-white/70 hover:text-white",
         ].join(" ")}
         aria-label={ARENA_COPY.backToHub}
@@ -81,6 +81,7 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
           <>
             <Check className="h-3.5 w-3.5" />
             <span className="text-[0.65rem] font-semibold">{ARENA_COPY.backToHub}</span>
+            <span className="absolute bottom-0 left-0 h-0.5 w-full origin-left bg-white/40" style={{ animation: `confirm-countdown ${CONFIRM_TIMEOUT_MS}ms linear forwards` }} />
           </>
         ) : (
           <ArrowLeft className="h-4 w-4" />
@@ -106,9 +107,9 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
             type="button"
             onClick={handleResignClick}
             className={[
-              "flex h-11 shrink-0 items-center justify-center rounded-full border transition-all",
+              "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
               confirmingResign
-                ? "w-auto gap-1.5 border-rose-400/40 bg-rose-500/15 px-3 text-rose-400 animate-pulse"
+                ? "w-auto gap-1.5 border-rose-400/40 bg-rose-500/15 px-3 text-rose-400"
                 : "w-11 border-white/10 bg-white/5 text-white/35 hover:text-rose-400",
             ].join(" ")}
             aria-label={ARENA_COPY.resign}
@@ -117,6 +118,7 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
               <>
                 <Check className="h-3.5 w-3.5" />
                 <span className="text-[0.65rem] font-semibold">{ARENA_COPY.resign}</span>
+                <span className="absolute bottom-0 left-0 h-0.5 w-full origin-left bg-rose-400/60" style={{ animation: `confirm-countdown ${CONFIRM_TIMEOUT_MS}ms linear forwards` }} />
               </>
             ) : (
               <Flag className="h-3.5 w-3.5" />

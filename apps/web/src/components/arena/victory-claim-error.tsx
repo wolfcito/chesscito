@@ -79,7 +79,7 @@ export function VictoryClaimError({
 
         {/* Stats */}
         <div className="mb-6 flex w-full gap-2">
-          <StatCard icon="⚔" value={difficulty.toUpperCase()} label={VICTORY_CELEBRATION_COPY.stats.difficulty} />
+          <StatCard icon="⚔" value={ARENA_COPY.difficulty[difficulty as keyof typeof ARENA_COPY.difficulty] ?? difficulty} label={VICTORY_CELEBRATION_COPY.stats.difficulty} />
           <StatCard icon="♟" value={String(moves)} label={VICTORY_CELEBRATION_COPY.stats.moves} />
           <StatCard icon="⏱" value={time} label={VICTORY_CELEBRATION_COPY.stats.time} />
         </div>

@@ -37,7 +37,7 @@ function VictoryCardTeaser({ moves, time, difficulty }: { moves: number; time: s
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold text-white/80">{VICTORY_CLAIM_COPY.teaserCheckmate(moves)}</p>
-          <p className="text-[0.6rem] text-cyan-100/40">{difficulty.toUpperCase()} — {time}</p>
+          <p className="text-[0.6rem] text-cyan-100/40">{ARENA_COPY.difficulty[difficulty as keyof typeof ARENA_COPY.difficulty] ?? difficulty} — {time}</p>
         </div>
         <div className="shrink-0 rounded-lg bg-white/[0.04] px-2 py-1">
           <span className="text-[0.55rem] font-bold text-cyan-100/30">{VICTORY_CLAIM_COPY.teaserShare}</span>
@@ -97,7 +97,7 @@ export function VictoryCelebration({
 
         {/* Stats — 3 mini-cards */}
         <div className="mb-5 flex w-full gap-2">
-          <StatCard icon="⚔" value={difficulty.toUpperCase()} label={VICTORY_CELEBRATION_COPY.stats.difficulty} />
+          <StatCard icon="⚔" value={ARENA_COPY.difficulty[difficulty as keyof typeof ARENA_COPY.difficulty] ?? difficulty} label={VICTORY_CELEBRATION_COPY.stats.difficulty} />
           <StatCard icon="♟" value={String(moves)} label={VICTORY_CELEBRATION_COPY.stats.moves} />
           <StatCard icon="⏱" value={time} label={VICTORY_CELEBRATION_COPY.stats.time} />
         </div>
