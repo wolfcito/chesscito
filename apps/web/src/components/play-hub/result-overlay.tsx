@@ -160,7 +160,7 @@ export function ResultOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -263,7 +263,7 @@ export function BadgeEarnedPrompt({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
       aria-labelledby="badge-earned-title"

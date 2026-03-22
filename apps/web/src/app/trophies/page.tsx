@@ -89,14 +89,14 @@ export default function TrophiesPage() {
   }, [isConnected, address, loadMyVictories]);
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[var(--app-max-width)] flex-col bg-[#0a1424]">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[var(--app-max-width)] flex-col bg-[var(--surface-frosted-solid)]">
       {/* Hero zone — art background, max 200px */}
       <div className="relative flex items-end px-4 pb-4 pt-6" style={{ minHeight: 160, maxHeight: 200 }}>
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a2a3f] to-[#0a1424] opacity-80" />
         <div className="relative z-10 flex items-center gap-3">
           <Link
             href="/"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5"
           >
             <ArrowLeft className="h-4 w-4 text-slate-400" />
           </Link>
@@ -112,7 +112,7 @@ export default function TrophiesPage() {
       </div>
 
       {/* List zone — clean dark background */}
-      <div className="flex-1 px-4 pb-8">
+      <div className="flex-1 px-4 pb-8" style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}>
         {!configured && (
           <p className="py-6 text-center text-sm text-slate-500">
             {TROPHY_VITRINE_COPY.configError}

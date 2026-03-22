@@ -34,6 +34,9 @@
 
     --radius: 1rem;
     --app-max-width: 390px;
+    --surface-frosted: rgba(10, 20, 36, 0.92);
+    --surface-frosted-solid: #0a1424;
+    --overlay-scrim: rgba(0, 0, 0, 0.7);
     --intro-bg-mobile: image-set(
       url("/art/bg-splash-chesscito.avif") type("image/avif"),
       url("/art/bg-splash-chesscito.webp") type("image/webp"),

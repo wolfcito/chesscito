@@ -27,12 +27,12 @@ const PIECE_KEY_MAP: Record<PromotionChoice, keyof typeof ARENA_PIECE_IMG.w> = {
 export function PromotionOverlay({ onSelect, onCancel }: Props) {
   return (
     <div
-      className="absolute inset-0 z-30 flex items-center justify-center bg-black/70"
+      className="absolute inset-0 z-30 flex items-center justify-center bg-[var(--overlay-scrim)]"
       onClick={onCancel}
     >
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
-        className="flex flex-col items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#0a1424]/92 p-5 backdrop-blur-2xl"
+        className="flex flex-col items-center gap-3 rounded-2xl border border-white/[0.08] bg-[var(--surface-frosted)] p-5 backdrop-blur-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-sm font-semibold text-white/80">
