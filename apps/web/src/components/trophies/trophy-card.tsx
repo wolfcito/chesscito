@@ -8,7 +8,7 @@ import type { VictoryEntry } from "@/lib/game/victory-events";
 const DIFFICULTY_CHIP: Record<number, { label: string; className: string }> = {
   1: { label: "Easy", className: "bg-emerald-500/20 text-emerald-400" },
   2: { label: "Medium", className: "bg-amber-500/20 text-amber-400" },
-  3: { label: "Hard", className: "bg-red-500/20 text-red-400" },
+  3: { label: "Hard", className: "bg-rose-500/20 text-rose-400" },
 };
 
 const RANK_ACCENT: Record<number, string> = {

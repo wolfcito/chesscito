@@ -59,7 +59,7 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
                 {item.configured && item.enabled ? (
                   <><CheckCircle2 className="h-3 w-3 text-emerald-400" /><span className="text-emerald-400">{SHOP_SHEET_COPY.status.available}</span></>
                 ) : item.configured ? (
-                  <><XCircle className="h-3 w-3 text-red-400" /><span className="text-red-400">{SHOP_SHEET_COPY.status.unavailable}</span></>
+                  <><XCircle className="h-3 w-3 text-rose-400" /><span className="text-rose-400">{SHOP_SHEET_COPY.status.unavailable}</span></>
                 ) : (
                   <><CircleDashed className="h-3 w-3 text-slate-500" /><span className="text-slate-500">{SHOP_SHEET_COPY.status.unavailable}</span></>
                 )}

@@ -71,7 +71,7 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
             <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.loading}</p>
           )}
           {error && (
-            <p className="text-center text-sm text-red-400">{error}</p>
+            <p className="text-center text-sm text-rose-400">{error}</p>
           )}
           {!loading && !error && rows.length === 0 && (
             <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.empty}</p>

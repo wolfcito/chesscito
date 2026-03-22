@@ -39,13 +39,13 @@ export function TrophyList({
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
-        <p className="text-sm text-red-400">{error}</p>
+      <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4 text-center">
+        <p className="text-sm text-rose-400">{error}</p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-2 text-xs font-semibold text-red-300 underline"
+            className="mt-2 text-xs font-semibold text-rose-300 underline"
           >
             Tap to retry
           </button>
