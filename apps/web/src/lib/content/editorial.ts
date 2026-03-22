@@ -222,6 +222,35 @@ export const MISSION_BRIEFING_COPY = {
   captureHintCompact: "♜ Capture the target",
 } as const;
 
+export const VICTORY_PAGE_COPY = {
+  challengeLine: "Can you beat this?",
+  acceptChallenge: "Accept Challenge",
+  backToHub: "Back to Hub",
+  metaCheckmate: (moves: number) => `Checkmate in ${moves} moves`,
+  metaChallenge: (id: string) => `Can you beat that? Victory #${id} claimed onchain.`,
+  metaFallback: "Can you beat this? Play Chesscito on Celo.",
+} as const;
+
+export const CHAIN_NAMES: Record<number, string> = {
+  42220: "Celo",
+  44787: "Celo Alfajores",
+  11142220: "Celo Sepolia",
+} as const;
+
+export const PURCHASE_FIELD_LABELS = {
+  item: "Item",
+  price: "Price",
+  payingWith: "Paying with",
+  status: "Status",
+  network: "Network",
+} as const;
+
+export const DIFFICULTY_LABELS: Record<number, string> = {
+  1: "Easy",
+  2: "Medium",
+  3: "Hard",
+} as const;
+
 export const VICTORY_CLAIM_COPY = {
   claimButton: "Claim Victory",
   claimHelper: "Claim your onchain victory and unlock your share card",
