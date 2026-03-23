@@ -18,6 +18,13 @@ import { PromotionOverlay } from "@/components/arena/promotion-overlay";
 import { ArenaEndState, type ClaimPhase, type ShareStatus, type ClaimData } from "@/components/arena/arena-end-state";
 import { ARENA_COPY } from "@/lib/content/editorial";
 import { formatTime } from "@/lib/game/arena-utils";
+import { mapArenaResult } from "@/lib/coach/game-result";
+import { generateQuickReview } from "@/lib/coach/fallback-engine";
+import { CoachLoading } from "@/components/coach/coach-loading";
+import { CoachPanel } from "@/components/coach/coach-panel";
+import { CoachFallback } from "@/components/coach/coach-fallback";
+import { CoachPaywall } from "@/components/coach/coach-paywall";
+import type { CoachResponse, BasicCoachResponse, GameRecord } from "@/lib/coach/types";
 import { getConfiguredChainId, getVictoryNFTAddress } from "@/lib/contracts/chains";
 import { victoryAbi } from "@/lib/contracts/victory";
 import {
@@ -51,6 +58,14 @@ export default function ArenaPage() {
   const [shareStatus, setShareStatus] = useState<ShareStatus>("locked");
   const [claimError, setClaimError] = useState<string | null>(null);
   const claimingRef = useRef(false);
+
+  // Coach state
+  type CoachPhase = "idle" | "loading" | "result" | "fallback" | "paywall";
+  const [coachPhase, setCoachPhase] = useState<CoachPhase>("idle");
+  const [coachJobId, setCoachJobId] = useState<string | null>(null);
+  const [coachResponse, setCoachResponse] = useState<CoachResponse | null>(null);
+  const [coachFallbackResponse, setCoachFallbackResponse] = useState<BasicCoachResponse | null>(null);
+  const [coachCredits, setCoachCredits] = useState(0);
 
   // Persist claim success so returning from share keeps context
   useEffect(() => {
@@ -128,6 +143,88 @@ export default function ArenaPage() {
     },
     [tokenBalances]
   );
+
+  const handleAskCoach = useCallback(async () => {
+    const gameResult = mapArenaResult(game.status, isPlayerWin);
+
+    // No wallet → free quick review
+    if (!isConnected || !address) {
+      const quick = generateQuickReview({
+        result: gameResult,
+        difficulty: game.difficulty,
+        totalMoves: game.moveHistory.length,
+        elapsedMs: game.elapsedMs,
+      });
+      setCoachFallbackResponse(quick);
+      setCoachPhase("fallback");
+      return;
+    }
+
+    // Check credits
+    try {
+      const creditsRes = await fetch(`/api/coach/credits?wallet=${address}`);
+      const creditsData = await creditsRes.json();
+      const credits = creditsData.credits ?? 0;
+      setCoachCredits(credits);
+
+      if (credits <= 0) {
+        setCoachPhase("paywall");
+        return;
+      }
+
+      // Save game record then request analysis
+      const gameRecord: GameRecord = {
+        gameId: crypto.randomUUID(),
+        moves: game.moveHistory,
+        result: gameResult,
+        difficulty: game.difficulty,
+        totalMoves: game.moveHistory.length,
+        elapsedMs: game.elapsedMs,
+        timestamp: Date.now(),
+      };
+
+      await fetch("/api/games", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ walletAddress: address, game: gameRecord }),
+      });
+
+      const analyzeRes = await fetch("/api/coach/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ gameId: gameRecord.gameId, walletAddress: address }),
+      });
+      const analyzeData = await analyzeRes.json();
+
+      if (analyzeData.status === "ready") {
+        setCoachResponse(analyzeData.response);
+        setCoachCredits((c) => Math.max(0, c - 1));
+        setCoachPhase("result");
+      } else if (analyzeData.jobId) {
+        setCoachJobId(analyzeData.jobId);
+        setCoachPhase("loading");
+      } else {
+        // Fallback to quick review on error
+        const quick = generateQuickReview({
+          result: gameResult,
+          difficulty: game.difficulty,
+          totalMoves: game.moveHistory.length,
+          elapsedMs: game.elapsedMs,
+        });
+        setCoachFallbackResponse(quick);
+        setCoachPhase("fallback");
+      }
+    } catch {
+      const quick = generateQuickReview({
+        result: gameResult,
+        difficulty: game.difficulty,
+        totalMoves: game.moveHistory.length,
+        elapsedMs: game.elapsedMs,
+      });
+      setCoachFallbackResponse(quick);
+      setCoachPhase("fallback");
+    }
+  }, [game.status, game.difficulty, game.moveHistory, game.elapsedMs, isPlayerWin, isConnected, address]);
 
   const handleBackToHub = () => router.push("/");
 
@@ -263,6 +360,10 @@ export default function ArenaPage() {
     setClaimData({ tokenId: null, claimTxHash: null, shareCardUrl: null, shareLinkUrl: null });
     setShareStatus("locked");
     setClaimError(null);
+    setCoachPhase("idle");
+    setCoachJobId(null);
+    setCoachResponse(null);
+    setCoachFallbackResponse(null);
     game.reset();
   };
 
@@ -343,6 +444,65 @@ export default function ArenaPage() {
           moves={game.moveCount}
           elapsedMs={game.elapsedMs}
           difficulty={game.difficulty}
+          onAskCoach={coachPhase === "idle" ? handleAskCoach : undefined}
+        />
+      )}
+
+      {/* Coach phases */}
+      {coachPhase === "loading" && coachJobId && (
+        <div className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)]">
+          <CoachLoading
+            jobId={coachJobId}
+            onReady={(response) => { setCoachResponse(response); setCoachCredits((c) => Math.max(0, c - 1)); setCoachPhase("result"); }}
+            onFailed={() => {
+              const quick = generateQuickReview({ result: mapArenaResult(game.status, isPlayerWin), difficulty: game.difficulty, totalMoves: game.moveHistory.length, elapsedMs: game.elapsedMs });
+              setCoachFallbackResponse(quick);
+              setCoachPhase("fallback");
+            }}
+          />
+        </div>
+      )}
+      {coachPhase === "result" && coachResponse && (
+        <div className="pointer-events-auto fixed inset-0 z-[60] overflow-y-auto bg-[var(--overlay-scrim)]">
+          <div className="mx-auto max-w-[var(--app-max-width,390px)] pt-8">
+            <CoachPanel
+              response={coachResponse}
+              difficulty={game.difficulty}
+              totalMoves={game.moveCount}
+              elapsedMs={game.elapsedMs}
+              credits={coachCredits}
+              onPlayAgain={handlePlayAgain}
+              onBackToHub={handleBackToHub}
+            />
+          </div>
+        </div>
+      )}
+      {coachPhase === "fallback" && coachFallbackResponse && (
+        <div className="pointer-events-auto fixed inset-0 z-[60] overflow-y-auto bg-[var(--overlay-scrim)]">
+          <div className="mx-auto max-w-[var(--app-max-width,390px)] pt-8">
+            <CoachFallback
+              response={coachFallbackResponse}
+              difficulty={game.difficulty}
+              totalMoves={game.moveCount}
+              elapsedMs={game.elapsedMs}
+              result={mapArenaResult(game.status, isPlayerWin)}
+              onGetFullAnalysis={() => setCoachPhase(isConnected ? "paywall" : "idle")}
+              onPlayAgain={handlePlayAgain}
+              onBackToHub={handleBackToHub}
+            />
+          </div>
+        </div>
+      )}
+      {coachPhase === "paywall" && (
+        <CoachPaywall
+          open
+          onOpenChange={() => setCoachPhase("idle")}
+          onBuy={() => { /* TODO: integrate shop purchase flow */ setCoachPhase("idle"); }}
+          onQuickReview={() => {
+            const quick = generateQuickReview({ result: mapArenaResult(game.status, isPlayerWin), difficulty: game.difficulty, totalMoves: game.moveHistory.length, elapsedMs: game.elapsedMs });
+            setCoachFallbackResponse(quick);
+            setCoachPhase("fallback");
+          }}
         />
       )}
     </main>

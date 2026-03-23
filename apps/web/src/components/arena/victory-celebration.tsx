@@ -3,6 +3,7 @@
 import { RotateCcw, Trophy } from "lucide-react";
 import { ARENA_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/content/editorial";
 import { Button } from "@/components/ui/button";
+import { AskCoachButton } from "@/components/coach/ask-coach-button";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { StatCard } from "@/components/arena/stat-card";
 import { formatTime } from "@/lib/game/arena-utils";
@@ -18,6 +19,7 @@ type Props = {
   onBackToHub: () => void;
   onClaimVictory?: () => void;
   claimPrice?: string;
+  onAskCoach?: () => void;
 };
 
 /** Locked teaser showing what the user unlocks on claim */
@@ -56,6 +58,7 @@ export function VictoryCelebration({
   onBackToHub,
   onClaimVictory,
   claimPrice,
+  onAskCoach,
 }: Props) {
   const time = formatTime(elapsedMs);
   const performanceLine = isCheckmate
@@ -140,6 +143,11 @@ export function VictoryCelebration({
               {/* Locked teaser card */}
               <VictoryCardTeaser moves={moves} time={time} difficulty={difficulty} />
             </div>
+          )}
+
+          {/* Ask the Coach */}
+          {onAskCoach && (
+            <AskCoachButton onClick={onAskCoach} />
           )}
 
           {/* Tertiary: Back to Hub */}

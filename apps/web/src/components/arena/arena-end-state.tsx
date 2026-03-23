@@ -4,6 +4,7 @@ import { RotateCcw } from "lucide-react";
 import { ARENA_COPY } from "@/lib/content/editorial";
 import { Button } from "@/components/ui/button";
 import type { ArenaStatus } from "@/lib/game/types";
+import { AskCoachButton } from "@/components/coach/ask-coach-button";
 import { VictoryCelebration } from "./victory-celebration";
 import { VictoryClaiming } from "./victory-claiming";
 import { VictoryClaimSuccess } from "./victory-claim-success";
@@ -34,6 +35,7 @@ type Props = {
   moves: number;
   elapsedMs: number;
   difficulty: string;
+  onAskCoach?: () => void;
 };
 
 function getLoseText(status: ArenaStatus): string {
@@ -65,6 +67,7 @@ export function ArenaEndState({
   moves,
   elapsedMs,
   difficulty,
+  onAskCoach,
 }: Props) {
   if (isPlayerWin) {
     const sharedProps = {
@@ -101,6 +104,7 @@ export function ArenaEndState({
             {...sharedProps}
             onClaimVictory={onClaimVictory}
             claimPrice={claimPrice}
+            onAskCoach={onAskCoach}
           />
         );
     }
@@ -128,7 +132,7 @@ export function ArenaEndState({
         <h2 className="fantasy-title text-2xl font-bold text-rose-300 drop-shadow-[0_0_16px_rgba(251,113,133,0.4)]">
           {text}
         </h2>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-2 w-full max-w-[260px]">
           <Button
             type="button"
             variant="game-primary"
@@ -138,6 +142,9 @@ export function ArenaEndState({
           >
             <RotateCcw size={16} className="inline -mt-0.5" /> {ARENA_COPY.playAgain}
           </Button>
+          {onAskCoach && (
+            <AskCoachButton onClick={onAskCoach} />
+          )}
           <Button
             type="button"
             variant="game-ghost"
