@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".tmp/coach-tests",
+    "rootDir": "src",
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmit": false,
+    "paths": {}
+  },
+  "include": ["src/lib/coach/**/*.ts"]
+}
