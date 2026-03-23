@@ -11,12 +11,11 @@ export async function GET(req: Request) {
   const wallet = url.searchParams.get("wallet")?.toLowerCase();
   if (!wallet) return NextResponse.json({ error: "Missing wallet" }, { status: 400 });
 
-  // Seed free credits on first query
+  // Seed free credits on first query (atomic — setnx prevents race conditions)
   const seededKey = `coach:seeded:${wallet}`;
-  const alreadySeeded = await redis.get(seededKey);
-  if (!alreadySeeded) {
-    await redis.set(REDIS_KEYS.credits(wallet), FREE_CREDITS);
-    await redis.set(seededKey, "1");
+  const wasSet = await redis.setnx(seededKey, "1");
+  if (wasSet) {
+    await redis.setnx(REDIS_KEYS.credits(wallet), FREE_CREDITS);
   }
 
   const credits = (await redis.get<number>(REDIS_KEYS.credits(wallet))) ?? 0;

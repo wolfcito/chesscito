@@ -48,13 +48,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "An analysis is already in progress" }, { status: 429 });
     }
 
-    // --- Free tier: seed 3 credits on first use ---
+    // --- Free tier: seed 3 credits on first use (atomic) ---
     const FREE_CREDITS = 3;
     const seededKey = `coach:seeded:${wallet}`;
-    const alreadySeeded = await redis.get(seededKey);
-    if (!alreadySeeded) {
-      await redis.set(REDIS_KEYS.credits(wallet), FREE_CREDITS);
-      await redis.set(seededKey, "1");
+    const wasSet = await redis.setnx(seededKey, "1");
+    if (wasSet) {
+      await redis.setnx(REDIS_KEYS.credits(wallet), FREE_CREDITS);
     }
 
     // --- Credit check ---
