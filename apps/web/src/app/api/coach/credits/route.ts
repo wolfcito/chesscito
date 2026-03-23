@@ -4,10 +4,20 @@ import { REDIS_KEYS } from "@/lib/coach/redis-keys";
 
 const redis = Redis.fromEnv();
 
+const FREE_CREDITS = 3;
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const wallet = url.searchParams.get("wallet")?.toLowerCase();
   if (!wallet) return NextResponse.json({ error: "Missing wallet" }, { status: 400 });
+
+  // Seed free credits on first query
+  const seededKey = `coach:seeded:${wallet}`;
+  const alreadySeeded = await redis.get(seededKey);
+  if (!alreadySeeded) {
+    await redis.set(REDIS_KEYS.credits(wallet), FREE_CREDITS);
+    await redis.set(seededKey, "1");
+  }
 
   const credits = (await redis.get<number>(REDIS_KEYS.credits(wallet))) ?? 0;
   return NextResponse.json({ credits });

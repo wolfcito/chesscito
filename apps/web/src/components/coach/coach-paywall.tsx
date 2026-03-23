@@ -26,7 +26,7 @@ export function CoachPaywall({ open, onOpenChange, onBuy, onQuickReview }: Props
             className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 text-center transition-all hover:bg-white/[0.06]"
           >
             <p className="text-lg font-bold text-white">{COACH_COPY.creditPack5}</p>
-            <p className="text-sm text-cyan-100/50">$0.10</p>
+            <p className="text-sm text-cyan-100/50">$0.05</p>
           </button>
           <button
             type="button"
@@ -34,7 +34,7 @@ export function CoachPaywall({ open, onOpenChange, onBuy, onQuickReview }: Props
             className="rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.04] p-4 text-center transition-all hover:bg-emerald-500/[0.08]"
           >
             <p className="text-lg font-bold text-white">{COACH_COPY.creditPack20}</p>
-            <p className="text-sm text-cyan-100/50">$0.30</p>
+            <p className="text-sm text-cyan-100/50">$0.10</p>
             <span className="mt-1 inline-block rounded-full bg-emerald-500/20 px-2 py-0.5 text-[0.6rem] font-bold text-emerald-300">{COACH_COPY.creditBest}</span>
           </button>
         </div>
