@@ -24,6 +24,7 @@ import { CoachLoading } from "@/components/coach/coach-loading";
 import { CoachPanel } from "@/components/coach/coach-panel";
 import { CoachFallback } from "@/components/coach/coach-fallback";
 import { CoachPaywall } from "@/components/coach/coach-paywall";
+import { CoachWelcome } from "@/components/coach/coach-welcome";
 import type { CoachResponse, BasicCoachResponse, GameRecord } from "@/lib/coach/types";
 import { getConfiguredChainId, getVictoryNFTAddress } from "@/lib/contracts/chains";
 import { victoryAbi } from "@/lib/contracts/victory";
@@ -60,7 +61,7 @@ export default function ArenaPage() {
   const claimingRef = useRef(false);
 
   // Coach state
-  type CoachPhase = "idle" | "loading" | "result" | "fallback" | "paywall";
+  type CoachPhase = "idle" | "welcome" | "loading" | "result" | "fallback" | "paywall";
   const [coachPhase, setCoachPhase] = useState<CoachPhase>("idle");
   const [coachJobId, setCoachJobId] = useState<string | null>(null);
   const [coachResponse, setCoachResponse] = useState<CoachResponse | null>(null);
@@ -144,24 +145,12 @@ export default function ArenaPage() {
     [tokenBalances]
   );
 
-  const handleAskCoach = useCallback(async () => {
+  const startCoachAnalysis = useCallback(async () => {
+    if (!address) return;
     const gameResult = mapArenaResult(game.status, isPlayerWin);
 
-    // No wallet → free quick review
-    if (!isConnected || !address) {
-      const quick = generateQuickReview({
-        result: gameResult,
-        difficulty: game.difficulty,
-        totalMoves: game.moveHistory.length,
-        elapsedMs: game.elapsedMs,
-      });
-      setCoachFallbackResponse(quick);
-      setCoachPhase("fallback");
-      return;
-    }
-
-    // Check credits
     try {
+      // Re-fetch credits (may have been seeded by welcome)
       const creditsRes = await fetch(`/api/coach/credits?wallet=${address}`);
       const creditsData = await creditsRes.json();
       const credits = creditsData.credits ?? 0;
@@ -224,7 +213,42 @@ export default function ArenaPage() {
       setCoachFallbackResponse(quick);
       setCoachPhase("fallback");
     }
-  }, [game.status, game.difficulty, game.moveHistory, game.elapsedMs, isPlayerWin, isConnected, address]);
+  }, [game.status, game.difficulty, game.moveHistory, game.elapsedMs, isPlayerWin, address]);
+
+  const handleAskCoach = useCallback(() => {
+    const gameResult = mapArenaResult(game.status, isPlayerWin);
+
+    // No wallet → free quick review
+    if (!isConnected || !address) {
+      const quick = generateQuickReview({
+        result: gameResult,
+        difficulty: game.difficulty,
+        totalMoves: game.moveHistory.length,
+        elapsedMs: game.elapsedMs,
+      });
+      setCoachFallbackResponse(quick);
+      setCoachPhase("fallback");
+      return;
+    }
+
+    // First time → show welcome
+    try {
+      const welcomed = localStorage.getItem("chesscito:coach-welcomed");
+      if (!welcomed) {
+        setCoachPhase("welcome");
+        return;
+      }
+    } catch { /* localStorage unavailable */ }
+
+    // Returning user → go straight to analysis
+    void startCoachAnalysis();
+  }, [game.status, game.difficulty, game.moveHistory, game.elapsedMs, isPlayerWin, isConnected, address, startCoachAnalysis]);
+
+  const handleClaimWelcome = useCallback(() => {
+    try { localStorage.setItem("chesscito:coach-welcomed", "1"); } catch { /* ignore */ }
+    setCoachPhase("idle");
+    void startCoachAnalysis();
+  }, [startCoachAnalysis]);
 
   const handleBackToHub = () => router.push("/");
 
@@ -449,6 +473,13 @@ export default function ArenaPage() {
       )}
 
       {/* Coach phases */}
+      {coachPhase === "welcome" && (
+        <div className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)]">
+          <div className="mx-4 w-full max-w-[340px] rounded-3xl border border-white/[0.08] bg-[var(--surface-frosted)] backdrop-blur-2xl shadow-[0_0_60px_rgba(16,185,129,0.08)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
+            <CoachWelcome onClaim={handleClaimWelcome} />
+          </div>
+        </div>
+      )}
       {coachPhase === "loading" && coachJobId && (
         <div className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)]">
           <CoachLoading

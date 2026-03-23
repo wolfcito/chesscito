@@ -416,4 +416,10 @@ export const COACH_COPY = {
   keyMomentsCount: (n: number) => `${n} key moments`,
   moveLabel: (n: number, move: string) => `Move ${n} · You played ${move}`,
   tryInstead: (move: string) => `→ Try ${move}`,
+  welcomeTitle: "Meet Your Coach",
+  welcomeSub: "Get personalized analysis of your games — mistakes, lessons, and what you did well.",
+  welcomePack: "3 analyses",
+  welcomePackDetail: "Key moments · Lessons · Praise",
+  claimFree: "Claim Free Analyses",
+  welcomeNote: "After your free analyses, credit packs start at $0.05",
 } as const;
