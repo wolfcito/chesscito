@@ -42,7 +42,7 @@ export function CoachLoading({ jobId, onReady, onFailed }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-4 px-6 py-12">
-      <GraduationCap className="h-12 w-12 text-emerald-400/60" />
+      <GraduationCap className="h-12 w-12 text-emerald-400/60 animate-pulse" />
       <p className="text-lg font-semibold text-white">{COACH_COPY.analyzing}{dots}</p>
       <p className="text-sm text-cyan-100/40">{COACH_COPY.reviewingMoves}</p>
       <p className="mt-4 text-xs text-cyan-100/30">{COACH_COPY.canLeave}</p>
