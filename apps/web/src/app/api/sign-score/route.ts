@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       timeMs?: number;
     };
     const player = parseAddress(body.player);
-    enforceRateLimit(getRequestIp(request), player);
+    await enforceRateLimit(getRequestIp(request), player);
 
     const levelId = parseInteger(body.levelId, "levelId", 1, 10_000);
     // Max score: 15 stars × 100 pts = 1500 per piece level
