@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Trophy } from "lucide-react";
+import { Check, Lock, Trophy } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -119,7 +119,9 @@ function BadgeCard({
           >
             {isClaimBusy ? BADGE_SHEET_COPY.claiming : BADGE_SHEET_COPY.claimBadge}
           </Button>
-        ) : null}
+        ) : (
+          <Lock className="h-4 w-4 text-cyan-100/30" aria-hidden="true" />
+        )}
       </div>
     </div>
   );
