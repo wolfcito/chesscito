@@ -732,7 +732,7 @@ Computed server-side from GameRecord[] using objective badge metrics:
 - Rule-based Quick Review fallback (Screen 5)
 - Coach history with progress signals (Screen 6)
 - Two analysis paths only: server-paid and fallback
-- Credit-based payment via CoachCredits contract
+- Credit-based payment via ShopUpgradeable items
 - Objective badge progression (no LLM dependency)
 - Server-side storage (Upstash) as source of truth
 - Game validation via chess.js server-side
