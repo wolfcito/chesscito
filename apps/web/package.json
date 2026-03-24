@@ -2,6 +2,8 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "description": "MiniPay MiniApp for playful cognitive enrichment through pre-chess challenges",
+  "author": "Wolfcito (@akawolfcito)",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
