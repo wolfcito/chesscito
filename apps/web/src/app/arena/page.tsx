@@ -99,6 +99,14 @@ export default function ArenaPage() {
           shareLinkUrl: null,
         });
         setShareStatus("ready");
+      } else if (saved.phase === "claiming") {
+        // Refresh mid-claim: block button if deadline still valid, otherwise clear
+        const nowSec = Math.floor(Date.now() / 1000);
+        if (saved.deadline && Number(saved.deadline) > nowSec + 30) {
+          setClaimPhase("claiming");
+        } else {
+          sessionStorage.removeItem("chesscito:claim");
+        }
       }
     } catch { /* corrupt data — ignore */ }
   }, []);
@@ -286,6 +294,9 @@ export default function ArenaPage() {
       if (!res.ok || "error" in payload) {
         throw new Error(payload.error ?? "Could not fetch signature");
       }
+
+      // Persist claiming state so page refresh can't double-mint
+      try { sessionStorage.setItem("chesscito:claim", JSON.stringify({ phase: "claiming", deadline: payload.deadline })); } catch { /* ignore */ }
 
       // 2. Select payment token
       const token = selectPaymentToken(mintPriceUsd6);
