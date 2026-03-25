@@ -449,7 +449,7 @@ export default function ArenaPage() {
             legalMoves={game.legalMoves}
             lastMove={game.lastMove}
             checkSquare={game.checkSquare}
-            isLocked={game.isThinking || isEndState}
+            isLocked={game.isThinking || isEndState || !!game.pendingPromotion}
             onSquareClick={game.selectSquare}
           />
           {game.pendingPromotion && (
