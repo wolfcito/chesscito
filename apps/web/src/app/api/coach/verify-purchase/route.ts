@@ -60,13 +60,14 @@ export async function POST(req: Request) {
     let creditsToAdd = 0;
     for (const log of logs) {
       try {
-        // Parse topic[2] as itemId (indexed param)
-        const itemId = log.topics[2] ? BigInt(log.topics[2]) : null;
-        const buyer = log.topics[1]
-          ? ("0x" + log.topics[1].slice(26)).toLowerCase()
-          : null;
+        const rawBuyer = log.topics[1];
+        const rawItem = log.topics[2];
+        if (!rawBuyer || !rawItem) continue;
 
+        const buyer = ("0x" + rawBuyer.slice(26)).toLowerCase();
         if (buyer !== wallet) continue;
+
+        const itemId = BigInt(rawItem);
         if (itemId === COACH_5_ITEM_ID) creditsToAdd += 5;
         else if (itemId === COACH_20_ITEM_ID) creditsToAdd += 20;
       } catch { continue; }
