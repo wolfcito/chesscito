@@ -35,8 +35,7 @@ Centered piece selector. Active piece is the only "hero" element on screen.
 - Gap between pieces: `8px`
 - Active piece shows label inside: piece name in `7px` uppercase tracking
 
-**Validation variants to test during implementation:**
-- Hero at `56px` vs `64px` — verify 64 doesn't crowd the row with 3 pieces on 390px
+**Default: `64px`.** Only fall back to `56px` if real-device testing on 390px shows crowding with 3 pieces. `64px` is the spec; `56px` is the escape hatch, not an equal option.
 
 **Mission target (inside hero block):**
 
@@ -48,11 +47,13 @@ Centered piece selector. Active piece is the only "hero" element on screen.
 - Gap from piece to label: test `8px` and `10px`, pick whichever reads cleaner without losing compactness
 - Gap from label to target value: `2px` (single visual block)
 - Target glow must be weaker than hero piece glow (max `cyan/20%` shadow vs piece's `cyan/20%` — if they feel equal, reduce target to `cyan/12%`)
-- When tutorial is active: label becomes tutorial text, target hides. Same position, same scale.
+- **Tutorial state replaces mission target entirely.** The mission-label slot renders either the mission target (label + coordinate) or the tutorial text — never both. They are mutually exclusive states of the same slot, not coexisting elements.
 
 #### Zone A2 — Utility Band
 
 Thin strip below hero. Pure metadata reference.
+
+**Anti-creep rule:** The utility band contains exactly 3 controls: Lv indicator, stars chip, more button. No new controls may be added here without revising this spec. If something needs to go in the header, it either replaces an existing utility element or it doesn't belong.
 
 - Height: `28px` total including padding
 - Background: **none** — fully transparent, no border, no blur
