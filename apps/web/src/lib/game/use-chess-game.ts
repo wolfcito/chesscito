@@ -52,6 +52,7 @@ export function useChessGame(): ChessGameState {
   const gameStartRef = useRef<number>(0);
 
   const gameRef = useRef(new Chess());
+  const aiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [fen, setFen] = useState(gameRef.current.fen());
 
   const pieces = useMemo(() => fenToPieces(fen), [fen]);
@@ -87,7 +88,9 @@ export function useChessGame(): ChessGameState {
     setIsThinking(true);
 
     // Use setTimeout to yield to the UI before computing
-    setTimeout(() => {
+    aiTimeoutRef.current = setTimeout(() => {
+      aiTimeoutRef.current = null;
+      if (game.isGameOver()) { setIsThinking(false); return; }
       try {
         const result = aiMove(game.fen(), DIFFICULTY_LEVEL[currentDifficulty]);
         const entries = Object.entries(result);
@@ -177,7 +180,7 @@ export function useChessGame(): ChessGameState {
   }, [status, isThinking, selectedSquare, legalMoves, triggerAiMove, difficulty]);
 
   const promoteWith = useCallback((piece: "q" | "r" | "b" | "n") => {
-    if (!pendingPromotion) return;
+    if (!pendingPromotion || isThinking) return;
     const game = gameRef.current;
 
     try {
@@ -199,7 +202,7 @@ export function useChessGame(): ChessGameState {
       setSelectedSquare(null);
       setLegalMoves([]);
     }
-  }, [pendingPromotion, triggerAiMove, difficulty]);
+  }, [pendingPromotion, isThinking, triggerAiMove, difficulty]);
 
   const cancelPromotion = useCallback(() => {
     if (!pendingPromotion) return;
@@ -212,6 +215,7 @@ export function useChessGame(): ChessGameState {
   }, [pendingPromotion]);
 
   const reset = useCallback(() => {
+    if (aiTimeoutRef.current) { clearTimeout(aiTimeoutRef.current); aiTimeoutRef.current = null; }
     gameRef.current = new Chess();
     setFen(gameRef.current.fen());
     setSelectedSquare(null);
@@ -228,11 +232,13 @@ export function useChessGame(): ChessGameState {
   }, []);
 
   const resign = useCallback(() => {
+    if (aiTimeoutRef.current) { clearTimeout(aiTimeoutRef.current); aiTimeoutRef.current = null; }
     setStatus("resigned");
     setIsThinking(false);
   }, []);
 
   const startGame = useCallback(() => {
+    if (aiTimeoutRef.current) { clearTimeout(aiTimeoutRef.current); aiTimeoutRef.current = null; }
     gameRef.current = new Chess();
     setFen(gameRef.current.fen());
     setSelectedSquare(null);
