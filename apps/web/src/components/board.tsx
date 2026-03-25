@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   arePositionsEqual,
@@ -51,6 +51,8 @@ export function Board({
     startPosition
   );
   const [movesCount, setMovesCount] = useState(0);
+  const mountedRef = useRef(false);
+  useEffect(() => { mountedRef.current = true; }, []);
 
   // Sync internal state when exercise changes (e.g. localStorage loads progress after board mounts,
   // or the user navigates exercises via the stars bar). Without this, the piece stays at the
@@ -81,7 +83,7 @@ export function Board({
   );
 
   const handleSquarePress = (label: string) => {
-    if (mode !== "practice" || isLocked) {
+    if (mode !== "practice" || isLocked || !mountedRef.current) {
       return;
     }
 
