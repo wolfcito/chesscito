@@ -22,32 +22,6 @@ type Props = {
   onAskCoach?: () => void;
 };
 
-/** Locked teaser showing what the user unlocks on claim */
-function VictoryCardTeaser({ moves, time, difficulty }: { moves: number; time: string; difficulty: string }) {
-  return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3">
-      {/* Blur overlay + lock */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center backdrop-blur-[2px] bg-black/20">
-        <span className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-emerald-300/70">
-          {VICTORY_CLAIM_COPY.teaserLabel}
-        </span>
-      </div>
-      {/* Card preview content (dimmed) */}
-      <div className="flex items-center gap-3 opacity-40">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10">
-          <span className="text-lg">🏆</span>
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-white/80">{VICTORY_CLAIM_COPY.teaserCheckmate(moves)}</p>
-          <p className="text-[0.6rem] text-cyan-100/40">{ARENA_COPY.difficulty[difficulty as keyof typeof ARENA_COPY.difficulty] ?? difficulty} — {time}</p>
-        </div>
-        <div className="shrink-0 rounded-lg bg-white/[0.04] px-2 py-1">
-          <span className="text-[0.55rem] font-bold text-cyan-100/30">{VICTORY_CLAIM_COPY.teaserShare}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function VictoryCelebration({
   moves,
@@ -118,31 +92,20 @@ export function VictoryCelebration({
             <RotateCcw size={16} className="inline -mt-0.5" /> {ARENA_COPY.playAgain}
           </Button>
 
-          {/* Claim block: button + helper + teaser */}
+          {/* Claim Victory — single CTA */}
           {onClaimVictory && (
-            <div className="flex w-full flex-col gap-2">
-              {/* Claim button — two-line with value hint */}
-              <button
-                type="button"
-                onClick={onClaimVictory}
-                className="group w-full rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.08] py-3 transition-all hover:bg-emerald-500/[0.15] hover:border-emerald-400/30 hover:shadow-[0_0_20px_rgba(52,211,153,0.12)] active:scale-[0.97]"
-              >
-                <span className="flex items-center justify-center gap-1.5 text-sm font-bold text-emerald-300/90">
-                  <Trophy size={16} /> {VICTORY_CLAIM_COPY.claimButton}
-                </span>
-                <span className="block text-[0.6rem] text-emerald-200/40 mt-0.5">
-                  {VICTORY_CLAIM_COPY.claimValueHint(claimPrice ?? "")}
-                </span>
-              </button>
-
-              {/* Helper text */}
-              <p className="text-center text-[0.6rem] text-cyan-100/30">
-                {VICTORY_CLAIM_COPY.claimHelper}
-              </p>
-
-              {/* Locked teaser card */}
-              <VictoryCardTeaser moves={moves} time={time} difficulty={difficulty} />
-            </div>
+            <button
+              type="button"
+              onClick={onClaimVictory}
+              className="w-full rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.08] py-3 transition-all hover:bg-emerald-500/[0.15] hover:border-emerald-400/30 hover:shadow-[0_0_20px_rgba(52,211,153,0.12)] active:scale-[0.97]"
+            >
+              <span className="flex items-center justify-center gap-1.5 text-sm font-bold text-emerald-300/90">
+                <Trophy size={16} /> {VICTORY_CLAIM_COPY.claimButton}
+              </span>
+              <span className="block text-[0.6rem] text-emerald-200/40 mt-0.5">
+                {VICTORY_CLAIM_COPY.claimValueHint(claimPrice ?? "")}
+              </span>
+            </button>
           )}
 
           {/* Ask the Coach */}
