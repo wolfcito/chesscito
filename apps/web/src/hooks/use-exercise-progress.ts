@@ -64,7 +64,8 @@ export function useExerciseProgress(piece: PieceId) {
     setProgress(loadProgress(piece));
   }, [piece]);
 
-  const currentExercise: Exercise = EXERCISES[piece][progress.exerciseIndex];
+  const safeIndex = Math.min(Math.max(0, progress.exerciseIndex), EXERCISES_PER_PIECE - 1);
+  const currentExercise: Exercise = EXERCISES[piece][safeIndex];
   const isLastExercise = progress.exerciseIndex === EXERCISES_PER_PIECE - 1;
   const total = totalStars(progress.stars);
   const badgeEarned = total >= BADGE_THRESHOLD;
@@ -73,7 +74,8 @@ export function useExerciseProgress(piece: PieceId) {
   const completeExercise = useCallback(
     (movesUsed: number) => {
       setProgress((prev) => {
-        const exercise = EXERCISES[piece][prev.exerciseIndex];
+        const idx = Math.min(Math.max(0, prev.exerciseIndex), EXERCISES_PER_PIECE - 1);
+        const exercise = EXERCISES[piece][idx];
         const stars = computeStars(movesUsed, exercise.optimalMoves);
         const newStars = [...prev.stars] as PieceProgress["stars"];
         newStars[prev.exerciseIndex] = Math.max(
