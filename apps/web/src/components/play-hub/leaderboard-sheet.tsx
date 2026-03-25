@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BadgeCheck } from "lucide-react";
 
 import {
@@ -24,8 +24,7 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
+  const fetchLeaderboard = useCallback(() => {
     setLoading(true);
     setError(null);
     fetch("/api/leaderboard")
@@ -33,7 +32,12 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
       .then((data: LeaderboardRow[]) => setRows(data))
       .catch(() => setError(LEADERBOARD_SHEET_COPY.error))
       .finally(() => setLoading(false));
-  }, [open]);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    fetchLeaderboard();
+  }, [open, fetchLeaderboard]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -71,7 +75,16 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
             <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.loading}</p>
           )}
           {error && (
-            <p className="text-center text-sm text-rose-400">{error}</p>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-center text-sm text-rose-400">{error}</p>
+              <button
+                type="button"
+                onClick={fetchLeaderboard}
+                className="min-h-[44px] text-xs text-cyan-300/70 underline transition-colors hover:text-cyan-200"
+              >
+                {LEADERBOARD_SHEET_COPY.retry}
+              </button>
+            </div>
           )}
           {!loading && !error && rows.length === 0 && (
             <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.empty}</p>
