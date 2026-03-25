@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { isAddress } from "viem";
 import { REDIS_KEYS } from "@/lib/coach/redis-keys";
+import { enforceOrigin, enforceRateLimit, getRequestIp } from "@/lib/server/demo-signing";
 import type { GameRecord } from "@/lib/coach/types";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -11,6 +12,9 @@ const redis = Redis.fromEnv();
 
 export async function POST(req: Request) {
   try {
+    enforceOrigin(req);
+    await enforceRateLimit(getRequestIp(req));
+
     const body = await req.json();
     const { walletAddress, game } = body as { walletAddress?: string; game?: GameRecord };
 
@@ -47,6 +51,13 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  try {
+    enforceOrigin(req);
+    await enforceRateLimit(getRequestIp(req));
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const url = new URL(req.url);
   const wallet = url.searchParams.get("wallet")?.toLowerCase();
   if (!wallet || !isAddress(wallet)) return NextResponse.json({ error: "Invalid wallet" }, { status: 400 });

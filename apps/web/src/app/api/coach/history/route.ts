@@ -2,11 +2,19 @@ import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { isAddress } from "viem";
 import { REDIS_KEYS } from "@/lib/coach/redis-keys";
+import { enforceOrigin, enforceRateLimit, getRequestIp } from "@/lib/server/demo-signing";
 import type { CoachAnalysisRecord, GameRecord } from "@/lib/coach/types";
 
 const redis = Redis.fromEnv();
 
 export async function GET(req: Request) {
+  try {
+    enforceOrigin(req);
+    await enforceRateLimit(getRequestIp(req));
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const url = new URL(req.url);
   const wallet = url.searchParams.get("wallet")?.toLowerCase();
   if (!wallet || !isAddress(wallet)) return NextResponse.json({ error: "Invalid wallet" }, { status: 400 });

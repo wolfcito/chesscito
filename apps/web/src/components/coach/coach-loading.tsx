@@ -7,11 +7,12 @@ import type { CoachResponse } from "@/lib/coach/types";
 
 type Props = {
   jobId: string;
+  wallet?: string;
   onReady: (response: CoachResponse) => void;
   onFailed: (reason: string) => void;
 };
 
-export function CoachLoading({ jobId, onReady, onFailed }: Props) {
+export function CoachLoading({ jobId, wallet, onReady, onFailed }: Props) {
   const [dots, setDots] = useState(".");
   const onReadyRef = useRef(onReady);
   const onFailedRef = useRef(onFailed);
@@ -26,7 +27,8 @@ export function CoachLoading({ jobId, onReady, onFailed }: Props) {
 
     const pollInterval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/coach/job/${jobId}`);
+        const params = wallet ? `?wallet=${wallet}` : "";
+        const res = await fetch(`/api/coach/job/${jobId}${params}`);
         if (!res.ok) return;
         const data = await res.json();
         if (data.status === "ready") {

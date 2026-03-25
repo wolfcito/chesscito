@@ -6,6 +6,7 @@ import { validateGameRecord } from "@/lib/coach/validate-game";
 import { normalizeCoachResponse } from "@/lib/coach/normalize";
 import { buildCoachPrompt } from "@/lib/coach/prompt-template";
 import { REDIS_KEYS } from "@/lib/coach/redis-keys";
+import { enforceOrigin, enforceRateLimit, getRequestIp } from "@/lib/server/demo-signing";
 import type { GameRecord, CoachAnalysisRecord, PlayerSummary } from "@/lib/coach/types";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -24,6 +25,10 @@ const llm = process.env.COACH_LLM_API_KEY
 
 export async function POST(req: Request) {
   try {
+    enforceOrigin(req);
+    const ip = getRequestIp(req);
+    await enforceRateLimit(ip);
+
     const body = await req.json();
     const { gameId, walletAddress } = body as { gameId?: string; walletAddress?: string };
 
@@ -57,13 +62,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "An analysis is already in progress" }, { status: 429 });
     }
 
-    // --- Free tier: seed 3 credits on first use (atomic) ---
+    // --- Free tier: seed 3 credits on first use (atomic Lua script — no race window) ---
     const FREE_CREDITS = 3;
-    const seededKey = `coach:seeded:${wallet}`;
-    const wasSet = await redis.setnx(seededKey, "1");
-    if (wasSet) {
-      await redis.setnx(REDIS_KEYS.credits(wallet), FREE_CREDITS);
-    }
+    await redis.eval(
+      `local s = redis.call("SETNX", KEYS[1], "1")
+       if s == 1 then redis.call("SETNX", KEYS[2], ARGV[1]) end
+       return s`,
+      [`coach:seeded:${wallet}`, REDIS_KEYS.credits(wallet)],
+      [FREE_CREDITS],
+    );
 
     // --- Credit check ---
     const credits = (await redis.get<number>(REDIS_KEYS.credits(wallet))) ?? 0;
@@ -94,7 +101,7 @@ export async function POST(req: Request) {
 
     // --- Create job ---
     const jobId = crypto.randomUUID();
-    await redis.set(REDIS_KEYS.job(jobId), { status: "pending" }, { ex: 60 });
+    await redis.set(REDIS_KEYS.job(jobId), { status: "pending", wallet }, { ex: 60 });
     await redis.set(REDIS_KEYS.jobByGame(wallet, gameId), jobId, { ex: 60 });
     await redis.set(REDIS_KEYS.pendingJob(wallet), jobId, { ex: 60 });
 

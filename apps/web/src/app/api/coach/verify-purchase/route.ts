@@ -3,6 +3,7 @@ import { createPublicClient, http, isAddress, keccak256, toBytes } from "viem";
 import { celo } from "viem/chains";
 import { Redis } from "@upstash/redis";
 import { REDIS_KEYS } from "@/lib/coach/redis-keys";
+import { enforceOrigin, enforceRateLimit, getRequestIp } from "@/lib/server/demo-signing";
 
 const TX_HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 const SHOP_PURCHASE_TOPIC = keccak256(toBytes("ShopPurchase(address,uint256,address,uint256)"));
@@ -18,6 +19,9 @@ const client = SHOP_ADDRESS
 
 export async function POST(req: Request) {
   try {
+    enforceOrigin(req);
+    await enforceRateLimit(getRequestIp(req));
+
     const body = await req.json();
     const { txHash, walletAddress } = body as { txHash?: string; walletAddress?: string };
 
