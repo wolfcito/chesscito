@@ -503,6 +503,9 @@ export default function PlayHubPage() {
     if (!address || !badgesAddress || !isConnected || !isCorrectChain || claimLevelId <= 0n) {
       return;
     }
+    // Prevent double-claim (stale cache or rapid taps)
+    const targetPiece = piece ?? selectedPiece;
+    if (badgesClaimed[targetPiece] || isClaimBusy) return;
 
     setLastError(null);
 
@@ -616,7 +619,16 @@ export default function PlayHubPage() {
     });
 
     try {
-      if (!paymentAllowance || paymentAllowance < normalizedTotal) {
+      // Read allowance fresh (not from hook cache) to avoid duplicate approvals on retry
+      const freshAllowance = publicClient
+        ? ((await publicClient.readContract({
+            address: paymentToken.address,
+            abi: erc20Abi,
+            functionName: "allowance",
+            args: [address, shopAddress],
+          })) as bigint)
+        : 0n;
+      if (freshAllowance < normalizedTotal) {
         setPurchasePhase("approving");
         const approveHash = await writeWithOptionalFeeCurrency({
           address: paymentToken.address,
@@ -843,6 +855,7 @@ export default function PlayHubPage() {
             pieceType={selectedPiece}
             totalStars={totalStars}
             onClaimBadge={() => {
+              boardGeneration.current++;
               if (autoResetTimer.current) clearTimeout(autoResetTimer.current);
               setShowBadgeEarned(false);
               void handleClaimBadge();
