@@ -5,14 +5,17 @@ import { GraduationCap } from "lucide-react";
 import { COACH_COPY } from "@/lib/content/editorial";
 import type { CoachResponse } from "@/lib/coach/types";
 
+const TIMEOUT_MS = 60_000;
+
 type Props = {
   jobId: string;
   wallet?: string;
   onReady: (response: CoachResponse) => void;
   onFailed: (reason: string) => void;
+  onCancel?: () => void;
 };
 
-export function CoachLoading({ jobId, wallet, onReady, onFailed }: Props) {
+export function CoachLoading({ jobId, wallet, onReady, onFailed, onCancel }: Props) {
   const [dots, setDots] = useState(".");
   const onReadyRef = useRef(onReady);
   const onFailedRef = useRef(onFailed);
@@ -41,11 +44,17 @@ export function CoachLoading({ jobId, wallet, onReady, onFailed }: Props) {
       } catch { /* retry on next poll */ }
     }, 3000);
 
+    const timeoutId = setTimeout(() => {
+      clearInterval(pollInterval);
+      onFailedRef.current("Timed out waiting for coach response");
+    }, TIMEOUT_MS);
+
     return () => {
       clearInterval(dotInterval);
       clearInterval(pollInterval);
+      clearTimeout(timeoutId);
     };
-  }, [jobId]);
+  }, [jobId, wallet]);
 
   return (
     <div className="flex flex-col items-center gap-4 px-6 py-12">
@@ -53,6 +62,15 @@ export function CoachLoading({ jobId, wallet, onReady, onFailed }: Props) {
       <p className="text-lg font-semibold text-white">{COACH_COPY.analyzing}{dots}</p>
       <p className="text-sm text-cyan-100/40">{COACH_COPY.reviewingMoves}</p>
       <p className="mt-4 text-xs text-cyan-100/30">{COACH_COPY.canLeave}</p>
+      {onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="mt-2 min-h-[44px] text-xs text-cyan-100/40 underline transition-colors hover:text-cyan-100/70"
+        >
+          {COACH_COPY.cancel}
+        </button>
+      )}
     </div>
   );
 }

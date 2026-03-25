@@ -159,6 +159,7 @@ export const LEADERBOARD_SHEET_COPY = {
   loading: "Loading...",
   empty: "No scores recorded yet.",
   error: "Could not load the leaderboard.",
+  retry: "Retry",
 } as const;
 
 export const PURCHASE_CONFIRM_COPY = {
@@ -416,6 +417,7 @@ export const COACH_COPY = {
   analysisProcessing: "Your analysis is still processing...",
   analysisFailed: "Analysis couldn't be completed. Your credit was not spent.",
   coachResting: "Coach is resting. Try again later.",
+  cancel: "Cancel",
   retry: "Retry",
   full: "Full",
   quick: "Quick",
