@@ -1,92 +1,32 @@
 import { NextResponse } from "next/server";
-import { createPublicClient, http, parseAbiItem } from "viem";
-import { celo } from "viem/chains";
+
+import { readHofEntries, tryRefresh } from "@/lib/server/hof-index";
+import type { IndexedVictoryRow } from "@/lib/server/hof-index";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const RPC_URL = process.env.CELO_RPC_URL ?? "https://forno.celo.org";
-const VICTORY_NFT = process.env.NEXT_PUBLIC_VICTORY_NFT_ADDRESS as
-  | `0x${string}`
-  | undefined;
-
-const EVENT_SCAN_START = 61_250_000n;
-const CHUNK_SIZE = 50_000n;
-
-const VictoryMintedEvent = parseAbiItem(
-  "event VictoryMinted(address indexed player, uint256 indexed tokenId, uint8 difficulty, uint16 totalMoves, uint32 timeMs, address indexed token, uint256 totalAmount)"
-);
-
-export type HallOfFameRow = {
-  tokenId: string;
-  player: string;
-  difficulty: number;
-  totalMoves: number;
-  timeMs: number;
-  timestamp: number;
-};
+export type HallOfFameRow = Omit<IndexedVictoryRow, "id">;
 
 export async function GET() {
-  if (!VICTORY_NFT) {
-    return NextResponse.json([], {
-      headers: { "Cache-Control": "s-maxage=300" },
-    });
-  }
+  const metrics = await tryRefresh();
 
-  try {
-    const client = createPublicClient({
-      chain: celo,
-      transport: http(RPC_URL),
-    });
+  const { rows, lastBlock } = await readHofEntries();
 
-    const latest = await client.getBlockNumber();
-    const logs = [];
-    for (let from = EVENT_SCAN_START; from <= latest; from += CHUNK_SIZE) {
-      const to =
-        from + CHUNK_SIZE - 1n > latest ? latest : from + CHUNK_SIZE - 1n;
-      const chunk = await client.getLogs({
-        address: VICTORY_NFT,
-        event: VictoryMintedEvent,
-        fromBlock: from,
-        toBlock: to,
-      });
-      logs.push(...chunk);
-    }
+  // Strip internal `id` field from response
+  const body: HallOfFameRow[] = rows.map(({ id: _, ...rest }) => rest);
 
-    // Sort newest first, take top 10
-    const sorted = logs.sort((a, b) => {
-      const blockDiff = Number(b.blockNumber - a.blockNumber);
-      return blockDiff !== 0 ? blockDiff : b.logIndex - a.logIndex;
-    });
-    const top = sorted.slice(0, 10);
+  const stale = metrics.staleServed || metrics.refreshFailed;
 
-    // Resolve timestamps
-    const uniqueBlocks = [
-      ...new Set(top.map((l) => l.blockNumber.toString())),
-    ].map(BigInt);
-    const blocks = await Promise.all(
-      uniqueBlocks.map((n) => client.getBlock({ blockNumber: n }))
-    );
-    const tsMap = new Map<bigint, number>();
-    for (const block of blocks) {
-      tsMap.set(block.number, Number(block.timestamp));
-    }
+  console.info(
+    `[hof:refresh] blocksScanned=${metrics.blocksScanned} newEvents=${metrics.newEventsFound} duration=${metrics.scanDurationMs}ms indexed=${metrics.indexedThroughBlock} stale=${stale}`
+  );
 
-    const rows: HallOfFameRow[] = top.map((log) => ({
-      tokenId: log.args.tokenId!.toString(),
-      player: log.args.player!,
-      difficulty: Number(log.args.difficulty!),
-      totalMoves: Number(log.args.totalMoves!),
-      timeMs: Number(log.args.timeMs!),
-      timestamp: tsMap.get(log.blockNumber) ?? 0,
-    }));
-
-    return NextResponse.json(rows, {
-      headers: {
-        "Cache-Control": "s-maxage=120, stale-while-revalidate=300",
-      },
-    });
-  } catch {
-    return NextResponse.json({ error: "Failed to fetch hall of fame" }, { status: 500 });
-  }
+  return NextResponse.json(body, {
+    headers: {
+      "Cache-Control": "s-maxage=30, stale-while-revalidate=120",
+      "X-HoF-Stale": String(stale),
+      "X-HoF-Indexed-Through": String(lastBlock),
+    },
+  });
 }
