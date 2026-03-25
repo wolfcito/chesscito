@@ -73,7 +73,7 @@ function decodeVictoryLog(log: BlockscoutLog): VictoryRow | null {
       difficulty: args.difficulty,
       totalMoves: args.totalMoves,
       timeMs: args.timeMs,
-      timestamp: Number(log.timeStamp),
+      timestamp: Number(log.timeStamp), // Blockscout returns hex (0x...) — Number() handles this
     };
   } catch {
     return null;
