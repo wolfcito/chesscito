@@ -50,10 +50,17 @@ export function useChessGame(): ChessGameState {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [elapsedMs, setElapsedMs] = useState(0);
   const gameStartRef = useRef<number>(0);
+  const gameEndRef = useRef<number>(0);
 
   const gameRef = useRef(new Chess());
   const aiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [fen, setFen] = useState(gameRef.current.fen());
+
+  /** Snapshot end time and set terminal status (prevents elapsedMs race with reset) */
+  function endGameWith(s: ArenaStatus) {
+    gameEndRef.current = Date.now();
+    setStatus(s);
+  }
 
   const pieces = useMemo(() => fenToPieces(fen), [fen]);
 
@@ -77,7 +84,9 @@ export function useChessGame(): ChessGameState {
 
   useEffect(() => {
     if (status === "checkmate" || status === "stalemate" || status === "draw" || status === "resigned") {
-      setElapsedMs(gameStartRef.current > 0 ? Date.now() - gameStartRef.current : 0);
+      const start = gameStartRef.current;
+      const end = gameEndRef.current;
+      setElapsedMs(start > 0 && end > 0 ? end - start : 0);
     }
   }, [status]);
 
@@ -117,9 +126,9 @@ export function useChessGame(): ChessGameState {
         setMoveHistory(game.history());
         setIsThinking(false);
 
-        if (game.isCheckmate()) setStatus("checkmate");
-        else if (game.isStalemate()) setStatus("stalemate");
-        else if (game.isDraw()) setStatus("draw");
+        if (game.isCheckmate()) endGameWith("checkmate");
+        else if (game.isStalemate()) endGameWith("stalemate");
+        else if (game.isDraw()) endGameWith("draw");
       } catch (err) {
         console.error("AI move error:", err);
         setIsThinking(false);
@@ -163,9 +172,9 @@ export function useChessGame(): ChessGameState {
         setSelectedSquare(null);
         setLegalMoves([]);
 
-        if (game.isCheckmate()) setStatus("checkmate");
-        else if (game.isStalemate()) setStatus("stalemate");
-        else if (game.isDraw()) setStatus("draw");
+        if (game.isCheckmate()) endGameWith("checkmate");
+        else if (game.isStalemate()) endGameWith("stalemate");
+        else if (game.isDraw()) endGameWith("draw");
         else triggerAiMove(difficulty);
       } catch {
         setSelectedSquare(null);
@@ -193,9 +202,9 @@ export function useChessGame(): ChessGameState {
       setSelectedSquare(null);
       setLegalMoves([]);
 
-      if (game.isCheckmate()) setStatus("checkmate");
-      else if (game.isStalemate()) setStatus("stalemate");
-      else if (game.isDraw()) setStatus("draw");
+      if (game.isCheckmate()) endGameWith("checkmate");
+      else if (game.isStalemate()) endGameWith("stalemate");
+      else if (game.isDraw()) endGameWith("draw");
       else triggerAiMove(difficulty);
     } catch {
       setPendingPromotion(null);
@@ -228,12 +237,13 @@ export function useChessGame(): ChessGameState {
     setMoveHistory([]);
     setElapsedMs(0);
     gameStartRef.current = 0;
+    gameEndRef.current = 0;
     setStatus("selecting");
   }, []);
 
   const resign = useCallback(() => {
     if (aiTimeoutRef.current) { clearTimeout(aiTimeoutRef.current); aiTimeoutRef.current = null; }
-    setStatus("resigned");
+    endGameWith("resigned");
     setIsThinking(false);
   }, []);
 
@@ -250,6 +260,7 @@ export function useChessGame(): ChessGameState {
     setMoveHistory([]);
     setElapsedMs(0);
     gameStartRef.current = Date.now();
+    gameEndRef.current = 0;
     setStatus("playing");
   }, []);
 
