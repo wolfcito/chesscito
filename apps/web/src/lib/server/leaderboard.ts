@@ -63,7 +63,7 @@ export async function fetchLeaderboard(): Promise<LeaderboardRow[]> {
       const scoreBig = ethers.toBigInt(log.data.slice(0, 66));
       // Guard against Number overflow (scores should never exceed safe integer)
       const score = Number(scoreBig);
-      if (!Number.isFinite(score) || score < 0) continue;
+      if (!Number.isSafeInteger(score) || score < 0) continue;
 
       const prev = best.get(player) ?? 0;
       if (score > prev) best.set(player, score);
