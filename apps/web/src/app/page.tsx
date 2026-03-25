@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import Link from "next/link";
 import {
   useAccount,
@@ -789,10 +789,10 @@ export default function PlayHubPage() {
           moreAction={
             <Link
               href="/about"
-              className="flex h-11 w-11 items-center justify-center text-cyan-300/50 transition hover:text-cyan-50"
+              className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-cyan-500/10 text-cyan-300/80 transition hover:text-cyan-50"
               aria-label="More options"
             >
-              <MoreHorizontal size={18} />
+              <MoreVertical size={20} strokeWidth={2.5} />
             </Link>
           }
         />
