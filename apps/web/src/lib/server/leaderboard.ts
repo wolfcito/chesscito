@@ -50,12 +50,27 @@ export async function fetchLeaderboard(): Promise<LeaderboardRow[]> {
 
   const best = new Map<string, number>();
   for (const log of logs) {
-    if (!log.topics[1]) continue;
-    const player = ethers.getAddress("0x" + log.topics[1].slice(26));
-    // data: score (32 bytes) | timeMs | nonce | deadline
-    const score = Number(ethers.toBigInt(log.data.slice(0, 66)));
-    const prev = best.get(player) ?? 0;
-    if (score > prev) best.set(player, score);
+    try {
+      // Validate topic[1] exists and has expected length (66 hex chars = "0x" + 64)
+      const topic1 = log.topics[1];
+      if (!topic1 || topic1.length < 42) continue;
+
+      // Validate data has at least 66 chars for first uint256 (score)
+      if (!log.data || log.data.length < 66) continue;
+
+      const player = ethers.getAddress("0x" + topic1.slice(26));
+      // data: score (32 bytes) | timeMs | nonce | deadline
+      const scoreBig = ethers.toBigInt(log.data.slice(0, 66));
+      // Guard against Number overflow (scores should never exceed safe integer)
+      const score = Number(scoreBig);
+      if (!Number.isFinite(score) || score < 0) continue;
+
+      const prev = best.get(player) ?? 0;
+      if (score > prev) best.set(player, score);
+    } catch {
+      // Skip malformed event, continue processing remaining logs
+      continue;
+    }
   }
 
   const sorted = Array.from(best.entries())
