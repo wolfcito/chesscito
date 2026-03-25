@@ -73,6 +73,18 @@ export function ArenaBoard({
     return map;
   }, [pieces]);
 
+  if (pieces.length === 0) {
+    return (
+      <div className="playhub-stage-shell w-full">
+        <div className="playhub-game-stage">
+          <div className="flex items-center justify-center aspect-square w-full">
+            <p className="text-sm text-rose-400">Board error — please restart the game</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="playhub-stage-shell w-full">
       <div className="playhub-game-stage">
