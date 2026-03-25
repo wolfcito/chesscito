@@ -137,33 +137,32 @@ export function useChessGame(): ChessGameState {
   }, []);
 
   const selectSquare = useCallback((square: string) => {
-    const game = gameRef.current;
-    if (status !== "playing" || isThinking || game.turn() !== "w") return;
+    try {
+      const game = gameRef.current;
+      if (status !== "playing" || isThinking || game.turn() !== "w") return;
 
-    const piece = game.get(square as Square);
+      const piece = game.get(square as Square);
 
-    // Clicking own piece → select and show legal moves
-    if (piece && piece.color === "w") {
-      setSelectedSquare(square);
-      const moves = game.moves({ square: square as Square, verbose: true });
-      setLegalMoves(moves.map((m) => m.to));
-      return;
-    }
-
-    // Clicking a legal move target
-    if (selectedSquare && legalMoves.includes(square)) {
-      // Check for pawn promotion (rank 8 for white, rank 1 for black)
-      const movingPiece = game.get(selectedSquare as Square);
-      const targetRank = Number(square[1]);
-      const isPromotion = movingPiece?.type === "p" &&
-        ((movingPiece.color === "w" && targetRank === 8) ||
-         (movingPiece.color === "b" && targetRank === 1));
-      if (isPromotion) {
-        setPendingPromotion({ from: selectedSquare, to: square });
+      // Clicking own piece → select and show legal moves
+      if (piece && piece.color === "w") {
+        setSelectedSquare(square);
+        const moves = game.moves({ square: square as Square, verbose: true });
+        setLegalMoves(moves.map((m) => m.to));
         return;
       }
 
-      try {
+      // Clicking a legal move target
+      if (selectedSquare && legalMoves.includes(square)) {
+        const movingPiece = game.get(selectedSquare as Square);
+        const targetRank = Number(square[1]);
+        const isPromotion = movingPiece?.type === "p" &&
+          ((movingPiece.color === "w" && targetRank === 8) ||
+           (movingPiece.color === "b" && targetRank === 1));
+        if (isPromotion) {
+          setPendingPromotion({ from: selectedSquare, to: square });
+          return;
+        }
+
         game.move({ from: selectedSquare, to: square });
         setFen(game.fen());
         setLastMove({ from: selectedSquare, to: square });
@@ -176,16 +175,17 @@ export function useChessGame(): ChessGameState {
         else if (game.isStalemate()) endGameWith("stalemate");
         else if (game.isDraw()) endGameWith("draw");
         else triggerAiMove(difficulty);
-      } catch {
-        setSelectedSquare(null);
-        setLegalMoves([]);
+        return;
       }
-      return;
-    }
 
-    // Deselect
-    setSelectedSquare(null);
-    setLegalMoves([]);
+      // Deselect
+      setSelectedSquare(null);
+      setLegalMoves([]);
+    } catch (err) {
+      console.error("selectSquare error:", err);
+      setSelectedSquare(null);
+      setLegalMoves([]);
+    }
   }, [status, isThinking, selectedSquare, legalMoves, triggerAiMove, difficulty]);
 
   const promoteWith = useCallback((piece: "q" | "r" | "b" | "n") => {
