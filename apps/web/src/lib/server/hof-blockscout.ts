@@ -14,10 +14,7 @@ const FROM_BLOCK = 61_250_000;
 const FETCH_TIMEOUT_MS = 5_000;
 const CACHE_TTL_S = 60;
 
-const CACHE_KEYS = {
-  all: "hof:v2:all",
-  player: (addr: string) => `hof:v2:player:${addr.toLowerCase()}`,
-} as const;
+const CACHE_KEY_ALL = "hof:v2:all";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -103,6 +100,13 @@ export async function fetchAllVictories(): Promise<VictoryRow[]> {
 
   if (json.status !== "1" || !Array.isArray(json.result)) return [];
 
+  if (json.result.length >= 1000) {
+    console.warn(
+      "[hof] Blockscout returned 1000 logs — pagination limit likely hit. " +
+      "Migrate to The Graph or Supabase. See docs/superpowers/specs/2026-03-24-header-and-hof-fixes-design.md"
+    );
+  }
+
   const rows: VictoryRow[] = [];
   for (const log of json.result) {
     const row = decodeVictoryLog(log);
@@ -133,8 +137,8 @@ async function cachedGet<T>(
     if (cached !== null && cached !== undefined) return cached;
 
     const fresh = await fetcher();
-    // Fire-and-forget cache write
-    redis.set(key, JSON.stringify(fresh), { ex: CACHE_TTL_S }).catch(() => {});
+    // Fire-and-forget cache write (Upstash auto-serializes — do NOT JSON.stringify)
+    redis.set(key, fresh, { ex: CACHE_TTL_S }).catch(() => {});
     return fresh;
   } catch {
     // Redis down — fetch directly
@@ -142,20 +146,22 @@ async function cachedGet<T>(
   }
 }
 
+/** Cached fetch of ALL victories (single shared cache key). */
+async function getAllVictoriesCached(): Promise<VictoryRow[]> {
+  return cachedGet(CACHE_KEY_ALL, fetchAllVictories);
+}
+
 export async function getHallOfFame(): Promise<VictoryRow[]> {
-  return cachedGet(CACHE_KEYS.all, async () => {
-    const all = await fetchAllVictories();
-    return all.slice(0, 10);
-  });
+  const all = await getAllVictoriesCached();
+  return all.slice(0, 10);
 }
 
 export async function getPlayerVictories(
   player: string,
 ): Promise<VictoryRow[]> {
-  return cachedGet(CACHE_KEYS.player(player), async () => {
-    const all = await fetchAllVictories();
-    return all.filter(
-      (v) => v.player.toLowerCase() === player.toLowerCase(),
-    );
-  });
+  // Reuse the shared cache — no per-player keys to prevent Redis key proliferation
+  const all = await getAllVictoriesCached();
+  return all.filter(
+    (v) => v.player.toLowerCase() === player.toLowerCase(),
+  );
 }
