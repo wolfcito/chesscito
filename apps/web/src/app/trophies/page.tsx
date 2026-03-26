@@ -124,8 +124,8 @@ export default function TrophiesPage() {
           <>
             {/* My Victories */}
             <section className="mb-6">
-              <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
-                <Crown className="h-3.5 w-3.5 text-amber-400" />
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[rgba(200,180,130,0.55)]" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
+                <Crown className="h-3.5 w-3.5 text-[rgba(220,190,100,0.7)] drop-shadow-[0_0_3px_rgba(200,170,100,0.2)]" />
                 {TROPHY_VITRINE_COPY.myVictories}
               </h2>
 
@@ -156,8 +156,8 @@ export default function TrophiesPage() {
 
             {/* Hall of Fame */}
             <section className="mb-6">
-              <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
-                <Crown className="h-3.5 w-3.5 text-purple-400" />
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[rgba(200,180,130,0.55)]" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
+                <Crown className="h-3.5 w-3.5 text-[rgba(220,190,100,0.7)] drop-shadow-[0_0_3px_rgba(200,170,100,0.2)]" />
                 {TROPHY_VITRINE_COPY.hallOfFame}
               </h2>
 
