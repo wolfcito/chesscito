@@ -1,4 +1,4 @@
-import { Lock, Swords, MoveRight, Star } from "lucide-react";
+import { Crosshair, Lock, Swords, MoveRight, Star } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -73,10 +73,9 @@ export function ExerciseDrawer({
         </button>
       </SheetTrigger>
       <SheetContent side="bottom" className="mission-shell rounded-t-3xl border-slate-700">
+        <div className="h-0.5 w-full bg-gradient-to-r from-cyan-500/40 via-cyan-400/20 to-cyan-500/40" />
         <SheetHeader>
-          <SheetTitle className="fantasy-title text-cyan-50">
-            {EXERCISE_DRAWER_COPY.title}
-          </SheetTitle>
+          <SheetTitle className="fantasy-title flex items-center gap-2 text-cyan-50"><Crosshair size={20} className="text-cyan-400/40" />{EXERCISE_DRAWER_COPY.title}</SheetTitle>
           <SheetDescription className="text-cyan-100/75">
             {PIECE_LABELS[piece]}
           </SheetDescription>

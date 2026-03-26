@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, CircleDashed } from "lucide-react";
+import { CheckCircle2, XCircle, CircleDashed, ShoppingBag } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -44,8 +44,9 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
         </button>
       </SheetTrigger>
       <SheetContent side="bottom" className="mission-shell sheet-bg-shop rounded-t-3xl border-slate-700">
+        <div className="h-0.5 w-full bg-gradient-to-r from-amber-500/40 via-amber-400/20 to-amber-500/40" />
         <SheetHeader>
-          <SheetTitle className="fantasy-title text-cyan-50">{SHOP_SHEET_COPY.title}</SheetTitle>
+          <SheetTitle className="fantasy-title flex items-center gap-2 text-cyan-50"><ShoppingBag size={20} className="text-amber-400/40" />{SHOP_SHEET_COPY.title}</SheetTitle>
           <SheetDescription className="text-cyan-100/75">{SHOP_SHEET_COPY.description}</SheetDescription>
         </SheetHeader>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">

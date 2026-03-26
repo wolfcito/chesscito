@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, Crown } from "lucide-react";
 
 import {
   Sheet,
@@ -55,8 +55,9 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
         </button>
       </SheetTrigger>
       <SheetContent side="bottom" className="mission-shell sheet-bg-leaderboard rounded-t-3xl border-slate-700">
+        <div className="h-0.5 w-full bg-gradient-to-r from-purple-500/40 via-purple-400/20 to-purple-500/40" />
         <SheetHeader>
-          <SheetTitle className="fantasy-title text-cyan-50">{LEADERBOARD_SHEET_COPY.title}</SheetTitle>
+          <SheetTitle className="fantasy-title flex items-center gap-2 text-cyan-50"><Crown size={20} className="text-purple-400/40" />{LEADERBOARD_SHEET_COPY.title}</SheetTitle>
           <SheetDescription className="text-cyan-100/75">{LEADERBOARD_SHEET_COPY.description}</SheetDescription>
         </SheetHeader>
         <p className="mt-3 text-center text-xs text-cyan-100/60">
