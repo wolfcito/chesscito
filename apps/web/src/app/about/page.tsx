@@ -40,7 +40,7 @@ export default function AboutPage() {
           <Link
             key={href}
             href={href}
-            className="flex min-h-[44px] items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-cyan-100 transition hover:bg-white/[0.06]"
+            className="flex min-h-[44px] items-center gap-3 rounded-2xl border border-white/[0.10] bg-white/[0.06] px-4 py-3 text-cyan-100 transition hover:bg-white/[0.10]"
           >
             <Icon size={18} className="shrink-0 text-cyan-400" />
             <span className="text-sm font-medium">{label}</span>
