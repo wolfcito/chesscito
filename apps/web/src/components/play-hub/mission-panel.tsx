@@ -183,7 +183,7 @@ export function MissionPanel({
         <div className="flex items-center gap-2">
           {exerciseDrawer}
           {moreAction && (
-            <div className="[&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:border [&>button]:border-white/[0.10] [&>button]:bg-white/[0.06] [&>button]:text-white/55 [&>button]:transition-all [&>button]:active:scale-95 [&>button]:active:bg-white/[0.12]">
+            <div className="[&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:border [&>button]:border-white/[0.12] [&>button]:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.04))] [&>button]:text-white/60 [&>button]:shadow-[inset_0_1px_2px_rgba(255,255,255,0.04),inset_0_-1px_2px_rgba(0,0,0,0.15),0_1px_3px_rgba(0,0,0,0.2)] [&>button]:transition-all [&>button]:active:scale-95 [&>button]:active:bg-white/[0.12]">
               {moreAction}
             </div>
           )}
