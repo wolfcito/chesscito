@@ -13,7 +13,7 @@ export function LegalPageShell({ title, backHref = "/about", children }: LegalPa
   const router = useRouter();
 
   return (
-    <div className="flex min-h-[100dvh] justify-center bg-[#0b1220]">
+    <div className="mission-shell flex min-h-[100dvh] justify-center">
       <div className="flex w-full max-w-[var(--app-max-width)] flex-col px-5 py-4">
         <header className="mb-6 flex items-center gap-3">
           <button

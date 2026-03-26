@@ -25,10 +25,10 @@ export default function AboutPage() {
           <img
             src="/art/favicon-wolf.png"
             alt="Chesscito logo"
-            className="h-16 w-16 drop-shadow-[0_0_12px_rgba(103,232,249,0.4)]"
+            className="h-16 w-16 drop-shadow-[0_0_24px_rgba(103,232,249,0.15)]"
           />
         </picture>
-        <h2 className="text-xl font-bold text-cyan-50">{ABOUT_COPY.title}</h2>
+        <h2 className="text-xl font-bold text-cyan-50 drop-shadow-[0_0_8px_rgba(103,232,249,0.2)]">{ABOUT_COPY.title}</h2>
         <p className="text-xs text-cyan-300/60">{ABOUT_COPY.operatedBy}</p>
         <p className="text-xs text-cyan-300/40">{ABOUT_COPY.handle}</p>
         <p className="text-[10px] text-cyan-300/30">{ABOUT_COPY.version}</p>
@@ -40,7 +40,7 @@ export default function AboutPage() {
           <Link
             key={href}
             href={href}
-            className="flex min-h-[44px] items-center gap-3 rounded-xl bg-cyan-950/40 px-4 py-3 text-cyan-100 transition hover:bg-cyan-950/60"
+            className="flex min-h-[44px] items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-cyan-100 transition hover:bg-white/[0.06]"
           >
             <Icon size={18} className="shrink-0 text-cyan-400" />
             <span className="text-sm font-medium">{label}</span>
