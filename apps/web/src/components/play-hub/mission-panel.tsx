@@ -136,14 +136,14 @@ export function MissionPanel({
                   <span
                     className={
                       isActive
-                        ? `text-[26px] leading-none drop-shadow-[0_0_6px_rgba(34,211,238,0.5)] ${plopping ? "animate-[hero-plop_300ms_cubic-bezier(0.34,1.56,0.64,1)]" : ""}`
+                        ? `text-[26px] leading-none drop-shadow-[0_0_6px_rgba(200,170,100,0.4)] ${plopping ? "animate-[hero-plop_300ms_cubic-bezier(0.34,1.56,0.64,1)]" : ""}`
                         : "text-[20px] leading-none"
                     }
                   >
                     {icon}
                   </span>
                   {isActive && (
-                    <span className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-white">
+                    <span className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-[rgba(220,200,150,0.9)]">
                       {piece.label}
                     </span>
                   )}
