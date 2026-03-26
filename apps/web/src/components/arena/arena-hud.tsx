@@ -72,8 +72,8 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
         className={[
           "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
           confirmingBack
-            ? "w-auto gap-1.5 border-white/30 bg-white/10 backdrop-blur-sm px-3 text-white"
-            : "w-11 border-white/10 bg-white/5 text-white/70 hover:text-white",
+            ? "w-auto gap-1.5 border-white/30 bg-white/12 backdrop-blur-md px-3 text-white"
+            : "w-11 border-white/[0.12] bg-[var(--surface-c-mid)] backdrop-blur-md text-white/80 hover:text-white",
         ].join(" ")}
         aria-label={ARENA_COPY.backToHub}
       >
@@ -109,8 +109,8 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
             className={[
               "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
               confirmingResign
-                ? "w-auto gap-1.5 border-rose-400/40 bg-rose-500/15 px-3 text-rose-400"
-                : "w-11 border-white/10 bg-white/5 text-white/35 hover:text-rose-400",
+                ? "w-auto gap-1.5 border-rose-400/40 bg-rose-500/18 backdrop-blur-md px-3 text-rose-400"
+                : "w-11 border-white/[0.12] bg-[var(--surface-c-mid)] backdrop-blur-md text-white/50 hover:text-rose-400",
             ].join(" ")}
             aria-label={ARENA_COPY.resign}
           >
