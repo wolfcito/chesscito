@@ -53,8 +53,15 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
           {items.length === 0 && (
             <p className="col-span-full text-center text-sm text-cyan-100/50">{SHOP_SHEET_COPY.empty}</p>
           )}
-          {items.map((item) => (
-            <div key={item.itemId.toString()} className="mission-soft rune-frame shop-slot-frame rounded-2xl p-3">
+          {items.map((item, index) => {
+            const isFeatured = index === 0 && item.configured && item.enabled;
+            return (
+            <div key={item.itemId.toString()} className={`mission-soft rune-frame shop-slot-frame rounded-2xl p-3 relative ${isFeatured ? "ring-2 ring-amber-400/30" : ""}`}>
+              {isFeatured && (
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full border border-amber-400/25 bg-amber-500/15 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-amber-400/60">
+                  Featured
+                </span>
+              )}
               <p className="text-sm font-semibold text-slate-100">{item.label}</p>
               <p className="text-xs text-slate-400">{item.subtitle}</p>
               <p className="mt-2 text-sm text-slate-200">
@@ -80,7 +87,8 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
                 {SHOP_SHEET_COPY.buyButton}
               </Button>
             </div>
-          ))}
+            );
+          })}
         </div>
       </SheetContent>
     </Sheet>
