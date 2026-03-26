@@ -748,78 +748,78 @@
   border-color: rgba(255, 255, 255, 0.10);
 }
 
-  /* ═══════════════════════════════════════════════════
-     Asset Treatment System — Category Classes
-     ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   Asset Treatment System — Category Classes
+   ═══════════════════════════════════════════════════ */
 
-  /* ── 1. Piece Icons (hero selector) ── */
-  .piece-hero {
-    filter: var(--treat-warm-tint);
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-warm-glow);
-    border: 1px solid var(--treat-warm-border);
-    border-radius: 8px;
-  }
+/* ── 1. Piece Icons (hero selector) ── */
+.piece-hero {
+  filter: var(--treat-warm-tint);
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-warm-glow);
+  border: 1px solid var(--treat-warm-border);
+  border-radius: 8px;
+}
 
-  .piece-inactive {
-    filter: var(--treat-neutral-tint);
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo);
-    border-radius: 8px;
-  }
+.piece-inactive {
+  filter: var(--treat-neutral-tint);
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo);
+  border-radius: 8px;
+}
 
-  .piece-pressed {
-    filter: brightness(0.90) saturate(0.85);
-    box-shadow: var(--treat-carved-lo);
-    border-radius: 8px;
-  }
+.piece-pressed {
+  filter: brightness(0.90) saturate(0.85);
+  box-shadow: var(--treat-carved-lo);
+  border-radius: 8px;
+}
 
-  /* ── 2. Dock Icons (persistent navigation) ── */
-  .dock-treat-base {
-    filter: var(--treat-neutral-tint);
-    box-shadow: var(--treat-carved-lo);
-  }
+/* ── 2. Dock Icons (persistent navigation) ── */
+.dock-treat-base {
+  filter: var(--treat-neutral-tint);
+  box-shadow: var(--treat-carved-lo);
+}
 
-  .dock-treat-active {
-    filter: var(--treat-neutral-tint-active);
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-depth-outer);
-  }
+.dock-treat-active {
+  filter: var(--treat-neutral-tint-active);
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-depth-outer);
+}
 
-  .dock-treat-pressed {
-    filter: brightness(0.65) saturate(0.6);
-    box-shadow: var(--treat-carved-lo);
-  }
+.dock-treat-pressed {
+  filter: brightness(0.65) saturate(0.6);
+  box-shadow: var(--treat-carved-lo);
+}
 
-  /* ── 3. Badge Images ── */
-  .badge-treat-owned {
-    filter: var(--treat-warm-tint);
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-warm-glow);
-    border: 1px solid var(--treat-warm-border);
-    border-radius: 8px;
-  }
+/* ── 3. Badge Images ── */
+.badge-treat-owned {
+  filter: var(--treat-warm-tint);
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-warm-glow);
+  border: 1px solid var(--treat-warm-border);
+  border-radius: 8px;
+}
 
-  .badge-treat-claimable {
-    filter: var(--treat-semi-tint);
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-semi-glow);
-    border: 1px solid var(--treat-semi-border);
-    border-radius: 8px;
-  }
+.badge-treat-claimable {
+  filter: var(--treat-semi-tint);
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-semi-glow);
+  border: 1px solid var(--treat-semi-border);
+  border-radius: 8px;
+}
 
-  .badge-treat-locked {
-    filter: grayscale(0.85) brightness(0.55);
-    box-shadow: var(--treat-carved-lo);
-    border-radius: 8px;
-  }
+.badge-treat-locked {
+  filter: grayscale(0.85) brightness(0.55);
+  box-shadow: var(--treat-carved-lo);
+  border-radius: 8px;
+}
 
-  /* ── 4. Arena Pieces (outside carved/relic system) ──
-     Applied as compound selectors on .arena-piece-img.
-     Color filters + drop-shadow defined together in Task 6. */
+/* ── 4. Arena Pieces (outside carved/relic system) ──
+   Applied as compound selectors on .arena-piece-img.
+   Color filters + drop-shadow defined together in Task 6. */
 
-  /* ── 5. Decorative Frames ── */
-  .frame-structural {
-    filter: var(--treat-neutral-tint);
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo);
-  }
+/* ── 5. Decorative Frames ── */
+.frame-structural {
+  filter: var(--treat-neutral-tint);
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo);
+}
 
-  .frame-showcase {
-    box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-depth-outer);
-    border: 1px solid var(--treat-semi-border);
-  }
+.frame-showcase {
+  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-depth-outer);
+  border: 1px solid var(--treat-semi-border);
+}
