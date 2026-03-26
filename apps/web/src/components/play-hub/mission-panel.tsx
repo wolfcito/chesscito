@@ -104,41 +104,69 @@ export function MissionPanel({
 }: MissionPanelProps) {
   return (
     <section className="mission-shell flex h-[100dvh] flex-col overflow-hidden">
-      {/* Zone 1: Floating HUD — piece selector + utilities */}
-      <div className="shrink-0 mx-2 mt-2 mb-1">
-        <div className="hud-bar flex items-center justify-between">
-          {/* Piece tabs — selected shows label, inactive icon-only */}
-          <div className="flex items-center gap-1">
-            {pieces.map((piece) => {
-              const isActive = selectedPiece === piece.key;
-              const icon = PIECE_ICONS[piece.key as keyof typeof PIECE_ICONS];
-              return (
-                <button
-                  key={piece.key}
-                  type="button"
-                  disabled={!piece.enabled}
-                  onClick={() => onSelectPiece(piece.key)}
-                  className={`relative flex h-11 items-center justify-center transition-all disabled:opacity-50 ${
-                    isActive
-                      ? "gap-1.5 rounded-full border border-cyan-400/25 bg-cyan-500/10 px-3 text-cyan-50"
-                      : "w-11 rounded-full text-cyan-200/55 hover:text-cyan-200/80"
-                  }`}
-                  aria-label={piece.label}
-                >
-                  <span className="text-base">{icon}</span>
-                  {isActive && (
-                    <span className="text-[11px] font-semibold uppercase tracking-widest">{piece.label}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+      {/* Zone A: Hero Selector — centered piece + mission target */}
+      <div className="shrink-0 px-4 pt-[max(env(safe-area-inset-top),12px)]">
+        {/* Piece selector row — centered */}
+        <div className="flex items-center justify-center gap-2">
+          {pieces.map((piece) => {
+            const isActive = selectedPiece === piece.key;
+            const icon = PIECE_ICONS[piece.key as keyof typeof PIECE_ICONS];
+            return (
+              <button
+                key={piece.key}
+                type="button"
+                disabled={!piece.enabled}
+                onClick={() => onSelectPiece(piece.key)}
+                className={`relative flex flex-col items-center justify-center rounded-full transition-all ${
+                  isActive
+                    ? "h-16 w-16 border-2 border-cyan-400/45 bg-cyan-500/[0.12] shadow-[0_0_16px_rgba(34,211,238,0.20)]"
+                    : "h-9 w-9 border border-white/[0.06] opacity-30 disabled:opacity-20"
+                }`}
+                aria-label={piece.label}
+              >
+                <span className={isActive ? "text-2xl drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" : "text-lg"}>
+                  {icon}
+                </span>
+                {isActive && (
+                  <span className="text-[7px] font-bold uppercase tracking-[0.12em] text-cyan-200">
+                    {piece.label}
+                  </span>
+                )}
+                {!piece.enabled && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/10 bg-slate-600/80 text-[7px]">
+                    &#128274;
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Right cluster — progress chip + more */}
-          <div className="flex items-center gap-1.5">
-            {exerciseDrawer}
-            {moreAction}
-          </div>
+        {/* Mission label slot — target OR tutorial (mutually exclusive) */}
+        <div className="mt-2 text-center">
+          {pieceHint ? (
+            <p className="text-[11px] font-medium text-cyan-200/50">{pieceHint}</p>
+          ) : (
+            <>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-cyan-400/35">
+                Move to
+              </p>
+              <p className="text-lg font-extrabold text-cyan-400/90 drop-shadow-[0_0_12px_rgba(34,211,238,0.20)]">
+                {targetLabel}
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Zone A2: Utility Band — Lv + stars + more */}
+      <div className="flex shrink-0 items-center justify-between px-4 h-7">
+        <span className="text-[11px] font-bold text-purple-400/50">
+          Lv {level}
+        </span>
+        <div className="flex items-center gap-1.5">
+          {exerciseDrawer}
+          {moreAction}
         </div>
       </div>
 
