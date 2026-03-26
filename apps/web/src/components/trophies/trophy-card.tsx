@@ -12,9 +12,9 @@ const DIFFICULTY_CHIP: Record<number, { label: string; className: string }> = {
 };
 
 const RANK_ACCENT: Record<number, string> = {
-  1: "border-amber-400/30 shadow-[0_0_8px_rgba(251,191,36,0.1)]",
-  2: "border-slate-300/30 shadow-[0_0_8px_rgba(203,213,225,0.1)]",
-  3: "border-orange-600/30 shadow-[0_0_8px_rgba(234,88,12,0.1)]",
+  1: "border-amber-400/40 shadow-[0_0_10px_rgba(251,191,36,0.12)]",
+  2: "border-slate-300/40 shadow-[0_0_10px_rgba(203,213,225,0.12)]",
+  3: "border-orange-600/40 shadow-[0_0_10px_rgba(234,88,12,0.12)]",
 };
 
 function formatTimeMs(ms: number): string {

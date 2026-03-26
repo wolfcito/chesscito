@@ -89,19 +89,19 @@ export default function TrophiesPage() {
   }, [isConnected, address, loadMyVictories]);
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[var(--app-max-width)] flex-col bg-[var(--surface-frosted-solid)]">
-      {/* Hero zone — art background, max 200px */}
-      <div className="relative flex min-h-40 max-h-[200px] items-end px-4 pb-4 pt-6">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2a3f] to-[#0a1424] opacity-80" />
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[var(--app-max-width)] flex-col bg-[var(--surface-a)] backdrop-blur-2xl">
+      {/* Header Pattern B */}
+      <header className="relative flex min-h-40 max-h-[200px] items-end border-b border-[var(--header-zone-border)] bg-[var(--header-zone-bg)] px-4 pb-5 pt-6 rounded-t-3xl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2a3f] to-transparent opacity-40 rounded-t-3xl" />
         <div className="relative z-10 flex items-center gap-3">
           <Link
             href="/"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.10]"
           >
-            <ArrowLeft className="h-4 w-4 text-slate-400" />
+            <ArrowLeft className="h-4 w-4 text-slate-300" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-white">
+            <h1 className="text-xl font-bold text-slate-100">
               {TROPHY_VITRINE_COPY.pageTitle}
             </h1>
             <p className="text-xs text-slate-400">
@@ -109,7 +109,7 @@ export default function TrophiesPage() {
             </p>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* List zone — clean dark background */}
       <div className="flex-1 px-4 pb-8" style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}>
