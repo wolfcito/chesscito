@@ -56,9 +56,9 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
           {items.map((item, index) => {
             const isFeatured = index === 0 && item.configured && item.enabled;
             return (
-            <div key={item.itemId.toString()} className={`mission-soft rune-frame shop-slot-frame rounded-2xl p-3 relative ${isFeatured ? "ring-2 ring-amber-400/30" : ""}`}>
+            <div key={item.itemId.toString()} className={`mission-soft rune-frame shop-slot-frame rounded-2xl p-3 relative ${isFeatured ? "ring-2 ring-amber-400/40 shadow-[0_0_16px_rgba(245,158,11,0.08)]" : "opacity-80"}`}>
               {isFeatured && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full border border-amber-400/25 bg-amber-500/15 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-amber-400/60">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full border border-amber-400/35 bg-amber-500/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-amber-400/60">
                   Featured
                 </span>
               )}
@@ -80,7 +80,7 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
                 type="button"
                 variant="game-solid"
                 size="game"
-                className="mt-3"
+                className={`mt-3 ${isFeatured ? "shadow-[0_0_12px_rgba(245,158,11,0.15)]" : ""}`}
                 disabled={!item.configured || !item.enabled}
                 onClick={() => onSelectItem(item.itemId)}
               >
