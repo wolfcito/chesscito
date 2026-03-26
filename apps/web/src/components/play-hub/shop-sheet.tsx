@@ -43,12 +43,13 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
           <span className="sr-only">Shop</span>
         </button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="mission-shell sheet-bg-shop rounded-t-3xl border-slate-700">
-        <div className="h-0.5 w-full bg-gradient-to-r from-amber-500/40 via-amber-400/20 to-amber-500/40" />
-        <SheetHeader>
-          <SheetTitle className="fantasy-title flex items-center gap-2 text-cyan-50"><ShoppingBag size={20} className="text-amber-400/40" />{SHOP_SHEET_COPY.title}</SheetTitle>
-          <SheetDescription className="text-cyan-100/75">{SHOP_SHEET_COPY.description}</SheetDescription>
-        </SheetHeader>
+      <SheetContent side="bottom" className="mission-shell sheet-bg-shop rounded-t-3xl border-white/[0.10]">
+        <div className="flex items-center justify-between border-b border-[var(--header-zone-border)] bg-[var(--header-zone-bg)] -mx-6 -mt-6 rounded-t-3xl px-6 py-5">
+          <SheetHeader className="flex-1">
+            <SheetTitle className="fantasy-title flex items-center gap-2 text-slate-100"><ShoppingBag size={20} className="text-amber-400/60" />{SHOP_SHEET_COPY.title}</SheetTitle>
+            <SheetDescription className="text-cyan-100/75">{SHOP_SHEET_COPY.description}</SheetDescription>
+          </SheetHeader>
+        </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {items.length === 0 && (
             <p className="col-span-full text-center text-sm text-cyan-100/50">{SHOP_SHEET_COPY.empty}</p>
@@ -56,7 +57,7 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
           {items.map((item, index) => {
             const isFeatured = index === 0 && item.configured && item.enabled;
             return (
-            <div key={item.itemId.toString()} className={`mission-soft rune-frame shop-slot-frame rounded-2xl p-3 relative ${isFeatured ? "ring-2 ring-amber-400/40 shadow-[0_0_16px_rgba(245,158,11,0.08)]" : "opacity-80"}`}>
+            <div key={item.itemId.toString()} className={`rounded-2xl border p-3 relative ${isFeatured ? "border-amber-400/40 bg-[rgba(6,14,28,0.90)] ring-2 ring-amber-400/40 shadow-[0_0_20px_rgba(245,158,11,0.12)]" : "border-white/[0.08] bg-white/[0.04] opacity-90"}`}>
               {isFeatured && (
                 <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full border border-amber-400/35 bg-amber-500/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-amber-400/60">
                   Featured
