@@ -184,13 +184,18 @@ export function MissionPanel({
 
       {/* Zone B: Board Stage — flex-1, maximum space */}
       <div className="min-h-0 flex-1 px-1 mt-2">
-        {board}
+        <div className="h-full rounded-lg overflow-hidden shadow-[inset_0_0_40px_rgba(0,0,0,0.3)]">
+          {board}
+        </div>
         {isReplay && (
           <p className="px-2 py-1 text-center text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-cyan-400/50">
             {PRACTICE_COPY.label}
           </p>
         )}
       </div>
+
+      {/* Visual transition between board and footer */}
+      <div className="h-px bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent" />
 
       {/* Zone C: Footer — micro-stats + CTA merged, then dock */}
       <div className="chesscito-footer shrink-0">
