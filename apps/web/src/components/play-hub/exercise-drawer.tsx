@@ -66,9 +66,9 @@ export function ExerciseDrawer({
         <button
           type="button"
           aria-label="Exercises"
-          className="flex h-6 items-center gap-1 rounded-full border border-amber-400/15 bg-transparent px-2.5 text-[10px] font-bold text-amber-400/60 transition hover:bg-amber-400/5"
+          className="flex h-5 items-center gap-0.5 rounded-full border border-amber-400/20 bg-transparent px-2 text-[10px] font-bold text-amber-300/70 transition hover:bg-amber-400/5"
         >
-          <Star size={10} className="fill-amber-400 text-amber-400" />
+          <Star size={9} className="fill-amber-300 text-amber-300" />
           <span className="tabular-nums">{totalStars}/{maxStars}</span>
         </button>
       </SheetTrigger>
