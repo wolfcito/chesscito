@@ -531,12 +531,8 @@
 
   .chesscito-footer {
     background: rgba(2, 12, 24, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.35);
-    border-radius: 20px 20px 0 0;
-    padding: 10px 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   /* ── Dock navigation ── */
@@ -557,19 +553,21 @@
   /* Consistent framing for all dock trigger buttons */
   .chesscito-dock-item > button,
   .chesscito-dock-item > [role="button"] {
-    width: 3rem !important;
-    height: 3rem !important;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
     border-radius: 14px !important;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background 200ms, border-color 200ms;
+    opacity: 0.30;
+    transition: opacity 0.15s, background 200ms, border-color 200ms;
   }
 
   .chesscito-dock-item > button:active,
   .chesscito-dock-item > [role="button"]:active {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(160, 205, 225, 0.15);
+    opacity: 0.60;
   }
 
   /* Center tab — primary focus with glow pill */
