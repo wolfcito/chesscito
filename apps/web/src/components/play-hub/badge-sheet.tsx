@@ -66,10 +66,10 @@ function BadgeCard({
       className={[
         "relative flex items-center gap-3 rounded-2xl px-3 py-3 transition",
         isClaimed
-          ? "bg-emerald-500/10 ring-1 ring-emerald-500/20 shadow-[inset_0_0_16px_rgba(16,185,129,0.12)]"
+          ? "bg-emerald-500/12 ring-1 ring-emerald-500/20 shadow-[inset_0_0_16px_rgba(16,185,129,0.12)]"
           : isClaimable
             ? "bg-cyan-500/10 ring-1 ring-cyan-400/30"
-            : "bg-slate-800/30",
+            : "bg-slate-800/20",
       ].join(" ")}
     >
       {isClaimed && (
@@ -77,7 +77,7 @@ function BadgeCard({
           &#10003;
         </span>
       )}
-      <picture className={`h-12 w-12 shrink-0 ${isLocked ? "grayscale opacity-40" : ""}`}>
+      <picture className={`h-12 w-12 shrink-0 ${isLocked ? "grayscale opacity-40" : isClaimed ? "drop-shadow-[0_0_8px_rgba(16,185,129,0.2)]" : ""}`}>
         <source srcSet={BADGE_ART[badge.piece].replace(".png", ".avif")} type="image/avif" />
         <source srcSet={BADGE_ART[badge.piece].replace(".png", ".webp")} type="image/webp" />
         <img
@@ -88,12 +88,12 @@ function BadgeCard({
       </picture>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-cyan-50">{title}</p>
+        <p className={`text-sm ${isClaimed ? "font-bold text-white" : "font-semibold text-cyan-50"}`}>{title}</p>
         <div className="mt-0.5 flex items-center gap-1.5">
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-700/50">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
-                isClaimed ? "bg-emerald-400" : "bg-amber-400"
+                isClaimed ? "bg-gradient-to-r from-emerald-400 to-emerald-300" : "bg-amber-400"
               }`}
               style={{ width: `${(badge.totalStars / badge.maxStars) * 100}%` }}
             />
@@ -125,7 +125,7 @@ function BadgeCard({
             {isClaimBusy ? BADGE_SHEET_COPY.claiming : BADGE_SHEET_COPY.claimBadge}
           </Button>
         ) : (
-          <Lock className="h-4 w-4 text-cyan-100/30" aria-hidden="true" />
+          <Lock className="h-4 w-4 text-cyan-100/20" aria-hidden="true" />
         )}
       </div>
     </div>
@@ -218,9 +218,9 @@ export function BadgeSheet({
         <Link
           href="/trophies"
           onClick={() => onOpenChange(false)}
-          className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-300 ring-1 ring-amber-400/20 transition hover:bg-amber-500/20"
+          className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-amber-500/[0.08] px-4 py-3.5 text-sm font-semibold text-amber-300 ring-1 ring-amber-400/15 transition hover:bg-amber-500/20"
         >
-          <Trophy className="h-4 w-4" />
+          <Trophy className="h-5 w-5" />
           {BADGE_SHEET_COPY.viewTrophies}
         </Link>
       </SheetContent>
