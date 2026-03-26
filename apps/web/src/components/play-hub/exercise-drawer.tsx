@@ -66,9 +66,10 @@ export function ExerciseDrawer({
         <button
           type="button"
           aria-label="Exercises"
-          className="flex h-6 items-center gap-0.5 rounded-full border border-amber-400/25 bg-amber-400/[0.08] px-2.5 text-[10px] font-bold text-amber-300/80 transition hover:bg-amber-400/[0.12]"
+          className="flex h-[26px] items-center gap-1 rounded-full px-2.5 text-[10px] font-bold text-[rgba(220,200,140,0.85)] transition hover:brightness-110"
+          style={{ background: "linear-gradient(180deg, rgba(20,16,10,0.70) 0%, rgba(12,10,8,0.60) 100%)", border: "1px solid rgba(180,160,100,0.20)", boxShadow: "inset 0 1px 2px rgba(255,255,255,0.05), inset 0 -1px 2px rgba(0,0,0,0.25), 0 1px 4px rgba(0,0,0,0.2)" }}
         >
-          <Star size={10} className="fill-amber-300 text-amber-300" />
+          <Star size={10} className="fill-[rgba(220,190,100,0.9)] text-[rgba(220,190,100,0.9)]" />
           <span className="tabular-nums">{totalStars}/{maxStars}</span>
         </button>
       </SheetTrigger>
