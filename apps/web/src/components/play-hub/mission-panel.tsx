@@ -176,13 +176,17 @@ export function MissionPanel({
       </div>
 
       {/* Zone A2: Utility Band — Lv + stars + more */}
-      <div className="flex shrink-0 items-center justify-between px-4 h-7">
+      <div className="flex shrink-0 items-center justify-between px-4 h-8">
         <span className="text-[11px] font-bold text-purple-400/50">
           Lv {level}
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {exerciseDrawer}
-          {moreAction}
+          {moreAction && (
+            <div className="[&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:border [&>button]:border-white/[0.10] [&>button]:bg-white/[0.06] [&>button]:text-white/55 [&>button]:transition-all [&>button]:active:scale-95 [&>button]:active:bg-white/[0.12]">
+              {moreAction}
+            </div>
+          )}
         </div>
       </div>
 
