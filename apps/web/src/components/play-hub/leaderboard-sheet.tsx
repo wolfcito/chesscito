@@ -54,12 +54,13 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
           <span className="sr-only">Leaderboard</span>
         </button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="mission-shell sheet-bg-leaderboard rounded-t-3xl border-slate-700">
-        <div className="h-0.5 w-full bg-gradient-to-r from-purple-500/40 via-purple-400/20 to-purple-500/40" />
-        <SheetHeader>
-          <SheetTitle className="fantasy-title flex items-center gap-2 text-cyan-50"><Crown size={20} className="text-purple-400/40" />{LEADERBOARD_SHEET_COPY.title}</SheetTitle>
-          <SheetDescription className="text-cyan-100/75">{LEADERBOARD_SHEET_COPY.description}</SheetDescription>
-        </SheetHeader>
+      <SheetContent side="bottom" className="mission-shell sheet-bg-leaderboard rounded-t-3xl border-white/[0.10]">
+        <div className="flex items-center justify-between border-b border-[var(--header-zone-border)] bg-[var(--header-zone-bg)] -mx-6 -mt-6 rounded-t-3xl px-6 py-5">
+          <SheetHeader className="flex-1">
+            <SheetTitle className="fantasy-title flex items-center gap-2 text-slate-100"><Crown size={20} className="text-purple-400/60" />{LEADERBOARD_SHEET_COPY.title}</SheetTitle>
+            <SheetDescription className="text-cyan-100/75">{LEADERBOARD_SHEET_COPY.description}</SheetDescription>
+          </SheetHeader>
+        </div>
         <p className="mt-3 text-center text-xs text-cyan-100/60">
           {PASSPORT_COPY.infoBanner}{" "}
           <a
@@ -91,7 +92,7 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
             <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.empty}</p>
           )}
           {rows.map((row) => (
-            <div key={row.rank} className="mission-soft rune-frame grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-3 py-2">
+            <div key={row.rank} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5">
               <p className="text-sm font-semibold text-cyan-100">
                 {row.rank <= 3 ? ["🥇","🥈","🥉"][row.rank - 1] : `#${row.rank}`}
               </p>
