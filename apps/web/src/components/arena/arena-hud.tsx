@@ -72,7 +72,7 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
         className={[
           "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
           confirmingBack
-            ? "w-auto gap-1.5 border-white/20 bg-white/10 px-3 text-white"
+            ? "w-auto gap-1.5 border-white/30 bg-white/10 backdrop-blur-sm px-3 text-white"
             : "w-11 border-white/10 bg-white/5 text-white/70 hover:text-white",
         ].join(" ")}
         aria-label={ARENA_COPY.backToHub}
