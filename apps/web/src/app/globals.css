@@ -37,6 +37,14 @@
     --surface-frosted: rgba(10, 20, 36, 0.92);
     --surface-frosted-solid: #0a1424;
     --overlay-scrim: rgba(0, 0, 0, 0.7);
+    --surface-a: rgba(6, 14, 28, 0.95);
+    --surface-b: rgba(6, 14, 28, 0.82);
+    --surface-b-plus: rgba(6, 14, 28, 0.90);
+    --surface-c-light: rgba(6, 14, 28, 0.55);
+    --surface-c-mid: rgba(6, 14, 28, 0.60);
+    --surface-c-heavy: rgba(6, 14, 28, 0.65);
+    --header-zone-bg: rgba(255, 255, 255, 0.08);
+    --header-zone-border: rgba(255, 255, 255, 0.08);
     --intro-bg-mobile: image-set(
       url("/art/bg-splash-chesscito.avif") type("image/avif"),
       url("/art/bg-splash-chesscito.webp") type("image/webp"),
@@ -209,7 +217,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(10, 20, 25, 0.58);
+    background: var(--surface-b);
     z-index: 0;
   }
 
@@ -531,8 +539,8 @@
   }
 
   .chesscito-footer {
-    background: rgba(2, 12, 24, 0.5);
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    background: var(--surface-c-heavy);
+    border-top: 1px solid rgba(160, 205, 225, 0.10);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
@@ -542,7 +550,7 @@
     align-items: center;
     justify-content: space-around;
     padding: 6px 12px calc(4px + env(safe-area-inset-bottom));
-    border-top: 1px solid rgba(160, 205, 225, 0.06);
+    border-top: 1px solid rgba(160, 205, 225, 0.10);
   }
 
   .chesscito-dock-item {
@@ -558,17 +566,17 @@
     height: 2.75rem !important;
     border-radius: 14px !important;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    opacity: 0.20;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    opacity: 0.45;
     transition: opacity 0.15s, background 200ms, border-color 200ms;
   }
 
   .chesscito-dock-item > button:active,
   .chesscito-dock-item > [role="button"]:active {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(160, 205, 225, 0.15);
-    opacity: 0.50;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(160, 205, 225, 0.20);
+    opacity: 0.65;
   }
 
   /* Center tab — primary focus with glow pill */
