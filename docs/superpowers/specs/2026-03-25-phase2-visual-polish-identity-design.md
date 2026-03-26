@@ -29,11 +29,11 @@
 | Hero glow | `shadow-[0_0_16px_rgba(34,211,238,0.20)]` | `shadow-[0_0_20px_rgba(34,211,238,0.30)]` |
 | Hero bg | `bg-cyan-500/[0.12]` | `bg-gradient-to-b from-cyan-400/15 to-cyan-600/8` |
 | Piece label | `text-[7px] font-bold text-cyan-200` | `text-[8px] font-extrabold tracking-[0.15em] text-cyan-100` |
-| Inactive circle | `h-9 w-9` (36px) | `h-8 w-8` (32px) — default. Fall back to `h-[34px] w-[34px]` if real-device testing shows legibility issues at 32px. |
+| Inactive circle | `h-9 w-9` (36px) | `h-8 w-8` (32px) visual default. Fall back to `h-[34px] w-[34px]` if real-device legibility suffers. **Touch target must remain 40-44px** regardless of visual size (use invisible padding or `min-w-[44px] min-h-[44px]` on the button). |
 | Inactive opacity | `opacity-30` | `opacity-[0.22]` |
 | Target value | `text-lg` (18px) | `text-xl` (20px) `font-black` (weight 900) |
 
-**Glow guardrail:** If the hero halo visually bleeds into the target label or utility band actions on device, reduce shadow to `shadow-[0_0_16px_rgba(34,211,238,0.22)]`. The halo must frame the piece, not flood the zone.
+**Glow guardrail (takes priority over nominal value):** If the hero halo visually bleeds into the target label or utility band actions on device, reduce shadow immediately — do not ship the nominal value. Fall back to `shadow-[0_0_16px_rgba(34,211,238,0.22)]`. The halo must frame the piece, not flood the zone. The guardrail overrides the table above.
 
 ### Signature Animation: Piece Selection "Plop"
 
@@ -46,6 +46,8 @@ When the active piece changes, the new hero gets a micro scale-bounce:
 ```
 
 Duration: `300ms`, easing: `cubic-bezier(0.34, 1.56, 0.64, 1)`. Implemented as a CSS keyframe `hero-plop` applied via a transient class toggled on piece change.
+
+**Trigger rule:** The plop fires only on actual `selectedPiece` value changes — not on re-renders, mounts, or other state updates. Implementation: track previous piece via ref, compare on render, apply transient class only when `prev !== current`.
 
 Only the hero circle animates. Inactive pieces transition smoothly with `transition-all duration-200`.
 
@@ -96,7 +98,7 @@ This is a whisper of a line — exists as a visual transition, not a separator. 
 
 ### Accent Stripe
 
-A `2px` (`h-0.5`) gradient line at the very top of each sheet, immediately below the drag handle:
+A `2px` (`h-0.5`) gradient line at the very top of each sheet overlay, immediately below the drag handle. **Applies to sheet overlays only** — not to inline confirms (Back to Hub, Resign) or modal overlays (victory, coach).
 
 ```tsx
 <div className="h-0.5 w-full bg-gradient-to-r from-{accent}-500/40 via-{accent}-400/20 to-{accent}-500/40" />
@@ -187,7 +189,9 @@ Current: all items have identical `rune-frame` styling.
 - The FEATURED label is tiny and subordinate — never competes with price or CTA
 - `ring-2 ring-amber-400/30` replaces the default ring — stronger but still subtle
 - Only 1 item can be featured at a time
+- **Default selection:** first purchasable premium item, unless a product-level override specifies otherwise
 - The label floats above the card (negative top position), not inside it
+- The label is tiny and subordinate — must never compete with price or CTA
 - No glow on the label itself
 
 **Priority:** High.
@@ -225,6 +229,8 @@ rounded-2xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06]
 ```
 
 Same visual family as dock items and utility elements — part of the game, not a settings page.
+
+**Tone guardrail:** The about page shares the game's visual universe but must remain calmer than gameplay or reward screens. No glows, no animations, no accent colors. It's the "quiet room" of the product.
 
 **Priority:** Low. These are cheap wins but not identity-critical.
 
