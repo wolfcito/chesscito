@@ -151,7 +151,7 @@ export function ArenaBoard({
                     <img
                       src={src}
                       alt={`${p.color === "w" ? "White" : "Black"} ${p.type}`}
-                      className="arena-piece-img"
+                      className={`arena-piece-img ${p.color === "w" ? "arena-treat-white" : "arena-treat-black"}`}
                       style={{ width: "100%" }}
                     />
                   </picture>
