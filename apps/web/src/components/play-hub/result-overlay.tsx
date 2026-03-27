@@ -5,7 +5,7 @@ import { useState } from "react";
 import { BADGE_EARNED_COPY, PIECE_LABELS, RESULT_OVERLAY_COPY, SHARE_COPY } from "@/lib/content/editorial";
 import { Button } from "@/components/ui/button";
 
-type PieceKey = "rook" | "bishop" | "knight";
+type PieceKey = "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
 type SuccessVariant = "badge" | "score" | "shop";
 type Variant = SuccessVariant | "error";
 
@@ -32,6 +32,9 @@ function getBadgeImg(pieceType?: PieceKey): string {
     rook: "/art/pieces/w-rook.png",
     bishop: "/art/pieces/w-bishop.png",
     knight: "/art/pieces/w-knight.png",
+    pawn: "/art/pieces/w-pawn.png",
+    queen: "/art/pieces/w-queen.png",
+    king: "/art/pieces/w-king.png",
   };
   return map[pieceType ?? "rook"];
 }

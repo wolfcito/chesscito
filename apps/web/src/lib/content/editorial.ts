@@ -30,18 +30,27 @@ export const PIECE_LABELS = {
   rook: "Rook",
   bishop: "Bishop",
   knight: "Knight",
+  pawn: "Pawn",
+  queen: "Queen",
+  king: "King",
 } as const;
 
 export const PIECE_IMAGES: Record<keyof typeof PIECE_LABELS, string> = {
   rook: "/art/pieces/w-rook",
   bishop: "/art/pieces/w-bishop",
   knight: "/art/pieces/w-knight",
+  pawn: "/art/pieces/w-pawn",
+  queen: "/art/pieces/w-queen",
+  king: "/art/pieces/w-king",
 } as const;
 
 export const BADGE_TITLES = {
   rook: "Rook Ascendant",
   bishop: "Bishop Ascendant",
   knight: "Knight Ascendant",
+  pawn: "Pawn Ascendant",
+  queen: "Queen Ascendant",
+  king: "King Ascendant",
 } as const;
 
 export const LEADERBOARD_COPY = {
@@ -102,6 +111,9 @@ export const TUTORIAL_COPY = {
   rook: "The Rook moves in straight lines — horizontal or vertical",
   bishop: "The Bishop moves diagonally — any distance",
   knight: "The Knight jumps in an L-shape — 2+1 squares",
+  pawn: "The Pawn moves forward one square — captures diagonally",
+  queen: "The Queen moves any direction — any distance",
+  king: "The King moves one square in any direction",
 } as const;
 
 export const CAPTURE_COPY = {
@@ -220,12 +232,18 @@ export const MISSION_BRIEFING_COPY = {
     rook: "The Rook moves in straight lines",
     bishop: "The Bishop moves diagonally",
     knight: "The Knight jumps in an L-shape",
+    pawn: "The Pawn moves forward, captures diagonally",
+    queen: "The Queen moves in any direction",
+    king: "The King moves one square at a time",
   },
   captureHint: "Capture the target piece",
   pieceHint: {
     rook: "♜ Straight lines",
     bishop: "♝ Diagonal moves",
     knight: "♞ L-shaped jumps",
+    pawn: "♟ Forward + diagonal capture",
+    queen: "♛ Any direction, any distance",
+    king: "♚ One square, any direction",
   },
   captureHintCompact: "♜ Capture the target",
 } as const;

@@ -45,10 +45,16 @@ const KNIGHT_EXERCISES: Exercise[] = [
   { id: "knight-5", startPos: pos(0, 0), targetPos: pos(4, 4), optimalMoves: 3 },
 ];
 
+/** Pieces with exercises defined and playable */
+export const PLAYABLE_PIECES: PieceId[] = ["rook", "bishop", "knight"];
+
 export const EXERCISES: Record<PieceId, Exercise[]> = {
   rook:   ROOK_EXERCISES,
   bishop: BISHOP_EXERCISES,
   knight: KNIGHT_EXERCISES,
+  pawn:   [], // PR-3
+  queen:  [], // PR-6
+  king:   [], // PR-9
 };
 
 export const BADGE_THRESHOLD = 10; // de 15 estrellas posibles

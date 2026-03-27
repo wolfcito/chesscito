@@ -28,18 +28,15 @@ export const scoreboardAbi = [
   },
 ] as const;
 
+const LEVEL_IDS: Record<string, bigint> = {
+  rook: 1n,
+  bishop: 2n,
+  knight: 3n,
+  pawn: 4n,
+  queen: 5n,
+  king: 6n,
+};
+
 export function getLevelId(piece: string) {
-  if (piece === "rook") {
-    return 1n;
-  }
-
-  if (piece === "bishop") {
-    return 2n;
-  }
-
-  if (piece === "knight") {
-    return 3n;
-  }
-
-  return 0n;
+  return LEVEL_IDS[piece] ?? 0n;
 }

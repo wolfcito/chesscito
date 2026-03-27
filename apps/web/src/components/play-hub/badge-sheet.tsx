@@ -16,12 +16,15 @@ import { Button } from "@/components/ui/button";
 import { BADGE_THRESHOLD } from "@/lib/game/exercises";
 import type { PieceId } from "@/lib/game/types";
 
-const PIECES: PieceId[] = ["rook", "bishop", "knight"];
+const PIECES: PieceId[] = ["rook", "bishop", "knight", "pawn", "queen", "king"];
 
 const BADGE_ART: Record<PieceId, string> = {
   rook: "/art/pieces/w-rook.png",
   bishop: "/art/pieces/w-bishop.png",
   knight: "/art/pieces/w-knight.png",
+  pawn: "/art/pieces/w-pawn.png",
+  queen: "/art/pieces/w-queen.png",
+  king: "/art/pieces/w-king.png",
 };
 
 type BadgeState = "claimed" | "claimable" | "locked";
@@ -155,19 +158,19 @@ export function BadgeSheet({
   isClaimBusy,
   showNotification,
 }: BadgeSheetProps) {
-  const [starsByPiece, setStarsByPiece] = useState<Record<PieceId, number[]>>({
-    rook: [0, 0, 0, 0, 0],
-    bishop: [0, 0, 0, 0, 0],
-    knight: [0, 0, 0, 0, 0],
-  });
+  const defaultStars = Object.fromEntries(
+    PIECES.map((p) => [p, [0, 0, 0, 0, 0]])
+  ) as Record<PieceId, number[]>;
+
+  const [starsByPiece, setStarsByPiece] = useState<Record<PieceId, number[]>>(defaultStars);
 
   useEffect(() => {
     if (!open) return;
-    setStarsByPiece({
-      rook: readStarsFromStorage("rook"),
-      bishop: readStarsFromStorage("bishop"),
-      knight: readStarsFromStorage("knight"),
-    });
+    setStarsByPiece(
+      Object.fromEntries(
+        PIECES.map((p) => [p, readStarsFromStorage(p)])
+      ) as Record<PieceId, number[]>
+    );
   }, [open]);
 
   const badges: BadgeInfo[] = PIECES.map((piece) => {

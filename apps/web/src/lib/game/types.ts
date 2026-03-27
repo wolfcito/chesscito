@@ -1,4 +1,4 @@
-export type PieceId = "rook" | "bishop" | "knight";
+export type PieceId = "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
 
 export type BoardPosition = {
   file: number; // 0=a … 7=h
@@ -39,7 +39,7 @@ export type PieceProgress = {
 
 /* ── Arena (full chess) types ── */
 
-export type ChessPieceId = PieceId | "pawn" | "queen" | "king";
+export type ChessPieceId = PieceId;
 
 export type PieceColor = "w" | "b";
 

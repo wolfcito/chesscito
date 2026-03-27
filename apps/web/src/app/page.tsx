@@ -61,7 +61,7 @@ type SignatureResponse =
   | { nonce: string; deadline: string; signature: `0x${string}`; error?: never }
   | { error: string };
 
-type PieceKey = "rook" | "bishop" | "knight";
+type PieceKey = "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
 type CatalogItem = (typeof SHOP_ITEMS)[number] & {
   configured: boolean;
   enabled: boolean;
@@ -137,7 +137,7 @@ export default function PlayHubPage() {
   const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [justClaimed, setJustClaimed] = useState<Record<PieceKey, boolean>>({
-    rook: false, bishop: false, knight: false,
+    rook: false, bishop: false, knight: false, pawn: false, queen: false, king: false,
   });
 
   const {
@@ -158,7 +158,7 @@ export default function PlayHubPage() {
   const timerStart = useRef<number>(0);
   const boardGeneration = useRef(0);
 
-  const PIECE_ORDER: PieceKey[] = ["rook", "bishop", "knight"];
+  const PIECE_ORDER: PieceKey[] = ["rook", "bishop", "knight", "pawn", "queen", "king"];
   const currentPieceIndex = PIECE_ORDER.indexOf(selectedPiece);
   const nextPiece = currentPieceIndex < PIECE_ORDER.length - 1
     ? PIECE_ORDER[currentPieceIndex + 1]
@@ -306,9 +306,10 @@ export default function PlayHubPage() {
     [tokenBalances]
   );
 
-  // Read hasClaimedBadge for all 3 pieces (batched)
+  // Read hasClaimedBadge for all 6 pieces (batched)
+  const BADGE_LEVEL_IDS = [1n, 2n, 3n, 4n, 5n, 6n] as const;
   const { data: allBadgesData, refetch: refetchAllBadges } = useReadContracts({
-    contracts: ([1n, 2n, 3n] as const).map((lid) => ({
+    contracts: BADGE_LEVEL_IDS.map((lid) => ({
       address: badgesAddress ?? undefined,
       abi: badgesAbi,
       functionName: "hasClaimedBadge" as const,
@@ -325,6 +326,9 @@ export default function PlayHubPage() {
     rook: allBadgesData?.[0]?.result as boolean | undefined,
     bishop: allBadgesData?.[1]?.result as boolean | undefined,
     knight: allBadgesData?.[2]?.result as boolean | undefined,
+    pawn: allBadgesData?.[3]?.result as boolean | undefined,
+    queen: allBadgesData?.[4]?.result as boolean | undefined,
+    king: allBadgesData?.[5]?.result as boolean | undefined,
   };
   const hasClaimedBadge = badgesClaimed[selectedPiece];
 
@@ -734,6 +738,9 @@ export default function PlayHubPage() {
             { key: "rook", label: PIECE_LABELS.rook, enabled: true },
             { key: "bishop", label: PIECE_LABELS.bishop, enabled: true },
             { key: "knight", label: PIECE_LABELS.knight, enabled: true },
+            { key: "pawn", label: PIECE_LABELS.pawn, enabled: false },
+            { key: "queen", label: PIECE_LABELS.queen, enabled: false },
+            { key: "king", label: PIECE_LABELS.king, enabled: false },
           ]}
           phase={phase}
           targetLabel={targetLabel}

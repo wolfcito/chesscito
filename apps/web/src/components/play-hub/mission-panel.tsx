@@ -6,7 +6,7 @@ import { Star, Timer } from "lucide-react";
 import { PHASE_FLASH_COPY, PIECE_IMAGES, PRACTICE_COPY } from "@/lib/content/editorial";
 
 type PieceOption = {
-  key: "rook" | "bishop" | "knight";
+  key: "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
   label: string;
   enabled: boolean;
 };

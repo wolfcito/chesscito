@@ -16,6 +16,9 @@ const PIECE_IMG: Record<PieceId, string> = {
   rook:   "/art/pieces/w-rook.png",
   bishop: "/art/pieces/w-bishop.png",
   knight: "/art/pieces/w-knight.png",
+  pawn:   "/art/pieces/w-pawn.png",
+  queen:  "/art/pieces/w-queen.png",
+  king:   "/art/pieces/w-king.png",
 };
 
 function parseLabel(label: string): BoardPosition {
