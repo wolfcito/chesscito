@@ -167,12 +167,12 @@ export function ResultOverlay({
 
   return (
     <div
-      className={`fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300 ${exiting ? "modal-exiting" : ""}`}
+      className={`fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-250 ${exiting ? "modal-exiting" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-label={title}
     >
-      <div className="flex w-full max-w-xs flex-col items-center gap-6 rounded-3xl border border-white/[0.06] bg-[var(--surface-frosted)] px-6 py-10 text-center backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-400">
+      <div className="flex w-full max-w-xs flex-col items-center gap-6 rounded-3xl border border-white/[0.06] bg-[var(--surface-frosted)] px-6 py-10 text-center backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-350">
         {/* Image or error icon */}
         {isError ? (
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-rose-900/40 ring-1 ring-rose-500/40">
@@ -284,12 +284,12 @@ export function BadgeEarnedPrompt({
 
   return (
     <div
-      className={`fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300 ${exiting ? "modal-exiting" : ""}`}
+      className={`fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-250 ${exiting ? "modal-exiting" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="badge-earned-title"
     >
-      <div className="flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-400">
+      <div className="flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350">
         <SuccessImage variant="badge" pieceType={pieceType} />
 
         <StarsRow totalStars={totalStars} />

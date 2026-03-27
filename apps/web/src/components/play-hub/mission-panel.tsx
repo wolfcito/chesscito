@@ -51,8 +51,8 @@ function PhaseFlash({ phase }: { phase: MissionPanelProps["phase"] }) {
     setVisible(true);
     setFading(false);
 
-    const fadeTimer = setTimeout(() => setFading(true), 700);
-    const hideTimer = setTimeout(() => setVisible(false), 1100);
+    const fadeTimer = setTimeout(() => setFading(true), 600);
+    const hideTimer = setTimeout(() => setVisible(false), 950);
 
     return () => {
       clearTimeout(fadeTimer);
