@@ -155,13 +155,19 @@ export function ResultOverlay({
   onRetry,
   totalStars,
 }: ResultOverlayProps) {
+  const [exiting, setExiting] = useState(false);
   const isError = variant === "error";
   const title = getTitle(variant);
   const subtitle = getSubtitle(variant, pieceType, itemLabel, errorMessage);
 
+  function handleDismiss() {
+    setExiting(true);
+    setTimeout(onDismiss, 250);
+  }
+
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300"
+      className={`fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300 ${exiting ? "modal-exiting" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -226,7 +232,7 @@ export function ResultOverlay({
               variant="game-text"
               size="game-sm"
               autoFocus={false}
-              onClick={onDismiss}
+              onClick={handleDismiss}
             >
               {RESULT_OVERLAY_COPY.cta.dismiss}
             </Button>
@@ -236,7 +242,7 @@ export function ResultOverlay({
               variant="game-solid"
               size="game"
               autoFocus={!(isError && onRetry)}
-              onClick={onDismiss}
+              onClick={handleDismiss}
             >
               {RESULT_OVERLAY_COPY.cta.continue}
             </Button>
@@ -268,11 +274,17 @@ export function BadgeEarnedPrompt({
   onSubmitScore,
   onLater,
 }: BadgeEarnedPromptProps) {
+  const [exiting, setExiting] = useState(false);
   const title = BADGE_EARNED_COPY.title(PIECE_LABELS[pieceType]);
+
+  function handleLater() {
+    setExiting(true);
+    setTimeout(onLater, 250);
+  }
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300"
+      className={`fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-300 ${exiting ? "modal-exiting" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="badge-earned-title"
@@ -299,7 +311,7 @@ export function BadgeEarnedPrompt({
             type="button"
             variant="game-text"
             size="game-sm"
-            onClick={onLater}
+            onClick={handleLater}
           >
             {BADGE_EARNED_COPY.later}
           </Button>

@@ -19,7 +19,6 @@ type MissionPanelProps = {
   targetLabel: string;
   score: string;
   timeMs: string;
-  level: string;
   board: ReactNode;
   exerciseDrawer: ReactNode;
   isReplay: boolean;
@@ -93,7 +92,6 @@ export function MissionPanel({
   targetLabel,
   score,
   timeMs,
-  level,
   board,
   exerciseDrawer,
   isReplay,
@@ -172,13 +170,12 @@ export function MissionPanel({
             })}
           </div>
 
-          {/* Utility cluster — Lv badge + help button */}
-          <div className="flex shrink-0 flex-col items-center gap-0.5">
-            <span className="text-[11px] font-bold text-purple-400/60">
-              Lv {level}
-            </span>
-            {moreAction}
-          </div>
+          {/* Utility cluster — help button */}
+          {moreAction && (
+            <div className="flex shrink-0 items-center">
+              {moreAction}
+            </div>
+          )}
         </div>
 
         {/* Mission label slot — collapses to content */}

@@ -17,7 +17,6 @@ export type ContextActionState = {
 export function getContextAction(state: ContextActionState): ContextAction {
   if (!state.isConnected || !state.isCorrectChain) return null;
 
-  if (state.phase === "failure" && state.shieldsAvailable > 0) return "useShield";
   if (state.phase === "failure") return "retry";
 
   if (state.scorePending) return "submitScore";

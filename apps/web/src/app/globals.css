@@ -707,6 +707,18 @@
   }
 }
 
+/* ── Modal exit animation — shared across all custom overlays ── */
+@keyframes modal-exit {
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+.modal-exiting {
+  animation: modal-exit 250ms ease-out forwards;
+  pointer-events: none;
+}
+
 @keyframes hero-plop {
   0% { transform: scale(0.95); }
   40% { transform: scale(1.03); }

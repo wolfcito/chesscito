@@ -37,7 +37,7 @@ import {
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
 import { ACCEPTED_TOKENS, erc20Abi, normalizePrice } from "@/lib/contracts/tokens";
-import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS, SHIELD_COPY } from "@/lib/content/editorial";
+import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS } from "@/lib/content/editorial";
 import { getPositionLabel, getValidTargets } from "@/lib/game/board";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
@@ -53,11 +53,7 @@ const SHOP_ITEMS = [
     label: "Founder Badge",
     subtitle: "Support Chesscito with an exclusive founder badge minted to your wallet.",
   },
-  {
-    itemId: 2n,
-    label: "Retry Shield",
-    subtitle: `${SHIELD_COPY.subtitle} (3 uses)`,
-  },
+  // Shield disabled — no gameplay penalty justifies the cost yet
 ] as const;
 
 
@@ -676,9 +672,6 @@ export default function PlayHubPage() {
         variant: "shop",
         txHash: buyHash,
       });
-      if (selectedItem.itemId === 2n) {
-        setPendingShieldCredit(true);
-      }
       console.info("[MiniPayTx] result", {
         label: selectedItem.label,
         txHash: buyHash,
@@ -747,7 +740,6 @@ export default function PlayHubPage() {
           pieceHint={pieceHint}
           score={score.toString()}
           timeMs={timeMs.toString()}
-          level={levelId.toString()}
           contextualAction={
             <ContextualActionSlot
               action={contextAction}
