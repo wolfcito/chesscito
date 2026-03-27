@@ -70,7 +70,7 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
         type="button"
         onClick={handleBackClick}
         className={[
-          "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
+          "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all active:scale-[0.97]",
           confirmingBack
             ? "w-auto gap-1.5 border-white/30 bg-white/12 backdrop-blur-md px-3 text-white"
             : "w-11 border-white/[0.12] bg-[var(--surface-c-mid)] backdrop-blur-md text-white/80 hover:text-white",
@@ -107,7 +107,7 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
             type="button"
             onClick={handleResignClick}
             className={[
-              "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all",
+              "relative flex h-11 shrink-0 items-center justify-center rounded-full border overflow-hidden transition-all active:scale-[0.97]",
               confirmingResign
                 ? "w-auto gap-1.5 border-rose-400/40 bg-rose-500/18 backdrop-blur-md px-3 text-rose-400"
                 : "w-11 border-white/[0.12] bg-[var(--surface-c-mid)] backdrop-blur-md text-white/50 hover:text-rose-400",

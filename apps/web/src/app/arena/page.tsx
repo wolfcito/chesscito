@@ -482,7 +482,7 @@ export default function ArenaPage() {
             <button
               type="button"
               onClick={game.reset}
-              className="shrink-0 rounded-xl bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/30 active:scale-95"
+              className="shrink-0 min-h-[44px] rounded-xl bg-rose-500/20 px-3 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/30 active:scale-[0.97]"
             >
               {ARENA_COPY.restartMatch}
             </button>

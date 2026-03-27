@@ -126,7 +126,7 @@ function BadgeCard({
             variant="game-solid"
             onClick={onClaim}
             disabled={isClaimBusy}
-            className="rounded-xl px-3 py-1.5 text-xs"
+            className="min-h-[44px] rounded-xl px-3 text-xs"
           >
             {isClaimBusy ? BADGE_SHEET_COPY.claiming : BADGE_SHEET_COPY.claimBadge}
           </Button>

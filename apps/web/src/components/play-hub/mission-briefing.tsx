@@ -47,7 +47,7 @@ export function MissionBriefing({
         <button
           type="button"
           onClick={handleDismiss}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-white/30 transition-colors hover:text-white/60"
+          className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full text-white/30 transition-colors hover:text-white/60"
           aria-label="Close"
         >
           <X className="h-4 w-4" />
