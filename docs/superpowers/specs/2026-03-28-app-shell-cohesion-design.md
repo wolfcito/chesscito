@@ -52,9 +52,9 @@ The shell currently has **4 structural fractures**:
 Minimal tokens, hierarchy by weight — family resemblance, not sameness.
 
 ```css
---shell-radius:   /* 12px or 16px — audit during Phase 1 */
---shell-border:   rgba(255, 255, 255, 0.06);
---shell-divider:  rgba(255, 255, 255, 0.04);
+--shell-radius:   16px;  /* matches rounded-2xl — dominant radius in gameplay components */
+--shell-border:   rgba(255, 255, 255, 0.06);  /* region/container borders */
+--shell-divider:  rgba(255, 255, 255, 0.04);  /* internal dividers within containers */
 --shell-gap-xs:   4px;   /* near-board orbit */
 --shell-gap-sm:   8px;   /* peripheral orbit */
 ```
@@ -173,9 +173,9 @@ Header rail and dock are the two shell extremes — top and bottom. They frame t
 |-------|-------|-------|
 | `--shell-gap-xs` | `4px` | Board orbit: header→board, board→GameplayPanel |
 | `--shell-gap-sm` | `8px` | Peripheral: GameplayPanel→dock |
-| `--shell-radius` | `12px` or `16px` (audit in Phase 1) | All shell containers: board, GameplayPanel |
-| `--shell-border` | `rgba(255, 255, 255, 0.06)` | All region borders, dividers |
-| `--shell-divider` | `rgba(255, 255, 255, 0.04)` | Internal dividers within GameplayPanel |
+| `--shell-radius` | `16px` (`rounded-2xl`) | All shell containers: board, GameplayPanel |
+| `--shell-border` | `rgba(255, 255, 255, 0.06)` | Region/container borders (board, GameplayPanel, dock border-top) |
+| `--shell-divider` | `rgba(255, 255, 255, 0.04)` | Internal dividers within containers (GameplayPanel slot separators) |
 
 ### Horizontal containment
 
@@ -207,7 +207,7 @@ Phased rollout — 6 commits, file-by-file, MiniPay-safe, independently deployab
 ### Phase 1 — Shell token system
 **Files:** `globals.css`
 - Add `--shell-gap-xs`, `--shell-gap-sm`, `--shell-radius`, `--shell-border`, `--shell-divider` to `:root`
-- Audit current radii (`rounded-xl` = 12px, `rounded-2xl` = 16px, CTA buttons, board) to decide `--shell-radius`
+- `--shell-radius` locked at `16px` (`rounded-2xl`) — dominant radius in gameplay components (mission card, CTA, badges, shop cards)
 - No intentional visual change yet — tokens defined but not consumed
 
 ### Phase 2 — GameplayPanel component
@@ -233,6 +233,7 @@ Phased rollout — 6 commits, file-by-file, MiniPay-safe, independently deployab
 - Old Zone C footer wrapper becomes: GameplayPanel + Dock
 - Remove `chesscito-footer` background/border from wrapper — each child owns its surface
 - Regression check: all CTA states still function (submit, retry, shield, badge, wallet, network)
+- Regression check: slot collapse — verify no empty rows render when mission/stats/action slots are conditionally empty across all game states
 
 ### Phase 5 — Anchor the header rail
 **Files:** `mission-panel.tsx`, `globals.css`
