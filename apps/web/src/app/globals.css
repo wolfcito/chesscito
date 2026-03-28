@@ -46,6 +46,13 @@
     --header-zone-bg: rgba(255, 255, 255, 0.08);
     --header-zone-border: rgba(255, 255, 255, 0.08);
 
+    /* ── Shell Cohesion — layout tokens ── */
+    --shell-radius: 16px;
+    --shell-border: rgba(255, 255, 255, 0.06);
+    --shell-divider: rgba(255, 255, 255, 0.04);
+    --shell-gap-xs: 4px;
+    --shell-gap-sm: 8px;
+
     /* ── Asset Treatment System — materiality tokens ── */
     --treat-carved-hi: inset 0 1px 2px rgba(255, 255, 255, 0.05);
     --treat-carved-lo: inset 0 -1px 2px rgba(0, 0, 0, 0.25);
