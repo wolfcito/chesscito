@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Star, Timer } from "lucide-react";
-import { PHASE_FLASH_COPY, PIECE_IMAGES, PRACTICE_COPY } from "@/lib/content/editorial";
+import { MISSION_BRIEFING_COPY, PHASE_FLASH_COPY, PIECE_IMAGES, PIECE_LABELS, PRACTICE_COPY } from "@/lib/content/editorial";
 
 type PieceOption = {
   key: "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
@@ -178,21 +178,6 @@ export function MissionPanel({
           )}
         </div>
 
-        {/* Mission label slot — collapses to content */}
-        <div className="mt-1 py-1 text-center">
-          {pieceHint ? (
-            <p className="text-[11px] font-medium text-cyan-200/50">{pieceHint}</p>
-          ) : (
-            <>
-              <p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-cyan-400/25">
-                Move to
-              </p>
-              <p className="text-xl font-black text-cyan-400/90 drop-shadow-[0_0_12px_rgba(34,211,238,0.20)]">
-                {targetLabel}
-              </p>
-            </>
-          )}
-        </div>
       </div>
 
       {/* Zone B: Board Stage — flex-1, maximum space */}
@@ -207,16 +192,25 @@ export function MissionPanel({
         )}
       </div>
 
-      {/* Mission strip — persistent objective reminder */}
-      <div className="mx-2 mt-1 flex items-center gap-2 rounded-lg px-3 py-1.5" style={{ background: "rgba(0,0,0,0.15)" }}>
-        <picture className="h-5 w-5 shrink-0">
-          <source srcSet={`${PIECE_IMAGES[selectedPiece as keyof typeof PIECE_IMAGES]}.avif`} type="image/avif" />
-          <source srcSet={`${PIECE_IMAGES[selectedPiece as keyof typeof PIECE_IMAGES]}.webp`} type="image/webp" />
-          <img src={`${PIECE_IMAGES[selectedPiece as keyof typeof PIECE_IMAGES]}.png`} alt="" className="h-full w-full object-contain opacity-60" />
+      {/* Mission card — persistent objective with wolf mascot */}
+      <div className="mx-2 mt-1 flex items-center gap-3 rounded-2xl border border-white/[0.06] px-4 py-2.5" style={{ background: "linear-gradient(180deg, rgba(12,20,35,0.60) 0%, rgba(6,14,28,0.50) 100%)", boxShadow: "inset 0 1px 2px rgba(255,255,255,0.04), inset 0 -1px 2px rgba(0,0,0,0.2)" }}>
+        <div className="flex-1 min-w-0">
+          <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-cyan-400/70">
+            {MISSION_BRIEFING_COPY.label}
+          </p>
+          <p className="text-sm font-bold text-slate-100 truncate">
+            {pieceHint
+              ? `Move your ${PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to ${targetLabel}`
+              : `Move your ${PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to ${targetLabel}`}
+          </p>
+          <p className="text-[11px] text-cyan-100/40 truncate">
+            {MISSION_BRIEFING_COPY.moveHint[selectedPiece as keyof typeof MISSION_BRIEFING_COPY.moveHint]}
+          </p>
+        </div>
+        <picture className="h-12 w-12 shrink-0">
+          <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
+          <img src="/art/favicon-wolf.png" alt="" aria-hidden="true" className="h-full w-full object-contain drop-shadow-[0_0_8px_rgba(103,232,249,0.3)]" />
         </picture>
-        <span className="text-[11px] font-semibold text-white/60 truncate">
-          {pieceHint ? pieceHint : `Move to ${targetLabel}`}
-        </span>
       </div>
 
       {/* Visual transition between board and footer */}
