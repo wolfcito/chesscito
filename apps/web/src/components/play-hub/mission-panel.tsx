@@ -124,7 +124,7 @@ export function MissionPanel({
   const statsContent = (
     <div className="flex items-center gap-3">
       <div className="shrink-0">{exerciseDrawer}</div>
-      <span className="h-4 w-px bg-white/8" />
+      <span className="h-4 w-px bg-white/[0.08]" />
       <div className="flex flex-1 items-center justify-center gap-4">
         <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
           <Star size={14} className="opacity-65" />
