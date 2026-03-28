@@ -23,6 +23,8 @@ export const FOOTER_CTA_COPY = {
   useShield: { label: "Use Shield", loading: "Using Shield..." },
   claimBadge: { label: "Claim Badge", loading: "Claiming..." },
   retry: { label: "Retry", loading: null },
+  connectWallet: { label: "Connect Wallet", loading: null },
+  switchNetwork: { label: "Switch Network", loading: null },
   shieldsLeft: (n: number) => `${n} left`,
 } as const;
 

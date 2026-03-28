@@ -7,9 +7,11 @@ import {
   usePublicClient,
   useReadContract,
   useReadContracts,
+  useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 import { Board } from "@/components/board";
 import { ExerciseDrawer } from "@/components/play-hub/exercise-drawer";
@@ -106,6 +108,8 @@ export default function PlayHubPage() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const publicClient = usePublicClient({ chainId });
+  const { openConnectModal } = useConnectModal();
+  const { switchChain } = useSwitchChain();
   const { isMiniPay } = useMiniPay();
   const { writeContractAsync, isPending: isWriting } = useWriteContract();
   const [selectedPiece, setSelectedPiece] = useState<PieceKey>("rook");
@@ -757,6 +761,8 @@ export default function PlayHubPage() {
               onUseShield={handleUseShield}
               onClaimBadge={() => void handleClaimBadge()}
               onRetry={() => resetBoard()}
+              onConnectWallet={() => openConnectModal?.()}
+              onSwitchNetwork={() => configuredChainId != null && switchChain({ chainId: configuredChainId })}
             />
           }
           persistentDock={

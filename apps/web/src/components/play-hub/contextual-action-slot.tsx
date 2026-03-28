@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ContextAction } from "@/lib/game/context-action";
 import type { LucideIcon } from "lucide-react";
-import { Star, Shield, Award, RotateCcw, Swords } from "lucide-react";
+import { Star, Shield, Award, RotateCcw, Swords, Wallet, ArrowLeftRight } from "lucide-react";
 import { FOOTER_CTA_COPY, ARENA_CTA_COPY } from "@/lib/content/editorial";
 
 type ContextualActionSlotProps = {
@@ -14,6 +14,8 @@ type ContextualActionSlotProps = {
   onUseShield: () => void;
   onClaimBadge: () => void;
   onRetry: () => void;
+  onConnectWallet: () => void;
+  onSwitchNetwork: () => void;
 };
 
 const ACTION_STYLES: Record<
@@ -40,6 +42,16 @@ const ACTION_STYLES: Record<
     glow: "",
     text: "text-[rgba(234,242,255,0.82)]",
   },
+  connectWallet: {
+    bg: "bg-gradient-to-b from-[#23C8F3] to-[#16A9E0]",
+    glow: "shadow-[0_0_20px_rgba(35,200,243,0.24)]",
+    text: "text-white",
+  },
+  switchNetwork: {
+    bg: "bg-gradient-to-b from-[#F6A400] to-[#EE8B00]",
+    glow: "shadow-[0_0_20px_rgba(246,164,0,0.22)]",
+    text: "text-[#FFF8ED]",
+  },
 };
 
 const ACTION_ICON: Record<Exclude<ContextAction, null>, LucideIcon> = {
@@ -47,6 +59,8 @@ const ACTION_ICON: Record<Exclude<ContextAction, null>, LucideIcon> = {
   useShield: Shield,
   claimBadge: Award,
   retry: RotateCcw,
+  connectWallet: Wallet,
+  switchNetwork: ArrowLeftRight,
 };
 
 function getHandler(
@@ -58,6 +72,8 @@ function getHandler(
     case "useShield": return props.onUseShield;
     case "claimBadge": return props.onClaimBadge;
     case "retry": return props.onRetry;
+    case "connectWallet": return props.onConnectWallet;
+    case "switchNetwork": return props.onSwitchNetwork;
   }
 }
 
