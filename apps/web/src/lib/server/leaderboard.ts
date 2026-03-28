@@ -48,42 +48,64 @@ export async function fetchLeaderboard(): Promise<LeaderboardRow[]> {
     toBlock: currentBlock,
   });
 
-  const best = new Map<string, number>();
+  // Build best score per player per levelId
+  const bestPerLevel = new Map<string, Map<number, number>>();
   for (const log of logs) {
     try {
-      // Validate topic[1] exists and has expected length (66 hex chars = "0x" + 64)
       const topic1 = log.topics[1];
+      const topic2 = log.topics[2];
       if (!topic1 || topic1.length < 42) continue;
-
-      // Validate data has at least 66 chars for first uint256 (score)
+      if (!topic2) continue;
       if (!log.data || log.data.length < 66) continue;
 
       const player = ethers.getAddress("0x" + topic1.slice(26));
-      // data: score (32 bytes) | timeMs | nonce | deadline
+      const levelId = Number(ethers.toBigInt(topic2));
       const scoreBig = ethers.toBigInt(log.data.slice(0, 66));
-      // Guard against Number overflow (scores should never exceed safe integer)
       const score = Number(scoreBig);
       if (!Number.isSafeInteger(score) || score < 0) continue;
 
-      const prev = best.get(player) ?? 0;
-      if (score > prev) best.set(player, score);
+      let levels = bestPerLevel.get(player);
+      if (!levels) {
+        levels = new Map<number, number>();
+        bestPerLevel.set(player, levels);
+      }
+      const prev = levels.get(levelId) ?? 0;
+      if (score > prev) levels.set(levelId, score);
     } catch {
-      // Skip malformed event, continue processing remaining logs
       continue;
     }
   }
 
-  const sorted = Array.from(best.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
+  // Sum best-per-piece into global total
+  const totals: [string, number][] = [];
+  for (const [player, levels] of bestPerLevel) {
+    let total = 0;
+    for (const score of levels.values()) total += score;
+    if (total > 0) totals.push([player, total]);
+  }
 
-  const fullAddresses = sorted.map(([addr]) => addr);
+  // Sort by total descending, then by address for deterministic tie order
+  totals.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const top = totals.slice(0, 10);
+
+  const fullAddresses = top.map(([addr]) => addr);
   const verifiedMap = await checkPassportScores(fullAddresses);
 
-  return sorted.map(([addr, score], i) => ({
-    rank: i + 1,
-    player: addr.slice(0, 6) + "..." + addr.slice(-4),
-    score,
-    isVerified: verifiedMap.get(addr) ?? false,
-  }));
+  // Assign ranks with ties (same score = same rank, skip next)
+  const rows: LeaderboardRow[] = [];
+  let currentRank = 1;
+  for (let i = 0; i < top.length; i++) {
+    const [addr, score] = top[i];
+    if (i > 0 && score < top[i - 1][1]) {
+      currentRank = i + 1;
+    }
+    rows.push({
+      rank: currentRank,
+      player: addr.slice(0, 6) + "..." + addr.slice(-4),
+      score,
+      isVerified: verifiedMap.get(addr) ?? false,
+    });
+  }
+
+  return rows;
 }
