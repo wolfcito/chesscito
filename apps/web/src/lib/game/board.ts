@@ -1,6 +1,7 @@
 import type { BoardPiece, BoardPosition, PieceId, SquareState } from "@/lib/game/types";
 import { getBishopMoves } from "@/lib/game/rules/bishop";
 import { getKnightMoves } from "@/lib/game/rules/knight";
+import { getPawnMoves } from "@/lib/game/rules/pawn";
 import { getRookMoves } from "@/lib/game/rules/rook";
 
 const BOARD_SIZE = 8;
@@ -36,6 +37,7 @@ export function getValidTargets(
     case "rook":   return getRookMoves(position, blockers);
     case "bishop": return getBishopMoves(position, blockers);
     case "knight": return getKnightMoves(position);
+    case "pawn":   return getPawnMoves(position, blockers);
     default:       return [];
   }
 }

@@ -400,6 +400,11 @@ export const EXERCISE_DESCRIPTIONS: Record<string, string> = {
   "knight-3": "Horizontal L",
   "knight-4": "Two jumps",
   "knight-5": "Long journey",
+  "pawn-1": "Forward step",
+  "pawn-2": "Forward march",
+  "pawn-3": "Diagonal capture",
+  "pawn-4": "Capture decision",
+  "pawn-5": "Mixed path",
 };
 
 export const PRACTICE_COPY = {

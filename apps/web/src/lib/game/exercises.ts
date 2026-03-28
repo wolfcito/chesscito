@@ -45,14 +45,28 @@ const KNIGHT_EXERCISES: Exercise[] = [
   { id: "knight-5", startPos: pos(0, 0), targetPos: pos(4, 4), optimalMoves: 3 },
 ];
 
+const PAWN_EXERCISES: Exercise[] = [
+  // 1. Forward one — simplest possible pawn move
+  { id: "pawn-1", startPos: pos(4, 1), targetPos: pos(4, 2), optimalMoves: 1 },
+  // 2. Forward march — advance two from starting rank, then one more
+  { id: "pawn-2", startPos: pos(3, 1), targetPos: pos(3, 4), optimalMoves: 2 },
+  // 3. Diagonal capture — one step diagonally forward
+  { id: "pawn-3", startPos: pos(2, 4), targetPos: pos(3, 5), optimalMoves: 1, isCapture: true },
+  // 4. Capture decision — must choose diagonal, not forward
+  { id: "pawn-4", startPos: pos(5, 3), targetPos: pos(6, 4), optimalMoves: 1, isCapture: true },
+  // 5. Mixed path — advance then capture (forward + forward + diagonal)
+  //    d2(3,1) → d4(3,3) fwd2, → d5(3,4) fwd1, → e6(4,5) diagonal capture = 3 moves
+  { id: "pawn-5", startPos: pos(3, 1), targetPos: pos(4, 5), optimalMoves: 3, isCapture: true },
+];
+
 /** Pieces with exercises defined and playable */
-export const PLAYABLE_PIECES: PieceId[] = ["rook", "bishop", "knight"];
+export const PLAYABLE_PIECES: PieceId[] = ["rook", "bishop", "knight", "pawn"];
 
 export const EXERCISES: Record<PieceId, Exercise[]> = {
   rook:   ROOK_EXERCISES,
   bishop: BISHOP_EXERCISES,
   knight: KNIGHT_EXERCISES,
-  pawn:   [], // PR-3
+  pawn:   PAWN_EXERCISES,
   queen:  [], // PR-6
   king:   [], // PR-9
 };
