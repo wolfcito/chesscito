@@ -71,8 +71,8 @@ export function Board({
 
   const validTargets = useMemo(() => {
     if (!selectedPosition) return [];
-    return getValidTargets(pieceType, selectedPosition);
-  }, [pieceType, selectedPosition]);
+    return getValidTargets(pieceType, selectedPosition, [], isCapture);
+  }, [pieceType, selectedPosition, isCapture]);
 
   const squares = useMemo(
     () =>

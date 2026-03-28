@@ -3,17 +3,18 @@ import type { BoardPosition } from "../types";
 /**
  * Pawn moves for Practice exercises (white, moves up the board).
  *
- * Returns:
- * - Forward 1 square (always, if not blocked and within bounds)
- * - Forward 2 squares from starting rank (rank 1), if not blocked
- * - Diagonal captures: 1 square diagonally forward (both sides)
+ * Movement and capture are SEPARATE for the Pawn:
+ * - Movement: forward only (1 square, or 2 from starting rank)
+ * - Capture: diagonally forward (1 square, left or right)
  *
- * In practice mode, diagonal squares are always included as valid targets
- * so capture exercises work without needing a piece to capture.
+ * Diagonal squares are ONLY included when `isCapture` is true,
+ * teaching the correct rule: pawns cannot move diagonally
+ * unless capturing.
  */
 export function getPawnMoves(
   origin: BoardPosition,
   blockers: BoardPosition[] = [],
+  isCapture: boolean = false,
 ): BoardPosition[] {
   const moves: BoardPosition[] = [];
   const isBlocked = (f: number, r: number) =>
@@ -33,11 +34,13 @@ export function getPawnMoves(
     }
   }
 
-  // Diagonal captures (always included in practice — no piece-on-square check)
-  for (const df of [-1, 1]) {
-    const diag = { file: origin.file + df, rank: origin.rank + 1 };
-    if (diag.file >= 0 && diag.file < 8 && diag.rank < 8) {
-      moves.push(diag);
+  // Diagonal captures — only in capture exercises
+  if (isCapture) {
+    for (const df of [-1, 1]) {
+      const diag = { file: origin.file + df, rank: origin.rank + 1 };
+      if (diag.file >= 0 && diag.file < 8 && diag.rank < 8) {
+        moves.push(diag);
+      }
     }
   }
 

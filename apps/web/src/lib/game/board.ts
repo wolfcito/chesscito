@@ -31,13 +31,14 @@ export function getPositionLabel(position: BoardPosition) {
 export function getValidTargets(
   pieceType: PieceId,
   position: BoardPosition,
-  blockers: BoardPosition[] = []
+  blockers: BoardPosition[] = [],
+  isCapture: boolean = false,
 ): BoardPosition[] {
   switch (pieceType) {
     case "rook":   return getRookMoves(position, blockers);
     case "bishop": return getBishopMoves(position, blockers);
     case "knight": return getKnightMoves(position);
-    case "pawn":   return getPawnMoves(position, blockers);
+    case "pawn":   return getPawnMoves(position, blockers, isCapture);
     default:       return [];
   }
 }
