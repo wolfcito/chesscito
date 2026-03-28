@@ -1,0 +1,45 @@
+import type { ReactNode } from "react";
+
+type GameplayPanelProps = {
+  mission?: ReactNode;
+  stats?: ReactNode;
+  action?: ReactNode;
+};
+
+export function GameplayPanel({ mission, stats, action }: GameplayPanelProps) {
+  const hasAnySlot = mission || stats || action;
+  if (!hasAnySlot) return null;
+
+  return (
+    <div
+      className="mx-2 overflow-hidden"
+      style={{
+        borderRadius: "var(--shell-radius)",
+        border: "1px solid var(--shell-border)",
+        background: "var(--surface-c-light)",
+      }}
+    >
+      {mission && (
+        <div className="px-4 py-2.5">{mission}</div>
+      )}
+      {mission && stats && (
+        <div
+          className="h-px"
+          style={{ background: "var(--shell-divider)" }}
+        />
+      )}
+      {stats && (
+        <div className="px-3 py-1.5">{stats}</div>
+      )}
+      {(mission || stats) && action && (
+        <div
+          className="h-px"
+          style={{ background: "var(--shell-divider)" }}
+        />
+      )}
+      {action && (
+        <div className="px-3 pb-1.5 pt-1">{action}</div>
+      )}
+    </div>
+  );
+}
