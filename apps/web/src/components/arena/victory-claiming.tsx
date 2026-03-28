@@ -4,6 +4,7 @@ import { ARENA_COPY, VICTORY_CLAIM_COPY, VICTORY_CELEBRATION_COPY } from "@/lib/
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { StatCard } from "@/components/arena/stat-card";
 import { formatTime } from "@/lib/game/arena-utils";
+import { Button } from "@/components/ui/button";
 import sparklesData from "@/../public/animations/sparkles.json";
 import trophyData from "@/../public/animations/trophy.json";
 
@@ -11,14 +12,16 @@ type Props = {
   moves: number;
   elapsedMs: number;
   difficulty: string;
-  onPlayAgain?: () => void;
-  onBackToHub?: () => void;
+  claimStep?: "signing" | "confirming" | "done";
+  onBackToHub: () => void;
 };
 
 export function VictoryClaiming({
   moves,
   elapsedMs,
   difficulty,
+  claimStep = "signing",
+  onBackToHub,
 }: Props) {
   const time = formatTime(elapsedMs);
 
@@ -61,22 +64,61 @@ export function VictoryClaiming({
           <StatCard icon="⏱" value={time} label={VICTORY_CELEBRATION_COPY.stats.time} />
         </div>
 
-        {/* Claiming state CTAs */}
-        <div className="flex w-full flex-col items-center gap-3">
-          {/* Disabled claiming button */}
-          <button
-            type="button"
-            disabled
-            className="w-full rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.08] py-3 text-sm font-bold text-emerald-300/80 shadow-[0_0_20px_rgba(52,211,153,0.12)] animate-pulse"
-          >
-            {VICTORY_CLAIM_COPY.claiming}
-          </button>
-
-          {/* Progress text */}
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-[0.65rem] text-cyan-100/40">{VICTORY_CLAIM_COPY.claimProgress1}</p>
-            <p className="text-[0.65rem] text-cyan-100/30">{VICTORY_CLAIM_COPY.claimProgress2}</p>
+        {/* Progress indicator */}
+        <div className="flex w-full flex-col items-center gap-4">
+          <div className="flex items-center gap-3">
+            {VICTORY_CLAIM_COPY.progressSteps.map((label, i) => {
+              const stepKeys = ["signing", "confirming", "done"] as const;
+              const currentIdx = stepKeys.indexOf(claimStep);
+              const isDone = i < currentIdx;
+              const isActive = i === currentIdx;
+              return (
+                <div key={label} className="flex items-center gap-3">
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full ${
+                        isDone
+                          ? "bg-emerald-400"
+                          : isActive
+                            ? "bg-emerald-400 animate-pulse"
+                            : "bg-cyan-100/20"
+                      }`}
+                    />
+                    <span
+                      className={`text-[0.6rem] ${
+                        isDone
+                          ? "text-emerald-400/70"
+                          : isActive
+                            ? "text-emerald-300/80"
+                            : "text-cyan-100/30"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                  {i < VICTORY_CLAIM_COPY.progressSteps.length - 1 && (
+                    <div
+                      className={`mb-4 h-px w-6 ${
+                        isDone ? "bg-emerald-400/50" : "bg-cyan-100/10"
+                      }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
+          <p className="text-[0.65rem] text-cyan-100/40">
+            {VICTORY_CLAIM_COPY.progressTimeHint}
+          </p>
+          <Button
+            type="button"
+            variant="game-text"
+            size="game-sm"
+            onClick={onBackToHub}
+            className="mt-2 text-xs"
+          >
+            {ARENA_COPY.backToHub}
+          </Button>
         </div>
       </div>
     </div>
