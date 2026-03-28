@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { HelpCircle } from "lucide-react";
 import {
   useAccount,
   useChainId,
@@ -37,7 +36,8 @@ import {
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
 import { ACCEPTED_TOKENS, erc20Abi, normalizePrice } from "@/lib/contracts/tokens";
-import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_LABELS } from "@/lib/content/editorial";
+import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_IMAGES, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
+import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { getPositionLabel, getValidTargets } from "@/lib/game/board";
 import type { BoardPosition } from "@/lib/game/types";
 import { BadgeEarnedPrompt, ResultOverlay } from "@/components/play-hub/result-overlay";
@@ -135,10 +135,10 @@ export default function PlayHubPage() {
   const [isLocalhost, setIsLocalhost] = useState(false);
   const { showSplash, showBriefing, markOnboarded } = useSplashLoader();
   const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   const [justClaimed, setJustClaimed] = useState<Record<PieceKey, boolean>>({
     rook: false, bishop: false, knight: false, pawn: false, queen: false, king: false,
   });
+  const [unlockedPiece, setUnlockedPiece] = useState<PieceKey | null>(null);
 
   const {
     progress,
@@ -532,6 +532,10 @@ export default function PlayHubPage() {
       setClaimTxHash(txHash);
       setJustClaimed(prev => ({ ...prev, [targetPiece]: true }));
       void refetchAllBadges();
+      // Queue unlock celebration for the next piece
+      const claimedIndex = PIECE_ORDER.indexOf(targetPiece);
+      const nextUnlock = claimedIndex < PIECE_ORDER.length - 1 ? PIECE_ORDER[claimedIndex + 1] : null;
+      if (nextUnlock) setUnlockedPiece(nextUnlock);
       setResultOverlay({
         variant: "badge",
         txHash,
@@ -816,16 +820,6 @@ export default function PlayHubPage() {
             />
           }
           isReplay={isReplay}
-          moreAction={
-            <button
-              type="button"
-              onClick={() => setShowHelp(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-cyan-200/70 transition hover:bg-white/10 hover:text-cyan-50"
-              aria-label="Help"
-            >
-              <HelpCircle size={18} strokeWidth={2} />
-            </button>
-          }
         />
 
         <PurchaseConfirmSheet
@@ -848,15 +842,12 @@ export default function PlayHubPage() {
           onConfirm={() => void handleConfirmPurchase()}
         />
 
-        {(showBriefing || showHelp) ? (
+        {showBriefing ? (
           <MissionBriefing
             pieceType={selectedPiece}
             targetLabel={targetLabel}
             isCapture={Boolean(currentExercise.isCapture)}
-            onPlay={() => {
-              if (showBriefing) markOnboarded();
-              setShowHelp(false);
-            }}
+            onPlay={() => markOnboarded()}
           />
         ) : null}
 
@@ -886,6 +877,44 @@ export default function PlayHubPage() {
             onRetry={resultOverlay.retryAction}
           />
         ) : null}
+
+        {unlockedPiece && !resultOverlay && (
+          <div
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--overlay-scrim)] animate-in fade-in duration-250"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex w-full max-w-xs flex-col items-center gap-5 rounded-3xl border border-white/[0.06] bg-[var(--surface-frosted)] px-6 py-10 text-center backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-350">
+              <div className="relative flex items-center justify-center">
+                <div className="pointer-events-none absolute h-36 w-36">
+                  <LottieAnimation src="/animations/sparkle-burst.lottie" loop={false} className="h-full w-full" />
+                </div>
+                <picture className="relative z-10 h-20 w-20">
+                  <source srcSet={`${PIECE_IMAGES[unlockedPiece]}.avif`} type="image/avif" />
+                  <source srcSet={`${PIECE_IMAGES[unlockedPiece]}.webp`} type="image/webp" />
+                  <img src={`${PIECE_IMAGES[unlockedPiece]}.png`} alt={PIECE_LABELS[unlockedPiece]} className="h-full w-full object-contain drop-shadow-[0_0_16px_rgba(217,180,74,0.5)]" />
+                </picture>
+              </div>
+              <h2 className="fantasy-title text-2xl text-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                {PIECE_LABELS[unlockedPiece]} Unlocked!
+              </h2>
+              <p className="text-sm text-cyan-100/50">
+                {TUTORIAL_COPY[unlockedPiece]}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setUnlockedPiece(null);
+                  setSelectedPiece(unlockedPiece);
+                  resetBoard();
+                }}
+                className="flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 text-sm font-bold text-white shadow-[0_0_16px_rgba(245,158,11,0.3),inset_0_1px_0_rgba(255,255,255,0.10)] transition-all active:scale-[0.97] active:shadow-none active:brightness-90"
+              >
+                Start {PIECE_LABELS[unlockedPiece]}
+              </button>
+            </div>
+          </div>
+        )}
 
         {qaEnabled && !isMiniPay ? (
           <details className="fixed bottom-2 left-2 right-2 z-30 rounded-xl bg-slate-900/95 px-3 py-2 text-xs text-slate-200 shadow-lg backdrop-blur">

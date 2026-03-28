@@ -213,6 +213,17 @@ export function BadgeSheet({
           <SheetHeader>
             <SheetTitle className="fantasy-title flex items-center gap-2 text-slate-100"><Trophy size={20} className="text-emerald-400/60" />{BADGE_SHEET_COPY.title}</SheetTitle>
             <SheetDescription className="text-cyan-100/75">{BADGE_SHEET_COPY.subtitle}</SheetDescription>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-700/50">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-300 transition-all duration-700"
+                  style={{ width: `${(badges.reduce((s, b) => s + b.totalStars, 0) / badges.reduce((s, b) => s + b.maxStars, 0)) * 100}%` }}
+                />
+              </div>
+              <span className="text-xs font-bold tabular-nums text-amber-300/80">
+                {badges.reduce((s, b) => s + b.totalStars, 0)}/{badges.reduce((s, b) => s + b.maxStars, 0)}
+              </span>
+            </div>
           </SheetHeader>
         </div>
         <div className="mt-4 space-y-2">

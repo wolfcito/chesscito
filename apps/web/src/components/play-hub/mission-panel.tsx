@@ -27,7 +27,6 @@ type MissionPanelProps = {
   persistentDock: ReactNode;
   pieceHint?: string;
   isCapture?: boolean;
-  moreAction?: ReactNode;
 };
 
 type FlashConfig = { text: string; accent: string };
@@ -108,7 +107,6 @@ export function MissionPanel({
   persistentDock,
   pieceHint,
   isCapture = false,
-  moreAction,
 }: MissionPanelProps) {
   const prevPieceRef = useRef(selectedPiece);
   const [plopping, setPlopping] = useState(false);
@@ -180,12 +178,6 @@ export function MissionPanel({
             })}
           </div>
 
-          {/* Utility cluster — help button */}
-          {moreAction && (
-            <div className="flex shrink-0 items-center">
-              {moreAction}
-            </div>
-          )}
         </div>
 
       </div>
