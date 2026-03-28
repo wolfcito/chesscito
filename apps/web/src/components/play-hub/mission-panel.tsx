@@ -26,6 +26,7 @@ type MissionPanelProps = {
   contextualAction: ReactNode;
   persistentDock: ReactNode;
   pieceHint?: string;
+  isCapture?: boolean;
   moreAction?: ReactNode;
 };
 
@@ -106,6 +107,7 @@ export function MissionPanel({
   contextualAction,
   persistentDock,
   pieceHint,
+  isCapture = false,
   moreAction,
 }: MissionPanelProps) {
   const prevPieceRef = useRef(selectedPiece);
@@ -206,12 +208,12 @@ export function MissionPanel({
           <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-cyan-400/70">
             {MISSION_BRIEFING_COPY.label}
           </p>
-          <p className="text-sm font-bold text-slate-100 truncate">
-            {pieceHint
-              ? `Move your ${PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to ${targetLabel}`
+          <p key={targetLabel} className="mission-typewriter text-sm font-bold text-slate-100">
+            {isCapture
+              ? <>Move your {PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to <span className="text-rose-400">CAPTURE</span></>
               : `Move your ${PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to ${targetLabel}`}
           </p>
-          <p className="text-[11px] text-cyan-100/40 truncate">
+          <p key={`hint-${targetLabel}`} className="mission-typewriter text-[11px] text-cyan-100/40" style={{ animationDelay: "1s" }}>
             {MISSION_BRIEFING_COPY.moveHint[selectedPiece as keyof typeof MISSION_BRIEFING_COPY.moveHint]}
           </p>
         </div>

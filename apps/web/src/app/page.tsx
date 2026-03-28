@@ -745,6 +745,7 @@ export default function PlayHubPage() {
           phase={phase}
           targetLabel={targetLabel}
           pieceHint={pieceHint}
+          isCapture={Boolean(currentExercise.isCapture)}
           score={score.toString()}
           timeMs={timeMs.toString()}
           contextualAction={
