@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { GraduationCap } from "lucide-react";
 import { COACH_COPY } from "@/lib/content/editorial";
+import { LottieAnimation } from "@/components/ui/lottie-animation";
 import type { CoachResponse } from "@/lib/coach/types";
 
 const TIMEOUT_MS = 60_000;
@@ -58,7 +58,9 @@ export function CoachLoading({ jobId, wallet, onReady, onFailed, onCancel }: Pro
 
   return (
     <div className="flex flex-col items-center gap-4 px-6 py-12">
-      <GraduationCap className="h-12 w-12 text-emerald-400/60 animate-pulse" />
+      <div className="h-16 w-16">
+        <LottieAnimation src="/animations/sandy-loading.lottie" loop className="h-full w-full" />
+      </div>
       <p className="text-lg font-semibold text-white">{COACH_COPY.analyzing}{dots}</p>
       <p className="text-sm text-cyan-100/40">{COACH_COPY.reviewingMoves}</p>
       <p className="mt-4 text-xs text-cyan-100/30">{COACH_COPY.canLeave}</p>

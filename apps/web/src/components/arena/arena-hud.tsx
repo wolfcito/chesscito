@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Brain, Check, Flag } from "lucide-react";
+import { ArrowLeft, Check, Flag } from "lucide-react";
 import { ARENA_COPY } from "@/lib/content/editorial";
+import { LottieAnimation } from "@/components/ui/lottie-animation";
 import type { ArenaDifficulty } from "@/lib/game/types";
 
 type Props = {
@@ -97,8 +98,10 @@ export function ArenaHud({ difficulty, isThinking, onBack, onResign, isEndState 
 
       <div className="flex items-center gap-2">
         {isThinking && (
-          <span className="flex items-center gap-1.5 animate-pulse text-amber-300/90 tracking-wide text-xs">
-            <Brain className="h-3.5 w-3.5" />
+          <span className="flex items-center gap-1.5 text-amber-300/90 tracking-wide text-xs">
+            <span className="h-5 w-8">
+              <LottieAnimation src="/animations/sandy-loading.lottie" loop className="h-full w-full" />
+            </span>
             {ARENA_COPY.aiThinking}
           </span>
         )}

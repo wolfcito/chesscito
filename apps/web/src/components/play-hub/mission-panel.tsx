@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Star, Timer } from "lucide-react";
 import { MISSION_BRIEFING_COPY, PHASE_FLASH_COPY, PIECE_IMAGES, PIECE_LABELS, PRACTICE_COPY } from "@/lib/content/editorial";
+import { LottieAnimation } from "@/components/ui/lottie-animation";
 
 type PieceOption = {
   key: "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
@@ -67,15 +68,22 @@ function PhaseFlash({ phase }: { phase: MissionPanelProps["phase"] }) {
       className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-400 ${fading ? "opacity-0" : "opacity-100"}`}
     >
       <div className="flex flex-col items-center gap-4 animate-in zoom-in-90 duration-300">
-        <picture>
-          <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
-          <img
-            src="/art/favicon-wolf.png"
-            alt=""
-            aria-hidden="true"
-            className="h-20 w-20 drop-shadow-[0_0_20px_rgba(103,232,249,0.5)]"
-          />
-        </picture>
+        <div className="relative flex items-center justify-center">
+          {phase === "success" && (
+            <div className="pointer-events-none absolute h-40 w-40">
+              <LottieAnimation src="/animations/sparkle-burst.lottie" loop={false} className="h-full w-full" />
+            </div>
+          )}
+          <picture className="relative z-10">
+            <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
+            <img
+              src="/art/favicon-wolf.png"
+              alt=""
+              aria-hidden="true"
+              className="h-20 w-20 drop-shadow-[0_0_20px_rgba(103,232,249,0.5)]"
+            />
+          </picture>
+        </div>
         <span className={`fantasy-title text-3xl drop-shadow-lg ${flash.accent}`}>
           {flash.text}
         </span>
@@ -207,10 +215,9 @@ export function MissionPanel({
             {MISSION_BRIEFING_COPY.moveHint[selectedPiece as keyof typeof MISSION_BRIEFING_COPY.moveHint]}
           </p>
         </div>
-        <picture className="h-12 w-12 shrink-0">
-          <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
-          <img src="/art/favicon-wolf.png" alt="" aria-hidden="true" className="h-full w-full object-contain drop-shadow-[0_0_8px_rgba(103,232,249,0.3)]" />
-        </picture>
+        <div className="h-14 w-14 shrink-0">
+          <LottieAnimation src="/animations/interactive-mage-animation.lottie" loop className="h-full w-full drop-shadow-[0_0_8px_rgba(103,232,249,0.3)]" />
+        </div>
       </div>
 
       {/* Visual transition between board and footer */}

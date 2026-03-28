@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { BADGE_EARNED_COPY, PIECE_LABELS, RESULT_OVERLAY_COPY, SHARE_COPY } from "@/lib/content/editorial";
 import { Button } from "@/components/ui/button";
+import { LottieAnimation } from "@/components/ui/lottie-animation";
 
 type PieceKey = "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
 type SuccessVariant = "badge" | "score" | "shop";
@@ -178,8 +179,8 @@ export function ResultOverlay({
       <div className="flex w-full max-w-xs flex-col items-center gap-6 rounded-3xl border border-white/[0.06] bg-[var(--surface-frosted)] px-6 py-10 text-center backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-350">
         {/* Image or error icon */}
         {isError ? (
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-rose-900/40 ring-1 ring-rose-500/40">
-            <span className="text-4xl text-rose-400" aria-hidden="true">!</span>
+          <div className="h-20 w-20">
+            <LottieAnimation src="/animations/error-alert.lottie" loop className="h-full w-full" />
           </div>
         ) : (
           <SuccessImage variant={variant} pieceType={pieceType} />
