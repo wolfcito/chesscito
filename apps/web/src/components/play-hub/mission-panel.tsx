@@ -121,6 +121,24 @@ export function MissionPanel({
     }
   }, [selectedPiece]);
 
+  const statsContent = (
+    <div className="flex items-center gap-3">
+      <div className="shrink-0">{exerciseDrawer}</div>
+      <span className="h-4 w-px bg-white/8" />
+      <div className="flex flex-1 items-center justify-center gap-4">
+        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
+          <Star size={14} className="opacity-65" />
+          {score}
+        </span>
+        <span className="text-xs text-white/15">&middot;</span>
+        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
+          <Timer size={14} className="opacity-65" />
+          {Number(timeMs) / 1000}s
+        </span>
+      </div>
+    </div>
+  );
+
   const missionContent = (
     <div className="flex items-center gap-3">
       <div className="flex-1 min-w-0">
@@ -218,37 +236,14 @@ export function MissionPanel({
       </div>
 
       {/* GameplayPanel — mission + stats + action */}
-      <GameplayPanel mission={missionContent} />
+      <GameplayPanel
+        mission={missionContent}
+        stats={statsContent}
+        action={contextualAction}
+      />
 
-      {/* Zone C: Footer — micro-stats + CTA merged, then dock */}
-      <div className="chesscito-footer shrink-0">
-        {/* Layer 1: Interactive progress chip + passive stats */}
-        <div
-          className="mx-2 flex items-center gap-3 rounded-xl border border-white/[0.06] py-1.5 px-3"
-          style={{ background: "linear-gradient(180deg, rgba(12,20,35,0.55) 0%, rgba(6,14,28,0.45) 100%)", boxShadow: "inset 0 1px 2px rgba(255,255,255,0.04), inset 0 -1px 2px rgba(0,0,0,0.2)" }}
-        >
-          {/* Interactive chip — exercise drawer trigger */}
-          <div className="shrink-0">{exerciseDrawer}</div>
-          {/* Separator */}
-          <span className="h-4 w-px bg-white/8" />
-          {/* Passive stats */}
-          <div className="flex flex-1 items-center justify-center gap-4">
-            <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
-              <Star size={14} className="opacity-65" />
-              {score}
-            </span>
-            <span className="text-xs text-white/15">&middot;</span>
-            <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
-              <Timer size={14} className="opacity-65" />
-              {Number(timeMs) / 1000}s
-            </span>
-          </div>
-        </div>
-        <div className="px-3 pb-1.5">
-          {contextualAction}
-        </div>
-
-        {/* Layer 2: Dock (navigation) */}
+      {/* Dock — persistent navigation, separate from GameplayPanel */}
+      <div className="shrink-0" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         {persistentDock}
       </div>
 
