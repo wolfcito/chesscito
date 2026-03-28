@@ -215,9 +215,10 @@ export function MissionPanel({
             {MISSION_BRIEFING_COPY.moveHint[selectedPiece as keyof typeof MISSION_BRIEFING_COPY.moveHint]}
           </p>
         </div>
-        <div className="h-14 w-14 shrink-0">
-          <LottieAnimation src="/animations/interactive-mage-animation.lottie" loop className="h-full w-full drop-shadow-[0_0_8px_rgba(103,232,249,0.3)]" />
-        </div>
+        <picture className="h-12 w-12 shrink-0">
+          <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
+          <img src="/art/favicon-wolf.png" alt="" aria-hidden="true" className="h-full w-full object-contain drop-shadow-[0_0_8px_rgba(103,232,249,0.3)]" />
+        </picture>
       </div>
 
       {/* Visual transition between board and footer */}
