@@ -622,19 +622,13 @@
     padding: 0.5rem 0.2rem 0;
   }
 
-  .chesscito-footer {
-    background: var(--surface-c-heavy);
-    border-top: 1px solid rgba(160, 205, 225, 0.10);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
   /* ── Dock navigation ── */
   .chesscito-dock {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 6px 12px calc(4px + env(safe-area-inset-bottom));
-    border-top: 1px solid rgba(160, 205, 225, 0.10);
+    padding: 6px 8px 4px;
+    border-top: 1px solid var(--shell-border);
   }
 
   .chesscito-dock-item {
@@ -651,7 +645,7 @@
     border-radius: 14px !important;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--shell-border);
     opacity: 0.55;
     transition: opacity 0.15s, background 200ms, border-color 200ms;
   }
@@ -676,7 +670,7 @@
     height: 3rem;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--shell-border);
     color: rgba(160, 225, 220, 0.55);
     box-shadow: none;
     transition: all 200ms;

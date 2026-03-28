@@ -17,6 +17,8 @@ export function GameplayPanel({ mission, stats, action }: GameplayPanelProps) {
         borderRadius: "var(--shell-radius)",
         border: "1px solid var(--shell-border)",
         background: "var(--surface-c-light)",
+        marginTop: "var(--shell-gap-xs)",
+        marginBottom: "var(--shell-gap-sm)",
       }}
     >
       {mission && (
