@@ -146,12 +146,10 @@ export default function PlayHubPage() {
     isLastExercise,
     totalStars,
     badgeEarned,
-    pieceCompleted,
     isReplay,
     completeExercise,
     advanceExercise,
     goToExercise,
-    markCompleted,
   } = useExerciseProgress(selectedPiece);
 
   const autoResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -371,8 +369,7 @@ export default function PlayHubPage() {
     isConnected &&
     isCorrectChain &&
     levelId > 0n &&
-    badgeEarned &&
-    !pieceCompleted;
+    badgeEarned;
   const isClaimBusy = isWriting || isClaimConfirming;
   const isSubmitBusy = isWriting || isSubmitConfirming;
 
@@ -455,7 +452,7 @@ export default function PlayHubPage() {
         if (!isLastExercise) {
           advanceExercise();
           resetBoard();
-        } else if (nextPiece && pieceCompleted) {
+        } else if (nextPiece && hasClaimedBadge) {
           setSelectedPiece(nextPiece);
           resetBoard();
         } else {
@@ -494,7 +491,7 @@ export default function PlayHubPage() {
     const gen = boardGeneration.current;
     autoResetTimer.current = setTimeout(() => {
       if (gen !== boardGeneration.current) return; // stale — user navigated
-      if (nextPiece && pieceCompleted) {
+      if (nextPiece && hasClaimedBadge) {
         setSelectedPiece(nextPiece);
         resetBoard();
       } else {
@@ -579,7 +576,6 @@ export default function PlayHubPage() {
       });
 
       setSubmitTxHash(txHash);
-      markCompleted();
       setResultOverlay({
         variant: "score",
         txHash,
