@@ -38,7 +38,7 @@ import {
 import { getLevelId, scoreboardAbi } from "@/lib/contracts/scoreboard";
 import { shopAbi } from "@/lib/contracts/shop";
 import { ACCEPTED_TOKENS, erc20Abi, normalizePrice } from "@/lib/contracts/tokens";
-import { CAPTURE_COPY, CTA_LABELS, MISSION_BRIEFING_COPY, PIECE_IMAGES, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
+import { CAPTURE_COPY, CTA_LABELS, FOOTER_CTA_COPY, MISSION_BRIEFING_COPY, PIECE_IMAGES, PIECE_LABELS, TUTORIAL_COPY } from "@/lib/content/editorial";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import { getPositionLabel, getValidTargets } from "@/lib/game/board";
 import type { BoardPosition } from "@/lib/game/types";
@@ -131,10 +131,19 @@ export default function PlayHubPage() {
     txHash?: string;
     errorMessage?: string;
     retryAction?: () => void;
+    globalTotal?: number;
   } | null>(null);
   const [showBadgeEarned, setShowBadgeEarned] = useState(false);
   const [badgeSheetOpen, setBadgeSheetOpen] = useState(false);
   const [shieldCount, setShieldCount] = useState(0);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  function showToast(msg: string, durationMs = 2000) {
+    clearTimeout(toastTimer.current);
+    setToast(msg);
+    toastTimer.current = setTimeout(() => setToast(null), durationMs);
+  }
   const [qaLevelInput, setQaLevelInput] = useState("2");
   const [isLocalhost, setIsLocalhost] = useState(false);
   const { showSplash, showBriefing, markOnboarded } = useSplashLoader();
@@ -217,7 +226,25 @@ export default function PlayHubPage() {
     [defaultLevelId, isQaLevelValid, qaEnabled, qaLevel]
   );
   const POINTS_PER_STAR = 100n;
+  const POINTS_PER_STAR_NUM = 100;
   const score = useMemo(() => BigInt(Math.max(1, totalStars)) * POINTS_PER_STAR, [totalStars]);
+
+  const globalTotal = useMemo(() => {
+    if (typeof window === "undefined") return 0;
+    const pieces = ["rook", "bishop", "knight", "pawn", "queen", "king"] as const;
+    let sum = 0;
+    for (const p of pieces) {
+      try {
+        const raw = localStorage.getItem(`chesscito:progress:${p}`);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw) as { stars?: number[] };
+        if (Array.isArray(parsed.stars)) {
+          for (const s of parsed.stars) sum += (typeof s === "number" ? s : 0);
+        }
+      } catch { continue; }
+    }
+    return sum * POINTS_PER_STAR_NUM;
+  }, [totalStars]); // recalc when current piece stars change
   const timeMs = useMemo(() => {
     if (phase !== "success") {
       return 1000n;
@@ -583,10 +610,14 @@ export default function PlayHubPage() {
       setResultOverlay({
         variant: "score",
         txHash,
+        globalTotal,
       });
       console.info("[MiniPayTx] result", { label: "submit-score", txHash, levelId: Number(levelId) });
     } catch (error) {
-      if (isUserCancellation(error)) return;
+      if (isUserCancellation(error)) {
+        showToast(FOOTER_CTA_COPY.submitCanceled, 2000);
+        return;
+      }
       const message = toErrorMessage(error);
       setLastError(message);
       setResultOverlay({
@@ -594,6 +625,7 @@ export default function PlayHubPage() {
         errorMessage: classifyTxError(error),
         retryAction: () => void handleSubmitScore(),
       });
+      showToast(FOOTER_CTA_COPY.submitFailed, 3000);
       console.warn("[MiniPayTx] error", { label: "submit-score", levelId: Number(levelId), error: message });
     }
   }
@@ -875,6 +907,7 @@ export default function PlayHubPage() {
             celoscanHref={resultOverlay.txHash ? txLink(chainId, resultOverlay.txHash) : undefined}
             errorMessage={resultOverlay.errorMessage}
             totalStars={totalStars}
+            globalTotal={resultOverlay.globalTotal}
             onDismiss={() => setResultOverlay(null)}
             onRetry={resultOverlay.retryAction}
           />
@@ -959,6 +992,11 @@ export default function PlayHubPage() {
             </div>
           </details>
         ) : null}
+        {toast && (
+          <div className="fixed bottom-24 left-1/2 z-[70] -translate-x-1/2 rounded-2xl border border-white/[0.08] bg-[var(--surface-frosted)] px-4 py-2.5 text-sm text-cyan-100/80 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
+            {toast}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -26,6 +26,8 @@ export const FOOTER_CTA_COPY = {
   connectWallet: { label: "Connect Wallet", loading: null },
   switchNetwork: { label: "Switch Network", loading: null },
   shieldsLeft: (n: number) => `${n} left`,
+  submitCanceled: "Submission canceled",
+  submitFailed: "Submission failed — try again",
 } as const;
 
 export const PIECE_LABELS = {
@@ -67,7 +69,8 @@ export const RESULT_OVERLAY_COPY = {
   },
   score: {
     title: "Score Recorded!",
-    subtitle: "Your score is now on-chain",
+    subtitle: "Your score is now recorded on the blockchain.",
+    globalTotalLabel: (total: number) => `Total: ${total.toLocaleString()} pts`,
   },
   shop: {
     title: "Purchase Complete!",
