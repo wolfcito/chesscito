@@ -57,29 +57,22 @@ export function CoachPanel({
         </section>
       )}
 
-      {/* What You Did Well */}
-      {response.praise.length > 0 && (
-        <section>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">{COACH_COPY.whatYouDidWell}</h3>
-          {response.praise.map((p, i) => (
-            <p key={i} className="text-sm text-cyan-100/60">{`"${p}"`}</p>
-          ))}
-        </section>
-      )}
-
-      {/* Takeaways */}
-      {response.lessons.length > 0 && (
+      {/* Takeaways — merged praise + lessons */}
+      {(response.praise.length > 0 || response.lessons.length > 0) && (
         <section>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">{COACH_COPY.takeaways}</h3>
           <ul className="flex flex-col gap-1">
+            {response.praise.map((p, i) => (
+              <li key={`p-${i}`} className="text-sm text-cyan-100/60">{"\u2713"} {p}</li>
+            ))}
             {response.lessons.map((l, i) => (
-              <li key={i} className="text-sm text-cyan-100/60">- {l}</li>
+              <li key={`l-${i}`} className="text-sm text-cyan-100/60">{"\u2192"} {l}</li>
             ))}
           </ul>
         </section>
       )}
 
-      {/* CTAs */}
+      {/* CTAs — Play Again primary, Back to Hub tertiary */}
       <div className="mt-4 flex flex-col gap-2">
         <Button type="button" variant="game-primary" size="game" onClick={onPlayAgain}>
           <RotateCcw size={16} className="inline -mt-0.5" /> {ARENA_COPY.playAgain}
