@@ -77,19 +77,36 @@ function SuccessImage({ variant, pieceType, glowClass }: { variant: SuccessVaria
 const EXERCISES_PER_PIECE = 5;
 const MAX_STARS = EXERCISES_PER_PIECE * 3;
 
-function StarsRow({ totalStars }: { totalStars: number }) {
+function StarsRow({ totalStars, staggered = false }: { totalStars: number; staggered?: boolean }) {
   const filled = Math.min(EXERCISES_PER_PIECE, Math.ceil(totalStars / 3));
   return (
     <div className="flex items-center gap-1.5">
-      {Array.from({ length: EXERCISES_PER_PIECE }, (_, i) => (
-        <span
-          key={i}
-          className={i < filled ? "text-amber-400" : "text-amber-400/30"}
-          aria-hidden="true"
-        >
-          ★
-        </span>
-      ))}
+      {Array.from({ length: EXERCISES_PER_PIECE }, (_, i) => {
+        const isEarned = i < filled;
+        return (
+          <span
+            key={i}
+            className={
+              isEarned
+                ? staggered
+                  ? "star-reveal-animated text-amber-400"
+                  : "text-amber-400"
+                : "text-amber-400/30"
+            }
+            style={
+              isEarned && staggered
+                ? {
+                    opacity: 0,
+                    animation: `star-reveal 250ms ease-out ${200 * i}ms forwards`,
+                  }
+                : undefined
+            }
+            aria-hidden="true"
+          >
+            ★
+          </span>
+        );
+      })}
       <span className="ml-1 text-xs text-cyan-100/70">
         {totalStars}/{MAX_STARS}
       </span>
@@ -198,7 +215,7 @@ export function ResultOverlay({
 
         {/* Stars (badge/score only) */}
         {!isError && variant !== "shop" && totalStars != null ? (
-          <StarsRow totalStars={totalStars} />
+          <StarsRow totalStars={totalStars} staggered />
         ) : null}
 
         {/* Global total (score variant only) */}
@@ -303,7 +320,7 @@ export function BadgeEarnedPrompt({
       <div className="panel-showcase flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350">
         <SuccessImage variant="badge" pieceType={pieceType} glowClass="reward-glow-achievement reward-glow-pulse" />
 
-        <StarsRow totalStars={totalStars} />
+        <StarsRow totalStars={totalStars} staggered />
 
         <h2 id="badge-earned-title" className="fantasy-title text-2xl text-cyan-50">{title}</h2>
 
