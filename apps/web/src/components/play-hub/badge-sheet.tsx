@@ -198,8 +198,8 @@ export function BadgeSheet({
           ) : null}
         </button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="mission-shell sheet-bg-badges rounded-t-3xl border-white/[0.10]">
-        <div className="border-b border-[var(--header-zone-border)] bg-[var(--header-zone-bg)] -mx-6 -mt-6 rounded-t-3xl px-6 py-5">
+      <SheetContent side="bottom" className="mission-shell sheet-bg-badges flex max-h-[85dvh] flex-col rounded-t-3xl border-white/[0.10]">
+        <div className="shrink-0 border-b border-[var(--header-zone-border)] bg-[var(--header-zone-bg)] -mx-6 -mt-6 rounded-t-3xl px-6 py-5">
           <SheetHeader>
             <SheetTitle className="fantasy-title flex items-center gap-2 text-slate-100"><Trophy size={20} className="text-emerald-400/60" />{BADGE_SHEET_COPY.title}</SheetTitle>
             <SheetDescription className="text-cyan-100/75">{BADGE_SHEET_COPY.subtitle}</SheetDescription>
@@ -216,7 +216,7 @@ export function BadgeSheet({
             </div>
           </SheetHeader>
         </div>
-        <div className="mt-4 space-y-2">
+        <div className="flex-1 overflow-y-auto overscroll-contain mt-4 space-y-2">
           {badges.map((badge) => (
             <BadgeCard
               key={badge.piece}
@@ -226,21 +226,23 @@ export function BadgeSheet({
             />
           ))}
         </div>
-        <Link
-          href="/trophies"
-          onClick={() => onOpenChange(false)}
-          className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-amber-500/[0.08] px-4 py-3.5 text-sm font-semibold text-amber-300 ring-1 ring-amber-400/15 transition hover:bg-amber-500/20"
-        >
-          <Trophy className="h-5 w-5" />
-          {BADGE_SHEET_COPY.viewTrophies}
-        </Link>
-        <Link
-          href="/about"
-          onClick={() => onOpenChange(false)}
-          className="mt-3 block text-center text-[11px] text-cyan-300/40 transition-colors hover:text-cyan-200/60"
-        >
-          {ABOUT_LINK_COPY.label}
-        </Link>
+        <div className="shrink-0">
+          <Link
+            href="/trophies"
+            onClick={() => onOpenChange(false)}
+            className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-amber-500/[0.08] px-4 py-3.5 text-sm font-semibold text-amber-300 ring-1 ring-amber-400/15 transition hover:bg-amber-500/20"
+          >
+            <Trophy className="h-5 w-5" />
+            {BADGE_SHEET_COPY.viewTrophies}
+          </Link>
+          <Link
+            href="/about"
+            onClick={() => onOpenChange(false)}
+            className="mt-3 block text-center text-[11px] text-cyan-300/40 transition-colors hover:text-cyan-200/60"
+          >
+            {ABOUT_LINK_COPY.label}
+          </Link>
+        </div>
       </SheetContent>
     </Sheet>
   );
