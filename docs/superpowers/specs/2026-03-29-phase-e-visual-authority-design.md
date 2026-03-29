@@ -80,6 +80,7 @@ The focal vignette must increase board dominance without making the rail, panel,
 - Do not touch the board asset or its cells
 - Do not add box-shadow or border to the board container
 - Do not crush legibility of the panel or dock (alpha max ~0.50 at extremes)
+- The focal treatment must not make the board feel artificially brighter than its own art language intends — preserve natural board presence, not a cut-out effect
 - Maintain coherence with Phase A atmosphere (extension, not replacement)
 
 ### Escalation Path
@@ -208,7 +209,7 @@ The piece rail transforms from a functional selector bar into a premium champion
 **Changes:**
 
 - Piece image filter: `brightness(0.35) saturate(0) contrast(0.8)` — near-monochrome silhouette, much darker than unlocked
-- Lock overlay: pseudo-element with centered lock SVG icon, `opacity: 0.4`, ~16px — subtle but legible
+- Lock overlay: pseudo-element with centered lock SVG icon, `opacity: 0.4`, ~16px — subtle but legible. **Plan dependency:** if no lock icon exists in the current asset set, sourcing or creating one must be an explicit plan step
 - Background: `rgba(0,0,0,0.15)` — slot feels "sealed"
 - Border: none visible — does not compete for attention
 - No tooltip or label — silhouette + lock communicates the state without text
@@ -323,7 +324,7 @@ All treatments are designed for and tested at 390px width. Desktop is not a prio
 
 ### Token Coherence
 
-All new values must integrate with the existing design token system (`--surface-*`, `--shell-*`, `--treat-*`). No ad-hoc hardcoded values outside the token system.
+New visual values should be tokenized where they become reusable or system-defining. Single-use tuning values are acceptable during implementation, but should not proliferate arbitrarily. All reusable values must integrate with the existing design token system (`--surface-*`, `--shell-*`, `--treat-*`).
 
 ### Escalation Paths
 
@@ -342,4 +343,4 @@ All new values must integrate with the existing design token system (`--surface-
 3. The piece rail feels like a champion roster with clear active/locked/unlocked states
 4. The gameplay panel reads as a command surface at scan speed
 5. All elements feel like one unified scene, not isolated modules
-6. The overall Play Hub feels like a premium game product, not a polished app
+6. Play Hub feels visually intentional, focal, and memorable in device review
