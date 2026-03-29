@@ -95,7 +95,7 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
             <p className="text-center text-sm text-cyan-100/60">{LEADERBOARD_SHEET_COPY.empty}</p>
           )}
           {rows.map((row) => (
-            <div key={row.rank} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5">
+            <div key={row.rank} className="panel-base grid grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5">
               <p className="text-sm font-semibold text-cyan-100">
                 {row.rank <= 3 ? ["🥇","🥈","🥉"][row.rank - 1] : `#${row.rank}`}
               </p>
