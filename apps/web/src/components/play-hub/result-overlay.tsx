@@ -200,7 +200,7 @@ export function ResultOverlay({
             <LottieAnimation src="/animations/error-alert.lottie" loop className="h-full w-full" />
           </div>
         ) : (
-          <SuccessImage variant={variant} pieceType={pieceType} glowClass="reward-glow-progress" />
+          <SuccessImage variant={variant} pieceType={pieceType} glowClass={variant === "badge" ? "reward-glow-achievement reward-glow-pulse" : "reward-glow-progress"} />
         )}
 
         {/* Title */}

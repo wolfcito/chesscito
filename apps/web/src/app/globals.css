@@ -82,11 +82,6 @@
       url("/art/shop-slot-frame.webp") type("image/webp"),
       url("/art/shop-slot-frame.png") type("image/png")
     );
-    --playhub-reward-glow: image-set(
-      url("/art/reward-glow.avif") type("image/avif"),
-      url("/art/reward-glow.webp") type("image/webp"),
-      url("/art/reward-glow.png") type("image/png")
-    );
     --playhub-game-bg: image-set(
       url("/art/bg-chesscitov3.avif") type("image/avif"),
       url("/art/bg-chesscitov3.webp") type("image/webp"),
