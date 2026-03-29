@@ -24,7 +24,7 @@ export function GameplayPanel({ mission, stats, action }: GameplayPanelProps) {
       {mission && stats && (
         <div
           className="h-px"
-          style={{ background: "var(--shell-divider)" }}
+          style={{ background: "rgba(255, 255, 255, 0.07)" }}
         />
       )}
       {stats && (
@@ -33,7 +33,7 @@ export function GameplayPanel({ mission, stats, action }: GameplayPanelProps) {
       {(mission || stats) && action && (
         <div
           className="h-px"
-          style={{ background: "var(--shell-divider)" }}
+          style={{ background: "rgba(255, 255, 255, 0.07)" }}
         />
       )}
       {action && (

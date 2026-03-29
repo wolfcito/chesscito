@@ -126,12 +126,12 @@ export function MissionPanel({
       <div className="shrink-0">{exerciseDrawer}</div>
       <span className="h-4 w-px bg-white/[0.08]" />
       <div className="flex flex-1 items-center justify-center gap-4">
-        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
+        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/85">
           <Star size={14} className="opacity-65" />
           {score}
         </span>
         <span className="text-xs text-white/15">&middot;</span>
-        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/75">
+        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/85">
           <Timer size={14} className="opacity-65" />
           {Number(timeMs) / 1000}s
         </span>
@@ -141,16 +141,16 @@ export function MissionPanel({
 
   const missionContent = (
     <div className="flex items-center gap-3">
-      <div className="flex-1 min-w-0">
-        <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-cyan-400/70">
+      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-400/85">
           {MISSION_BRIEFING_COPY.label}
         </p>
-        <p key={targetLabel} className="mission-typewriter text-sm font-bold text-slate-100">
+        <p key={targetLabel} className="mission-typewriter text-[15px] font-bold text-slate-50">
           {isCapture
             ? <>Move your {PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to <span className="text-rose-400">CAPTURE</span></>
             : `Move your ${PIECE_LABELS[selectedPiece as keyof typeof PIECE_LABELS]} to ${targetLabel}`}
         </p>
-        <p key={`hint-${targetLabel}`} className="mission-typewriter text-[11px] text-cyan-100/40" style={{ animationDelay: "1s" }}>
+        <p key={`hint-${targetLabel}`} className="mission-typewriter text-[11px] text-cyan-100/55" style={{ animationDelay: "1s" }}>
           {MISSION_BRIEFING_COPY.moveHint[selectedPiece as keyof typeof MISSION_BRIEFING_COPY.moveHint]}
         </p>
       </div>
