@@ -224,7 +224,7 @@ export function MissionPanel({
       </div>
 
       {/* Zone B: Board Stage — flex-1, maximum space */}
-      <div className="min-h-0 flex-1 mx-2">
+      <div className="board-stage-focus min-h-0 flex-1 mx-2">
         <div className="panel-base h-full overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
           {board}
         </div>
