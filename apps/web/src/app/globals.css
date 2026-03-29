@@ -516,6 +516,63 @@
     z-index: 1;
   }
 
+  /* ── Panel tier system — material surfaces ── */
+
+  .panel-base {
+    background: linear-gradient(to bottom, rgba(12, 20, 35, 0.50), rgba(6, 14, 28, 0.40));
+    border: 1px solid var(--shell-border);
+    border-radius: var(--shell-radius);
+    box-shadow: var(--treat-carved-lo);
+  }
+
+  .panel-elevated {
+    position: relative;
+    background: linear-gradient(to bottom, rgba(12, 20, 35, 0.65), rgba(6, 14, 28, 0.55));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--shell-radius);
+    box-shadow:
+      var(--treat-carved-hi),
+      var(--treat-carved-lo),
+      var(--treat-depth-outer);
+  }
+
+  .panel-elevated::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 1px;
+    right: 1px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 2;
+    border-radius: var(--shell-radius) var(--shell-radius) 0 0;
+  }
+
+  .panel-showcase {
+    position: relative;
+    background: linear-gradient(to bottom, rgba(14, 22, 38, 0.80), rgba(6, 14, 28, 0.70));
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--shell-radius);
+    box-shadow:
+      var(--treat-carved-hi),
+      var(--treat-carved-lo),
+      var(--treat-depth-outer);
+  }
+
+  .panel-showcase::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 1px;
+    right: 1px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    z-index: 2;
+    border-radius: var(--shell-radius) var(--shell-radius) 0 0;
+  }
+
   /* ── Arena background ── */
 
   .arena-bg {
@@ -697,6 +754,14 @@
     border-color: rgba(160, 205, 225, 0.20);
     opacity: 0.65;
     transform: scale(0.92);
+    transition: transform 120ms, opacity 120ms, background 120ms;
+  }
+
+  /* dock-treat-pressed on dock item images (no scale — button container handles it) */
+  .chesscito-dock-item > button:active img,
+  .chesscito-dock-item > [role="button"]:active img {
+    filter: brightness(0.65) saturate(0.6);
+    transition: filter 120ms;
   }
 
   /* Center tab — route-aware glow pill */
@@ -724,9 +789,20 @@
     box-shadow: 0 0 12px rgba(20, 184, 166, 0.1);
   }
 
+  /* Lucide icons: color + opacity only, no filter (spec Section 5) */
+  .chesscito-dock-center.is-active svg {
+    color: rgba(160, 225, 220, 0.9);
+    opacity: 1;
+  }
+
   .chesscito-dock-center:active {
     background: rgba(20, 184, 166, 0.2);
     box-shadow: 0 0 16px rgba(20, 184, 166, 0.2);
+  }
+
+  .chesscito-dock-center:active svg {
+    transform: scale(0.92);
+    transition: transform 120ms;
   }
 
 }
@@ -927,10 +1003,20 @@
   box-shadow: var(--treat-carved-hi), var(--treat-carved-lo);
 }
 
-/* Reserved — consumed when interaction states are wired */
 .piece-pressed {
   filter: brightness(0.90) saturate(0.85);
   box-shadow: var(--treat-carved-lo);
+  transform: scale(0.92);
+  transition: transform 120ms, filter 120ms, box-shadow 120ms;
+}
+
+/* Auto-activate piece-pressed on hero rail tap */
+.hero-rail-tab:active .piece-hero,
+.hero-rail-tab:active .piece-inactive {
+  filter: brightness(0.90) saturate(0.85);
+  box-shadow: var(--treat-carved-lo);
+  transform: scale(0.92);
+  transition: transform 120ms, filter 120ms, box-shadow 120ms;
 }
 
 /* ── 2. Dock Icons (persistent navigation) ── */
@@ -976,15 +1062,38 @@
    Applied as compound selectors on .arena-piece-img.
    Color filters + drop-shadow defined together in Task 6. */
 
-/* ── 5. Decorative Frames ── */
-/* Reserved — consumed when frame wrappers adopt treatment system */
+/* ── 5. Decorative Frames — aligned to panel tier material ── */
 .frame-structural {
   filter: var(--treat-neutral-tint);
-  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo);
+  /* panel-base material language */
+  border: 1px solid var(--shell-border);
+  border-radius: var(--shell-radius);
+  box-shadow: var(--treat-carved-lo);
 }
 
-/* Reserved — consumed when featured frame slots adopt treatment system */
 .frame-showcase {
-  box-shadow: var(--treat-carved-hi), var(--treat-carved-lo), var(--treat-depth-outer);
-  border: 1px solid var(--treat-semi-border);
+  /* panel-showcase material language */
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: var(--shell-radius);
+  box-shadow:
+    var(--treat-carved-hi),
+    var(--treat-carved-lo),
+    var(--treat-depth-outer);
+}
+
+/* ═══════════════════════════════════════════════════
+   Reduced Motion — disable scale transitions
+   ═══════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .piece-pressed,
+  .hero-rail-tab:active .piece-hero,
+  .hero-rail-tab:active .piece-inactive,
+  .chesscito-dock-item > button:active,
+  .chesscito-dock-item > [role="button"]:active,
+  .chesscito-dock-item > button:active img,
+  .chesscito-dock-item > [role="button"]:active img,
+  .chesscito-dock-center:active svg {
+    transform: none !important;
+    transition: none !important;
+  }
 }
