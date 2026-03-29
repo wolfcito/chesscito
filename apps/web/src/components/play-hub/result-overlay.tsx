@@ -178,7 +178,7 @@ export function ResultOverlay({
       aria-modal="true"
       aria-label={title}
     >
-      <div className="flex w-full max-w-xs flex-col items-center gap-6 rounded-3xl border border-white/[0.06] bg-[var(--surface-frosted)] px-6 py-10 text-center backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-350">
+      <div className={`${isError ? "panel-elevated" : "panel-showcase"} flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350`}>
         {/* Image or error icon */}
         {isError ? (
           <div className="h-20 w-20">
@@ -302,7 +302,7 @@ export function BadgeEarnedPrompt({
       aria-modal="true"
       aria-labelledby="badge-earned-title"
     >
-      <div className="flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350">
+      <div className="panel-showcase flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350">
         <SuccessImage variant="badge" pieceType={pieceType} />
 
         <StarsRow totalStars={totalStars} />

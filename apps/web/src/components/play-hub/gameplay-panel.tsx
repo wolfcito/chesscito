@@ -12,11 +12,8 @@ export function GameplayPanel({ mission, stats, action }: GameplayPanelProps) {
 
   return (
     <div
-      className="mx-2 shrink-0 overflow-hidden"
+      className="panel-elevated mx-2 shrink-0 overflow-hidden"
       style={{
-        borderRadius: "var(--shell-radius)",
-        border: "1px solid var(--shell-border)",
-        background: "var(--surface-c-light)",
         marginTop: "var(--shell-gap-xs)",
         marginBottom: "var(--shell-gap-sm)",
       }}

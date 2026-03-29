@@ -225,7 +225,7 @@ export function MissionPanel({
 
       {/* Zone B: Board Stage — flex-1, maximum space */}
       <div className="min-h-0 flex-1 mx-2">
-        <div className="h-full overflow-hidden shadow-[inset_0_0_40px_rgba(0,0,0,0.3),0_4px_20px_rgba(0,0,0,0.25)]" style={{ borderRadius: "var(--shell-radius)", border: "1px solid var(--shell-border)" }}>
+        <div className="panel-base h-full overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
           {board}
         </div>
         {isReplay && (
