@@ -28,8 +28,11 @@ export function LeaderboardSheet({ open, onOpenChange }: LeaderboardSheetProps) 
     setLoading(true);
     setError(null);
     fetch("/api/leaderboard")
-      .then((r) => r.json())
-      .then((data: LeaderboardRow[]) => setRows(data))
+      .then((r) => {
+        if (!r.ok) throw new Error("fetch failed");
+        return r.json();
+      })
+      .then((data: unknown) => setRows(Array.isArray(data) ? data : []))
       .catch(() => setError(LEADERBOARD_SHEET_COPY.error))
       .finally(() => setLoading(false));
   }, []);
