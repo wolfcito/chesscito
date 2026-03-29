@@ -57,7 +57,7 @@ export function ShopSheet({ open, onOpenChange, items, onSelectItem }: ShopSheet
           {items.map((item, index) => {
             const isFeatured = index === 0 && item.configured && item.enabled;
             return (
-            <div key={item.itemId.toString()} className={`rounded-2xl p-3 relative ${isFeatured ? "" : "border border-white/[0.05] bg-white/[0.02] opacity-75"}`} style={isFeatured ? { background: "linear-gradient(180deg, rgba(18,14,8,0.95) 0%, rgba(10,8,6,0.90) 100%)", border: "1.5px solid rgba(200,170,100,0.30)", boxShadow: "inset 0 1px 3px rgba(255,255,255,0.05), inset 0 -2px 4px rgba(0,0,0,0.4), 0 0 20px rgba(200,170,100,0.10), 0 4px 12px rgba(0,0,0,0.3)" } : undefined}>
+            <div key={item.itemId.toString()} className={`p-3 relative ${isFeatured ? "panel-elevated" : "panel-base"}`} style={isFeatured ? { borderColor: "var(--treat-warm-border)" } : undefined}>
               {isFeatured && (
                 <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-[rgba(220,200,140,0.85)]" style={{ background: "rgba(200,170,100,0.15)", border: "1px solid rgba(200,170,100,0.35)" }}>
                   Featured
