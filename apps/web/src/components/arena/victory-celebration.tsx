@@ -48,7 +48,7 @@ export function VictoryCelebration({
       </div>
 
       {/* Card */}
-      <div className="relative z-10 mx-4 flex w-full max-w-[340px] flex-col items-center rounded-3xl border border-white/[0.08] bg-[var(--surface-frosted)] px-6 pb-6 pt-8 backdrop-blur-2xl shadow-[0_0_60px_rgba(20,184,166,0.08)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
+      <div className="panel-showcase relative z-10 mx-4 flex w-full max-w-[340px] flex-col items-center px-6 pb-6 pt-8 shadow-[0_0_60px_rgba(20,184,166,0.08)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
 
         {/* Hero — Trophy with breathing halo */}
         <div className="relative mb-4 flex items-center justify-center">
@@ -60,7 +60,13 @@ export function VictoryCelebration({
         </div>
 
         {/* Title */}
-        <h2 className="fantasy-title mb-1 text-3xl font-bold text-emerald-300/90 drop-shadow-[0_0_12px_rgba(20,184,166,0.35)]">
+        <h2
+          className="fantasy-title victory-text-slam mb-1 text-3xl font-bold text-emerald-300/90"
+          style={{
+            textShadow: "var(--text-shadow-hero-emerald)",
+            animation: "victory-text-slam 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+          }}
+        >
           {VICTORY_CELEBRATION_COPY.title}
         </h2>
 

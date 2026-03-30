@@ -119,7 +119,7 @@ export function ArenaEndState({
       role="alert"
       aria-live="assertive"
     >
-      <div className="flex flex-col items-center gap-6 rounded-3xl border border-white/[0.08] bg-[var(--surface-frosted)] px-8 py-8 backdrop-blur-2xl shadow-[0_0_60px_rgba(251,113,133,0.08)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
+      <div className="panel-showcase flex flex-col items-center gap-6 px-8 py-8 shadow-[0_0_60px_rgba(251,113,133,0.08)] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
         <picture>
           <source srcSet="/art/favicon-wolf.webp" type="image/webp" />
           <img
@@ -129,7 +129,10 @@ export function ArenaEndState({
             className="h-14 w-14 drop-shadow-[0_0_20px_rgba(103,232,249,0.5)]"
           />
         </picture>
-        <h2 className="fantasy-title text-2xl font-bold text-rose-300 drop-shadow-[0_0_16px_rgba(251,113,133,0.4)]">
+        <h2
+          className="fantasy-title text-2xl font-bold text-rose-300"
+          style={{ textShadow: "var(--text-shadow-hero-rose)" }}
+        >
           {text}
         </h2>
         <div className="flex flex-col gap-2 w-full max-w-[260px]">
