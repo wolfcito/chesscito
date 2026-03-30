@@ -85,7 +85,12 @@ function PhaseFlash({ phase }: { phase: MissionPanelProps["phase"] }) {
             />
           </picture>
         </div>
-        <span className={`fantasy-title text-3xl drop-shadow-lg ${flash.accent}`}>
+        <span
+          className={`fantasy-title victory-text-slam text-3xl ${flash.accent}`}
+          style={{
+            textShadow: phase === "success" ? "var(--text-shadow-hero-emerald)" : "var(--text-shadow-hero-rose)",
+          }}
+        >
           {flash.text}
         </span>
       </div>
@@ -126,12 +131,12 @@ export function MissionPanel({
       <div className="shrink-0">{exerciseDrawer}</div>
       <span className="h-4 w-px bg-white/[0.08]" />
       <div className="flex flex-1 items-center justify-center gap-4">
-        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/85">
+        <span className="game-label flex items-center gap-1 text-xs font-bold tabular-nums text-white/85">
           <Star size={14} className="opacity-65" />
           {score}
         </span>
         <span className="text-xs text-white/15">&middot;</span>
-        <span className="flex items-center gap-1 text-xs font-bold tabular-nums text-white/85">
+        <span className="game-label flex items-center gap-1 text-xs font-bold tabular-nums text-white/85">
           <Timer size={14} className="opacity-65" />
           {Number(timeMs) / 1000}s
         </span>
@@ -142,7 +147,7 @@ export function MissionPanel({
   const missionContent = (
     <div className="flex items-center gap-3">
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-400/85">
+        <p className="game-label text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-400/85">
           {MISSION_BRIEFING_COPY.label}
         </p>
         <p key={targetLabel} className="mission-typewriter text-[15px] font-bold text-slate-50">
@@ -208,7 +213,10 @@ export function MissionPanel({
                     />
                   </picture>
                   {isActive && (
-                    <span className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-[rgba(220,200,150,0.9)]">
+                    <span
+                      className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-[rgba(220,200,150,0.9)]"
+                      style={{ fontFamily: "var(--font-game-display)", textShadow: "var(--text-shadow-label)" }}
+                    >
                       {piece.label}
                     </span>
                   )}

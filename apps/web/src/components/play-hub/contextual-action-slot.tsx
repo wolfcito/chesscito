@@ -92,7 +92,7 @@ export function ContextualActionSlot(props: ContextualActionSlotProps) {
         type="button"
         onClick={handler}
         disabled={isBusy}
-        className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-bold uppercase tracking-wide shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-all active:scale-[0.97] active:shadow-none active:brightness-90 disabled:opacity-70 ${style.bg} ${style.glow} ${style.text} ${action === "retry" ? "border border-[rgba(190,210,255,0.08)]" : ""}`}
+        className={`game-cta-depth flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-bold uppercase tracking-wide disabled:opacity-70 ${style.bg} ${style.glow} ${style.text} ${action === "retry" ? "border border-[rgba(190,210,255,0.08)]" : ""}`}
       >
         {isBusy ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

@@ -70,6 +70,47 @@
     --treat-semi-glow: 0 0 6px rgba(200, 170, 100, 0.08);
     --treat-semi-border: rgba(180, 160, 110, 0.15);
     --treat-semi-tint: sepia(0.15) saturate(1.1) brightness(1.0);
+
+  /* ── E3 Surface Material tokens ── */
+  --panel-bg-base: linear-gradient(
+    180deg,
+    hsl(220, 40%, 12%) 0%,
+    hsl(220, 45%, 8%) 100%
+  );
+  --panel-bg-elevated: linear-gradient(
+    180deg,
+    hsl(220, 38%, 14%) 0%,
+    hsl(222, 42%, 9%) 100%
+  );
+  --panel-bg-showcase: linear-gradient(
+    180deg,
+    hsl(218, 36%, 16%) 0%,
+    hsl(222, 44%, 10%) 100%
+  );
+  --panel-border-base: 2px solid rgba(255, 255, 255, 0.08);
+  --panel-shadow-base:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  --panel-shadow-elevated:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+  --panel-shadow-showcase:
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+
+  /* ── E3 Text Shadow system ── */
+  --text-shadow-hero: 0 0 24px rgba(34, 211, 238, 0.4), 0 2px 0 rgba(0, 0, 0, 0.8);
+  --text-shadow-display: 0 0 12px rgba(34, 211, 238, 0.25), 0 1px 0 rgba(0, 0, 0, 0.6);
+  --text-shadow-label: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --text-shadow-hero-amber: 0 0 24px rgba(217, 180, 74, 0.4), 0 2px 0 rgba(0, 0, 0, 0.8);
+  --text-shadow-hero-rose: 0 0 24px rgba(251, 113, 133, 0.4), 0 2px 0 rgba(0, 0, 0, 0.8);
+  --text-shadow-hero-emerald: 0 0 24px rgba(52, 211, 153, 0.4), 0 2px 0 rgba(0, 0, 0, 0.8);
+
+  /* ── E3 Display Font ── */
+  --font-game-display: var(--font-fredoka), "Fredoka One", sans-serif;
     --intro-bg-mobile: image-set(
       url("/art/bg-splash-chesscito.avif") type("image/avif"),
       url("/art/bg-splash-chesscito.webp") type("image/webp"),
@@ -169,8 +210,9 @@
   }
 
   .fantasy-title {
-    font-family: "Cinzel", "Times New Roman", Georgia, serif;
-    letter-spacing: 0.02em;
+    font-family: var(--font-game-display);
+    letter-spacing: 0.01em;
+    text-shadow: var(--text-shadow-display);
   }
 
   .rune-frame {
@@ -312,6 +354,117 @@
   animation: glow-pulse-once 600ms ease-in-out 1;
 }
 
+/* ── E3 Reward Ceremony v1 ── */
+@keyframes reward-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes reward-star-bounce {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes reward-star-glow {
+  0% {
+    box-shadow: 0 0 0 rgba(217, 180, 74, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(217, 180, 74, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(217, 180, 74, 0);
+  }
+}
+
+@keyframes reward-icon-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes reward-buttons-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* P1: confetti burst — keyframe ready, not yet wired to DOM */
+@keyframes reward-confetti-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+/* ── E3 Victory text slam ── */
+.victory-text-slam {
+  animation: victory-text-slam 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes victory-text-slam {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reward-ceremony-panel,
+  .reward-ceremony-icon,
+  .reward-ceremony-star,
+  .reward-ceremony-buttons,
+  .victory-text-slam {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* ── Reward icon showcase treatment (Phase E2) ── */
 .reward-icon-showcase {
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
@@ -327,17 +480,6 @@
   background: radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
   pointer-events: none;
   border-radius: 50%;
-}
-
-@keyframes star-reveal {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
   .playhub-game-stage {
@@ -615,31 +757,28 @@
   /* ── Panel tier system — material surfaces ── */
 
   .panel-base {
-    background: linear-gradient(to bottom, rgba(12, 20, 35, 0.50), rgba(6, 14, 28, 0.40));
-    border: 1px solid var(--shell-border);
+    background: var(--panel-bg-base);
+    border: var(--panel-border-base);
     border-radius: var(--shell-radius);
-    box-shadow: var(--treat-carved-lo);
+    box-shadow: var(--panel-shadow-base);
   }
 
   .panel-elevated {
     position: relative;
-    background: linear-gradient(to bottom, rgba(12, 20, 35, 0.65), rgba(6, 14, 28, 0.55));
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--panel-bg-elevated);
+    border: 2px solid rgba(255, 255, 255, 0.10);
     border-radius: var(--shell-radius);
-    box-shadow:
-      var(--treat-carved-hi),
-      var(--treat-carved-lo),
-      var(--treat-depth-outer);
+    box-shadow: var(--panel-shadow-elevated);
   }
 
   .panel-elevated::after {
     content: "";
     position: absolute;
     top: 0;
-    left: 1px;
-    right: 1px;
+    left: 2px;
+    right: 2px;
     height: 1px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.10);
     pointer-events: none;
     z-index: 2;
     border-radius: var(--shell-radius) var(--shell-radius) 0 0;
@@ -647,26 +786,48 @@
 
   .panel-showcase {
     position: relative;
-    background: linear-gradient(to bottom, rgba(14, 22, 38, 0.80), rgba(6, 14, 28, 0.70));
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: var(--panel-bg-showcase);
+    border: 2px solid rgba(255, 255, 255, 0.12);
     border-radius: var(--shell-radius);
-    box-shadow:
-      var(--treat-carved-hi),
-      var(--treat-carved-lo),
-      var(--treat-depth-outer);
+    box-shadow: var(--panel-shadow-showcase);
   }
 
   .panel-showcase::after {
     content: "";
     position: absolute;
     top: 0;
-    left: 1px;
-    right: 1px;
+    left: 2px;
+    right: 2px;
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.14);
     pointer-events: none;
     z-index: 2;
     border-radius: var(--shell-radius) var(--shell-radius) 0 0;
+  }
+
+  /* ── E3 CTA Button depth ── */
+  .game-cta-depth {
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+    transition: all 120ms ease-out;
+    font-family: var(--font-game-display);
+    text-shadow: var(--text-shadow-label);
+  }
+
+  .game-cta-depth:active {
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    transform: translateY(1px) scale(0.97);
+  }
+
+  /* ── E3 Key game labels ── */
+  .game-label {
+    font-family: var(--font-game-display);
+    text-shadow: var(--text-shadow-label);
   }
 
   /* ── Arena background ── */
@@ -822,8 +983,15 @@
     align-items: center;
     justify-content: space-around;
     padding: 6px 8px 4px;
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
-    background: rgba(6, 14, 28, 0.90);
+    border-top: 2px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(
+      180deg,
+      hsl(220, 42%, 11%) 0%,
+      hsl(222, 48%, 7%) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 -4px 12px rgba(0, 0, 0, 0.3);
   }
 
   .chesscito-dock-item {
@@ -839,10 +1007,13 @@
     height: 2.75rem !important;
     border-radius: 14px !important;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--shell-border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     opacity: 0.65;
-    transition: opacity 0.15s, background 200ms, border-color 200ms;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: opacity 0.15s, background 200ms, border-color 200ms, transform 120ms;
   }
 
   .chesscito-dock-item > button:active,
@@ -850,7 +1021,8 @@
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(160, 205, 225, 0.20);
     opacity: 0.65;
-    transform: scale(0.92);
+    transform: scale(0.92) translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: transform 120ms, opacity 120ms, background 120ms;
   }
 
@@ -872,18 +1044,24 @@
     width: 3.5rem;
     height: 3rem;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--shell-border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     color: rgba(160, 225, 220, 0.55);
-    box-shadow: none;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
     transition: all 200ms;
+    font-family: var(--font-game-display);
   }
 
   .chesscito-dock-center.is-active {
     background: rgba(20, 184, 166, 0.15);
-    border-color: rgba(20, 184, 166, 0.25);
+    border-color: rgba(20, 184, 166, 0.30);
     color: rgba(160, 225, 220, 0.8);
-    box-shadow: 0 0 16px rgba(20, 184, 166, 0.14);
+    box-shadow:
+      0 0 16px rgba(20, 184, 166, 0.14),
+      0 2px 6px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(20, 184, 166, 0.12);
     transform: scale(1.04);
   }
 
@@ -1030,11 +1208,18 @@
   align-items: center;
   gap: 2px;
   height: 60px;
-  background: linear-gradient(180deg, rgba(12, 20, 35, 0.85) 0%, rgba(6, 14, 28, 0.75) 100%);
-  border: 1px solid rgba(160, 140, 100, 0.15);
+  background: linear-gradient(
+    180deg,
+    hsl(220, 40%, 13%) 0%,
+    hsl(222, 45%, 8%) 100%
+  );
+  border: 2px solid rgba(160, 140, 100, 0.18);
   border-radius: 36px;
   padding: 4px 5px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35);
 }
 
 .hero-rail-tab {
@@ -1059,9 +1244,17 @@
 }
 
 .hero-rail-tab.is-active {
-  background: linear-gradient(180deg, rgba(20, 28, 45, 0.95) 0%, rgba(8, 14, 28, 0.90) 100%);
+  background: linear-gradient(
+    180deg,
+    hsl(220, 35%, 16%) 0%,
+    hsl(222, 40%, 10%) 100%
+  );
   border-color: rgba(180, 160, 110, 0.45);
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.06), inset 0 -2px 4px rgba(0, 0, 0, 0.4), 0 0 14px rgba(200, 170, 100, 0.18);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+    0 0 14px rgba(200, 170, 100, 0.18);
   transform: scale(1.05);
 }
 
@@ -1099,8 +1292,10 @@
 .hero-rail-tab.is-inactive {
   opacity: 0.45;
   border-color: rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.03), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .hero-rail-tab.is-inactive:active {
@@ -1262,10 +1457,5 @@
   }
   .reward-glow-achievement.reward-glow-pulse::before {
     animation: none !important;
-  }
-  .star-reveal-animated {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
 }
