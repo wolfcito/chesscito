@@ -354,6 +354,96 @@
   animation: glow-pulse-once 600ms ease-in-out 1;
 }
 
+/* ── E3 Reward Ceremony v1 ── */
+@keyframes reward-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes reward-star-bounce {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes reward-star-glow {
+  0% {
+    box-shadow: 0 0 0 rgba(217, 180, 74, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(217, 180, 74, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(217, 180, 74, 0);
+  }
+}
+
+@keyframes reward-icon-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes reward-buttons-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reward-confetti-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reward-ceremony-panel,
+  .reward-ceremony-icon,
+  .reward-ceremony-star,
+  .reward-ceremony-buttons,
+  .reward-ceremony-confetti {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* ── Reward icon showcase treatment (Phase E2) ── */
 .reward-icon-showcase {
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));

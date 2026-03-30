@@ -65,7 +65,10 @@ function SuccessImage({ variant, pieceType, glowClass }: { variant: SuccessVaria
   const src = variant === "badge" ? getBadgeImg(pieceType) : VARIANT_IMG[variant];
   return (
     <div className={`relative flex items-center justify-center ${glowClass ?? "reward-glow-progress"}`}>
-      <picture className="reward-icon-showcase reward-burst relative z-10">
+      <picture
+        className="reward-icon-showcase reward-ceremony-icon relative z-10"
+        style={{ animation: "reward-icon-enter 250ms ease-out 200ms both" }}
+      >
         <source srcSet={src.replace(".png", ".avif")} type="image/avif" />
         <source srcSet={src.replace(".png", ".webp")} type="image/webp" />
         <img src={src} alt="" className="h-32 w-32 object-contain drop-shadow-lg" />
@@ -83,21 +86,20 @@ function StarsRow({ totalStars, staggered = false }: { totalStars: number; stagg
     <div className="flex items-center gap-1.5">
       {Array.from({ length: EXERCISES_PER_PIECE }, (_, i) => {
         const isEarned = i < filled;
+        const starDelay = 400 + i * 150;
         return (
           <span
             key={i}
             className={
               isEarned
-                ? staggered
-                  ? "star-reveal-animated text-amber-400"
-                  : "text-amber-400"
+                ? "reward-ceremony-star text-amber-400 inline-block"
                 : "text-amber-400/30"
             }
             style={
               isEarned && staggered
                 ? {
                     opacity: 0,
-                    animation: `star-reveal 250ms ease-out ${200 * i}ms forwards`,
+                    animation: `reward-star-bounce 350ms cubic-bezier(0.34, 1.56, 0.64, 1) ${starDelay}ms forwards`,
                   }
                 : undefined
             }
@@ -107,7 +109,10 @@ function StarsRow({ totalStars, staggered = false }: { totalStars: number; stagg
           </span>
         );
       })}
-      <span className="ml-1 text-xs text-cyan-100/70">
+      <span
+        className="reward-ceremony-buttons ml-1 text-xs text-cyan-100/70"
+        style={staggered ? { opacity: 0, animation: "reward-buttons-enter 250ms ease-out 1200ms forwards" } : undefined}
+      >
         {totalStars}/{MAX_STARS}
       </span>
     </div>
@@ -193,7 +198,10 @@ export function ResultOverlay({
       aria-modal="true"
       aria-label={title}
     >
-      <div className={`${isError ? "panel-elevated" : "panel-showcase"} flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350`}>
+      <div
+        className={`${isError ? "panel-elevated" : "panel-showcase"} reward-ceremony-panel flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center`}
+        style={{ animation: "reward-panel-enter 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
+      >
         {/* Image or error icon */}
         {isError ? (
           <div className="h-20 w-20">
@@ -238,7 +246,10 @@ export function ResultOverlay({
         ) : null}
 
         {/* CTA buttons */}
-        <div className="mt-2 flex w-full flex-col gap-2">
+        <div
+          className="reward-ceremony-buttons mt-2 flex w-full flex-col gap-2"
+          style={{ opacity: 0, animation: "reward-buttons-enter 300ms ease-out 1300ms forwards" }}
+        >
           {!isError ? (
             <ShareButton variant={variant} pieceType={pieceType} itemLabel={itemLabel} totalStars={totalStars} />
           ) : null}
@@ -317,14 +328,20 @@ export function BadgeEarnedPrompt({
       aria-modal="true"
       aria-labelledby="badge-earned-title"
     >
-      <div className="panel-showcase flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center animate-in zoom-in-95 fade-in duration-350">
+      <div
+        className="panel-showcase reward-ceremony-panel flex w-full max-w-xs flex-col items-center gap-6 px-6 py-10 text-center"
+        style={{ animation: "reward-panel-enter 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
+      >
         <SuccessImage variant="badge" pieceType={pieceType} glowClass="reward-glow-achievement reward-glow-pulse" />
 
         <StarsRow totalStars={totalStars} staggered />
 
         <h2 id="badge-earned-title" className="fantasy-title text-2xl text-cyan-50">{title}</h2>
 
-        <div className="mt-2 flex w-full flex-col gap-2">
+        <div
+          className="reward-ceremony-buttons mt-2 flex w-full flex-col gap-2"
+          style={{ opacity: 0, animation: "reward-buttons-enter 300ms ease-out 1300ms forwards" }}
+        >
           <Button
             type="button"
             variant="game-solid"
