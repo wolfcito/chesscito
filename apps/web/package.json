@@ -20,7 +20,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "type-check": "rm -rf .next && next build >/dev/null && tsc --noEmit",
-    "art:optimize": "bash scripts/optimize-art-assets.sh"
+    "art:optimize": "bash scripts/optimize-art-assets.sh",
+    "encrypt-key": "npx tsx scripts/encrypt-key.ts"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.18.7",
