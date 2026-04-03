@@ -46,11 +46,27 @@ describe("decryptSignerKey", () => {
       () => decryptSignerKey("one:two", TEST_PASSPHRASE),
       { message: "Invalid encrypted format: expected iv:authTag:ciphertext" }
     );
+    assert.throws(
+      () => decryptSignerKey("one:two:three:four", TEST_PASSPHRASE),
+      { message: "Invalid encrypted format: expected iv:authTag:ciphertext" }
+    );
   });
 
   it("throws on invalid hex in segments", () => {
     assert.throws(
       () => decryptSignerKey("zzzz:yyyy:xxxx", TEST_PASSPHRASE)
+    );
+  });
+
+  it("throws on invalid passphrase format", () => {
+    const encrypted = encryptSignerKey(TEST_KEY, TEST_PASSPHRASE);
+    assert.throws(
+      () => decryptSignerKey(encrypted, "too-short"),
+      { message: "Passphrase must be exactly 64 hex characters (32 bytes)" }
+    );
+    assert.throws(
+      () => decryptSignerKey(encrypted, "z".repeat(64)),
+      { message: "Passphrase must be exactly 64 hex characters (32 bytes)" }
     );
   });
 });
