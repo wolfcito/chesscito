@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { ethers } from "ethers";
+import { decryptSignerKey } from "./crypto.js";
 
 const MAX_REQUESTS_PER_IP = 5;
 const MAX_REQUESTS_PER_ADDRESS = 3;
@@ -34,7 +35,9 @@ export function getDemoConfig() {
   const badgesAddress = ethers.getAddress(requireEnv("NEXT_PUBLIC_BADGES_ADDRESS"));
   const scoreboardAddress = ethers.getAddress(requireEnv("NEXT_PUBLIC_SCOREBOARD_ADDRESS"));
   const victoryNFTAddress = ethers.getAddress(requireEnv("NEXT_PUBLIC_VICTORY_NFT_ADDRESS"));
-  const signer = new ethers.Wallet(requireEnv("SIGNER_PRIVATE_KEY"));
+  const signer = new ethers.Wallet(
+    decryptSignerKey(requireEnv("TORRE_PRINCESA"), requireEnv("DRAGON"))
+  );
 
   return {
     chainId,

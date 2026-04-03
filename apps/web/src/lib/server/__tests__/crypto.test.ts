@@ -70,3 +70,17 @@ describe("decryptSignerKey", () => {
     );
   });
 });
+
+describe("getDemoConfig integration", () => {
+  it("produces a valid signer from encrypted env vars", () => {
+    // Encrypt a known test key
+    const testKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+    const passphrase = "c".repeat(64);
+    const encrypted = encryptSignerKey(testKey, passphrase);
+
+    // Decrypt and verify it's a valid hex key
+    const decrypted = decryptSignerKey(encrypted, passphrase);
+    assert.equal(decrypted, testKey);
+    assert.match(decrypted, /^0x[0-9a-fA-F]{64}$/);
+  });
+});
