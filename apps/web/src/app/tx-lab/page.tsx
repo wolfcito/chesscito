@@ -72,6 +72,11 @@ async function requestScoreSignature(player: `0x${string}`) {
 }
 
 export default function TxLabPage() {
+  const isQaEnabled =
+    typeof window !== "undefined" &&
+    process.env.NEXT_PUBLIC_QA_MODE === "1" &&
+    window.location.hostname === "localhost";
+
   const chainId = useChainId();
   const badgesAddress = useMemo(() => getBadgesAddress(chainId), [chainId]);
   const scoreboardAddress = useMemo(() => getScoreboardAddress(chainId), [chainId]);
@@ -251,6 +256,14 @@ export default function TxLabPage() {
       setLastResult(safeJson({ error }));
     }
   };
+
+  if (!isQaEnabled) {
+    return (
+      <div className="flex h-dvh items-center justify-center text-sm text-white/40">
+        Not available
+      </div>
+    );
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-[var(--app-max-width)] flex-col gap-4 px-4 py-8">
