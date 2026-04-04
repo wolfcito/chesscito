@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Crown, ArrowLeft } from "lucide-react";
 import { TrophyList } from "@/components/trophies/trophy-list";
 import { getVictoryAddress } from "@/lib/game/victory-events";
@@ -33,6 +34,7 @@ function toVictoryEntry(row: ApiVictoryRow): VictoryEntry {
 
 export default function TrophiesPage() {
   const { address, isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   const [myVictories, setMyVictories] = useState<VictoryEntry[]>();
   const [hallOfFame, setHallOfFame] = useState<VictoryEntry[]>();
@@ -130,9 +132,17 @@ export default function TrophiesPage() {
               </h2>
 
               {!isConnected ? (
-                <p className="py-4 text-center text-sm text-slate-500">
-                  {TROPHY_VITRINE_COPY.connectWallet}
-                </p>
+                <div className="flex flex-col items-center gap-3 py-4">
+                  <p className="text-center text-sm text-slate-500">
+                    {TROPHY_VITRINE_COPY.connectWallet}
+                  </p>
+                  <button
+                    onClick={() => openConnectModal?.()}
+                    className="min-h-[44px] rounded-xl bg-white/[0.08] px-6 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-white/[0.12]"
+                  >
+                    Connect Wallet
+                  </button>
+                </div>
               ) : (
                 <TrophyList
                   victories={myVictories}
