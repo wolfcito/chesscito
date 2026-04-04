@@ -168,7 +168,7 @@ export const SHOP_SHEET_COPY = {
   status: {
     available: "Available",
     unavailable: "Unavailable",
-    notConfigured: "Not configured",
+    notConfigured: "Coming soon",
   },
 } as const;
 
@@ -336,7 +336,7 @@ export const VICTORY_CELEBRATION_COPY = {
 } as const;
 
 export const TROPHY_VITRINE_COPY = {
-  pageTitle: "Trophy Vitrine",
+  pageTitle: "Trophy Case",
   pageDescription: "Your onchain victories, immortalized.",
   myVictories: "My Victories",
   hallOfFame: "Hall of Fame",

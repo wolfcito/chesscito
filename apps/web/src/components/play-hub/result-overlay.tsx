@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BADGE_EARNED_COPY, PIECE_LABELS, RESULT_OVERLAY_COPY, SHARE_COPY } from "@/lib/content/editorial";
 import { Button } from "@/components/ui/button";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
+import { EXERCISES_PER_PIECE } from "@/lib/game/exercises";
 
 type PieceKey = "rook" | "bishop" | "knight" | "pawn" | "queen" | "king";
 type SuccessVariant = "badge" | "score" | "shop";
@@ -76,7 +77,6 @@ function SuccessImage({ variant, pieceType, glowClass }: { variant: SuccessVaria
   );
 }
 
-const EXERCISES_PER_PIECE = 5;
 const MAX_STARS = EXERCISES_PER_PIECE * 3;
 
 function StarsRow({ totalStars, staggered = false }: { totalStars: number; staggered?: boolean }) {

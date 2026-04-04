@@ -616,15 +616,15 @@ export default function PlayHubPage() {
       return;
     }
     if (!selectedItem.configured) {
-      setLastError(`Item ${selectedItem.itemId.toString()} is not configured on-chain`);
+      setLastError("This item is not available yet");
       return;
     }
     if (!selectedItem.enabled) {
-      setLastError(`Item ${selectedItem.itemId.toString()} is disabled`);
+      setLastError("This item is currently unavailable");
       return;
     }
     if (!paymentToken) {
-      setLastError("No accepted token with sufficient balance");
+      setLastError("Not enough funds to complete this purchase");
       return;
     }
 

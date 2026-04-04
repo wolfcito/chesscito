@@ -64,7 +64,7 @@ export function PurchaseConfirmSheet({
               </span>
             </p>
             <p>
-              {PURCHASE_FIELD_LABELS.network}: <span className="font-semibold text-slate-100">{chainId ? (CHAIN_NAMES[chainId] ?? `Chain ${chainId}`) : "—"}</span>
+              {PURCHASE_FIELD_LABELS.network}: <span className="font-semibold text-slate-100">{chainId ? (CHAIN_NAMES[chainId] ?? "Unknown network") : "—"}</span>
             </p>
             <p className="rounded-xl border border-amber-400/45 bg-amber-900/30 px-3 py-2 text-xs text-amber-100">
               {PURCHASE_CONFIRM_COPY.miniPayWarning}
