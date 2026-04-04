@@ -20,7 +20,6 @@ type ResultOverlayProps = {
   onDismiss: () => void;
   onRetry?: () => void;
   totalStars?: number;
-  globalTotal?: number;
 };
 
 const VARIANT_IMG: Record<SuccessVariant, string> = {
@@ -179,7 +178,6 @@ export function ResultOverlay({
   onDismiss,
   onRetry,
   totalStars,
-  globalTotal,
 }: ResultOverlayProps) {
   const [exiting, setExiting] = useState(false);
   const isError = variant === "error";
@@ -224,13 +222,6 @@ export function ResultOverlay({
         {/* Stars (badge/score only) */}
         {!isError && variant !== "shop" && totalStars != null ? (
           <StarsRow totalStars={totalStars} staggered />
-        ) : null}
-
-        {/* Global total (score variant only) — TODO Task 2: remove this block */}
-        {!isError && variant === "score" && globalTotal != null && globalTotal > 0 ? (
-          <p className="text-sm font-semibold text-cyan-100/60">
-            {`Total: ${globalTotal.toLocaleString()} pts`}
-          </p>
         ) : null}
 
         {/* CeloScan link (success only) */}

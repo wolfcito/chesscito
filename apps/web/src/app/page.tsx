@@ -131,7 +131,6 @@ export default function PlayHubPage() {
     txHash?: string;
     errorMessage?: string;
     retryAction?: () => void;
-    globalTotal?: number;
   } | null>(null);
   const [showBadgeEarned, setShowBadgeEarned] = useState(false);
   const [badgeSheetOpen, setBadgeSheetOpen] = useState(false);
@@ -226,25 +225,8 @@ export default function PlayHubPage() {
     [defaultLevelId, isQaLevelValid, qaEnabled, qaLevel]
   );
   const POINTS_PER_STAR = 100n;
-  const POINTS_PER_STAR_NUM = 100;
   const score = useMemo(() => BigInt(Math.max(1, totalStars)) * POINTS_PER_STAR, [totalStars]);
 
-  const globalTotal = useMemo(() => {
-    if (typeof window === "undefined") return 0;
-    const pieces = ["rook", "bishop", "knight", "pawn", "queen", "king"] as const;
-    let sum = 0;
-    for (const p of pieces) {
-      try {
-        const raw = localStorage.getItem(`chesscito:progress:${p}`);
-        if (!raw) continue;
-        const parsed = JSON.parse(raw) as { stars?: number[] };
-        if (Array.isArray(parsed.stars)) {
-          for (const s of parsed.stars) sum += (typeof s === "number" ? s : 0);
-        }
-      } catch { continue; }
-    }
-    return sum * POINTS_PER_STAR_NUM;
-  }, [totalStars]); // recalc when current piece stars change
   const timeMs = useMemo(() => {
     if (phase !== "success") {
       return 1000n;
@@ -610,7 +592,6 @@ export default function PlayHubPage() {
       setResultOverlay({
         variant: "score",
         txHash,
-        globalTotal,
       });
       console.info("[MiniPayTx] result", { label: "submit-score", txHash, levelId: Number(levelId) });
     } catch (error) {
@@ -907,7 +888,6 @@ export default function PlayHubPage() {
             celoscanHref={resultOverlay.txHash ? txLink(chainId, resultOverlay.txHash) : undefined}
             errorMessage={resultOverlay.errorMessage}
             totalStars={totalStars}
-            globalTotal={resultOverlay.globalTotal}
             onDismiss={() => setResultOverlay(null)}
             onRetry={resultOverlay.retryAction}
           />
